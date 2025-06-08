@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, MouseEventHandler } from "react";
 
-import { GitError, Repository } from "./types";
+import { Branch, GitError, Repository } from "./types";
 import { CheckMarkIcon, ChevronDownIcon, CloseIcon, PlusIcon } from "./icons";
 import CloneRepositoryInput from "./components/clone-repository-input";
 import "./App.css";
@@ -19,7 +19,7 @@ function App() {
   const [invalidRepoSelected, setInvalidRepoSelected] = useState(false);
   const [currentRepository, setCurrentRepository] = useState<Repository>();
   const [currentRepositoryBranches, setCurrentRepositoryBranches] = useState<
-    string[]
+    Branch[]
   >([]);
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
   const [currentAction, setCurrentAction] = useState<Actiontype>();
@@ -63,7 +63,7 @@ function App() {
     });
   }, []);
 
-  const checkout = useCallback((branch: string) => {
+  const checkout = useCallback((branch: Branch) => {
     setIsCheckoutLoading(true);
     // window.electronAPI.checkoutBranch(
     //   currentRepository?.localPath!,
@@ -141,7 +141,7 @@ function App() {
               className="m-2 cursor-pointer text-right transition-colors hover:bg-stone-600"
               onClick={() => checkout(branch)}
             >
-              {branch}
+              {branch.name}
             </div>
           ))}
         </div>

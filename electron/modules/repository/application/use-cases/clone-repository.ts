@@ -10,7 +10,10 @@ import { RepositorySelectionDto } from "../../dto/repository-selection.js";
 import { ActionResponse } from "../../../../commons/action.js";
 import { safeGit } from "../../../../commons/safe-git.js";
 
-import { getRepositoryNameFromRemoteUrl } from "../../domain/services.js";
+import {
+  dedupRefs,
+  getRepositoryNameFromRemoteUrl,
+} from "../../domain/services.js";
 import { FilesRepository } from "../files-repository.js";
 
 export class CloneRepository {
@@ -62,10 +65,8 @@ export class CloneRepository {
     await this.filesRepository.copyFolder(tmpFolder, repositoryPath);
     await this.filesRepository.deleteFolder(tmpFolder);
 
-    const branches = await this.gitRunner.listBranches(
-      repositoryPath,
-      remote.name,
-    );
+    const refs = await this.gitRunner.listRefs(repositoryPath);
+    const branches = dedupRefs(currentBranch, refs);
 
     const repository = new Repository({
       name: repoName,

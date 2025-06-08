@@ -1,12 +1,20 @@
-import { ExecOptionsWithStringEncoding, execSync } from "child_process";
+import {
+  ExecOptions,
+  ExecOptionsWithStringEncoding,
+  execSync,
+} from "child_process";
 
 import { v4 as uuidv4 } from "uuid";
 
+import { CommandRunner } from "../../../commons/application/command-runner.js";
 import { GitRunner } from "../application/git-runner.js";
 import { Branch } from "../domain/branch.js";
 import { GitError } from "../domain/git-error.js";
+import { RepositoryReferences } from "../dto/reference.js";
 import { Remote } from "../dto/remote.js";
 import { ChangedFile, ModType } from "../domain/changed-file.js";
+import { ShellRunner } from "../../../commons/infra/shell-runner.js";
+import { stderr } from "process";
 
 const validGitActions = ["M", "T", "A", "D", "R", "C", "U", "??"] as const;
 type GitFileAction = (typeof validGitActions)[number];
@@ -26,118 +34,63 @@ const gitFileActionsToModType: Record<GitFileAction, ModType | null> = {
 };
 
 export class GitCliRunner implements GitRunner {
-  private runCommand(
+  private cmdRunner: CommandRunner = new ShellRunner();
+  constructor(cmdRunner?: CommandRunner) {
+    if (cmdRunner) {
+      this.cmdRunner = cmdRunner;
+    }
+  }
+
+  private async safeRun(
     command: string,
-    options: ExecOptionsWithStringEncoding,
-  ): string {
-    try {
-      const results = execSync(command, options);
-      return results;
-    } catch (error) {
-      const errorAsUnknown = error as unknown;
-      const stdErrInError =
-        typeof errorAsUnknown === "object" &&
-        errorAsUnknown !== null &&
-        "stderr" in errorAsUnknown &&
-        errorAsUnknown.stderr;
+    args: string[],
+    options?: ExecOptions,
+  ): Promise<string[]> {
+    const res = await this.cmdRunner.run(command, args, {
+      cwd: options?.cwd || process.cwd(),
+    });
 
-      if (!stdErrInError) {
-        throw error;
-      }
-
-      let cliMessage: string;
-      if (typeof errorAsUnknown.stderr === "string") {
-        cliMessage = errorAsUnknown.stderr;
-      } else if (Buffer.isBuffer(errorAsUnknown.stderr)) {
-        cliMessage = errorAsUnknown.stderr.toString("utf8");
-      } else {
-        throw new Error(
-          `Unsupported error.stdErr type: ${typeof errorAsUnknown.stderr}`,
-        );
-      }
-
-      throw new GitError(cliMessage, command);
+    if (res.exitCode !== 0) {
+      throw new GitError(res.stderr.join("\n"), res.command);
     }
-  }
 
-  private splitLines(output: string): string[] {
-    const lines = [];
-    const rawLines = output.split("\n");
-
-    for (let i = 0; i < rawLines.length; i++) {
-      const rawLine = rawLines[i].trim();
-      if (!rawLine) {
-        continue;
-      }
-      lines.push(rawLine);
-    }
-    return lines;
-  }
-
-  private cleanLine(output: string): string {
-    return output.replace("\n", "");
-  }
-
-  async listRemotes(path: string): Promise<Remote[]> {
-    const commandResult = this.runCommand(
-      "git remote -v | awk '{print $1, $2}' | uniq",
-      { encoding: "utf8", cwd: path },
-    );
-
-    const lines = this.splitLines(commandResult);
-    const remotes = [];
-
-    for (let i = 0; i < lines.length; i++) {
-      const parts = lines[i].split(" ");
-      if (parts.length !== 2) {
-        console.warn(
-          `Seemingly malformed git remote -v output line: ${lines[i]}`,
-        );
-        continue;
-      }
-
-      remotes.push({ name: parts[0], url: parts[1] });
-    }
-    return remotes;
+    return res.stdout;
   }
 
   async cloneRepository(url: string): Promise<string> {
     const tempFolder = `/tmp/${uuidv4()}`;
-    // TODO: Sanitize for command injection
-    const command = `git clone --depth=1 --single-branch ${url} ${tempFolder}`;
-    this.runCommand(command, { encoding: "utf8" });
+    await this.safeRun("git", [
+      "clone",
+      "--depth=1",
+      "--single-branch",
+      url,
+      tempFolder,
+    ]);
     return tempFolder;
   }
 
   async isValidRepository(path: string): Promise<boolean> {
-    try {
-      const commandResult = execSync(`git rev-parse --is-inside-work-tree`, {
-        cwd: path,
-        encoding: "utf-8",
-      });
-
-      const value = this.cleanLine(commandResult);
-      return value === "true";
-    } catch (err) {
-      return false;
-    }
+    const res = await this.cmdRunner.run(
+      "git",
+      ["rev-parse", "--is-inside-work-tree"],
+      { cwd: path },
+    );
+    return res.exitCode === 0;
   }
 
   async getCurrentBranch(path: string): Promise<string> {
-    const commandResult = this.runCommand(`git rev-parse --abbrev-ref HEAD`, {
-      cwd: path,
-      encoding: "utf8",
-    });
-    const value = this.cleanLine(commandResult);
-    return value;
+    const res = await this.safeRun(
+      "git",
+      ["rev-parse", "--abbrev-ref", "HEAD"],
+      { cwd: path },
+    );
+    return res[0];
   }
 
   async getCurrentRemote(path: string): Promise<Remote> {
-    const commandResult = this.runCommand(`git remote -v`, {
+    const lines = await this.safeRun("git", ["remote", "-v"], {
       cwd: path,
-      encoding: "utf8",
     });
-    const lines = this.splitLines(commandResult);
 
     const cache: string[] = [];
     const remotes: Remote[] = [];
@@ -167,12 +120,11 @@ export class GitCliRunner implements GitRunner {
   async getFileDiff(filePath: string, repositoryPath: string): Promise<void> {}
 
   async getModifiedFiles(path: string): Promise<ChangedFile[]> {
-    const rv = this.runCommand("git status --porcelain", {
+    const lines = await this.safeRun("git", ["status", "--porcelain"], {
       cwd: path,
-      encoding: "utf8",
     });
+
     const files: ChangedFile[] = [];
-    const lines = this.splitLines(rv);
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       const parts = line.split(" ");
@@ -199,15 +151,63 @@ export class GitCliRunner implements GitRunner {
     return files;
   }
 
-  async listBranches(
-    path: string,
-    currentBranchName: string,
-  ): Promise<Branch[]> {
-    const commandResult = this.runCommand(
-      "git for-each-ref --format='%(refname:short) %(refname) %(upstream:short)' refs/heads refs/remotes",
-      { encoding: "utf8", cwd: path },
+  async listRefs(path: string): Promise<RepositoryReferences> {
+    const lines = await this.safeRun(
+      "git",
+      [
+        "for-each-ref",
+        "--format='%(refname:short) $(refname) $(upstream:remotename)'",
+        "refs/heads",
+        "refs/remotes",
+      ],
+      { cwd: path },
     );
-    const lines = this.splitLines(commandResult);
+    const rv: RepositoryReferences = { local: [], remote: [] };
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const parts = line.split(" ");
+      if (parts.length < 2 || parts.length > 3) {
+        console.warn(
+          `Seemingly malformed git for-each-ref output line: ${line}`,
+        );
+        continue;
+      }
+
+      const shortRefName = parts[0];
+      const refName = parts[1];
+
+      if (refName.startsWith("refs/head")) {
+        rv.local.push({
+          name: shortRefName,
+        });
+      } else {
+        const refNameParts = shortRefName.split("/");
+        const remoteName = refNameParts.shift();
+        if (!remoteName) {
+          console.warn(
+            `Seemingly malformed git for-each-ref output line: ${line}`,
+          );
+          continue;
+        }
+        const branchName = refNameParts.join("/");
+        rv.remote.push({ name: branchName, remoteName });
+      }
+    }
+
+    return rv;
+  }
+
+  async listBranches(path: string, currentBranchName: string) {
+    const lines = await this.safeRun(
+      "git",
+      [
+        "for-each-ref",
+        "--format='%(refname:short) %(refname) %(upstream:short)'",
+        "refs/heads",
+        "refs/remotes",
+      ],
+      { cwd: path },
+    );
     const branchesMap: Map<string, Branch> = new Map();
 
     for (let i = 0; i < lines.length; i++) {

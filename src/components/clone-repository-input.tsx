@@ -1,10 +1,10 @@
 import { useCallback, useRef, useState } from "react";
-import { Repository } from "../types";
+import { Branch, Repository } from "../types";
 
 export default function CloneRepositoryInput({
   callback,
 }: {
-  callback: (repository: Repository, branches: string[]) => void;
+  callback: (repository: Repository, branches: Branch[]) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isInvalidUrl, setIsInvalidUrl] = useState(false);

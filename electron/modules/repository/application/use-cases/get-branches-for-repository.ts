@@ -1,8 +1,10 @@
+import { BrowserWindow } from "electron";
+
 import { ActionResponse } from "../../../../commons/action.js";
 import { safeGit } from "../../../../commons/safe-git.js";
 import { GitRunner } from "../git-runner.js";
 import { Branch } from "../../domain/branch.js";
-import { BrowserWindow } from "electron";
+import { dedupRefs } from "../../domain/services.js";
 
 export class GetBranchesForRepository {
   constructor(private readonly gitRunner: GitRunner) {}
@@ -19,18 +21,13 @@ export class GetBranchesForRepository {
       this.gitRunner.getCurrentBranch(repositoryPath),
       window,
     );
-    const branches = await safeGit(
-      this.gitRunner.listBranches(repositoryPath, remote.name),
-      window,
-    );
+    const refs = await safeGit(this.gitRunner.listRefs(repositoryPath), window);
+    const branches = dedupRefs(currentBranch, refs);
 
     return {
       success: true,
       action: "getBranchesForRepository",
-      data: branches.map((branch) => ({
-        name: branch,
-        isCurrent: branch === currentBranch,
-      })),
+      data: branches,
     };
   }
 }

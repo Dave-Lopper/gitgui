@@ -9,6 +9,7 @@ import { Repository } from "../../domain/repository.js";
 import { RepositorySelectionDto } from "../../dto/repository-selection.js";
 import { GitRunner } from "../git-runner.js";
 import { RepositoryStore } from "../store.js";
+import { dedupRefs } from "../../domain/services.js";
 
 export type SelectRepositoryFromDiskStatus =
   | "canceled"
@@ -63,10 +64,8 @@ export class SelectRepositoryFromDisk {
       remoteName: remote.name,
       url: remote.url,
     });
-    const repositoryBranches = await this.gitRunner.listBranches(
-      repositoryPath,
-      remote.name,
-    );
+    const refs = await this.gitRunner.listRefs(repositoryPath);
+    const branches = dedupRefs(branchName, refs);
 
     if (!(await this.store.exists(repository))) {
       await this.store.save(repository);
@@ -75,7 +74,7 @@ export class SelectRepositoryFromDisk {
       action: "selectRepositoryFromDisk",
       status: "success",
       success: true,
-      data: { repository, branches: repositoryBranches },
+      data: { repository, branches },
     };
   }
 }

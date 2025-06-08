@@ -1,5 +1,6 @@
 import { Branch } from "../domain/branch.js";
 import { ChangedFile } from "../domain/changed-file.js";
+import { RepositoryReferences } from "../dto/reference.js";
 import { Remote } from "../dto/remote.js";
 
 export interface GitRunner {
@@ -15,5 +16,5 @@ export interface GitRunner {
 
   getModifiedFiles(path: string): Promise<ChangedFile[]>;
 
-  listBranches(path: string, currentBranchName: string): Promise<Branch[]>;
+  listRefs(path: string): Promise<RepositoryReferences>;
 }

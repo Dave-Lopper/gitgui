@@ -10,11 +10,13 @@ export type Repository = {
 export type Branch = {
   name: string;
   isCurrent: boolean;
+  isLocal: boolean;
+  remoteName: string;
 };
 
 export type RepositorySelection = {
   repository: Repository;
-  branches: string[];
+  branches: Branch[];
 };
 
 export type GitError = {

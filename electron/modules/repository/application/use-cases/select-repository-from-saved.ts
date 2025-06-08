@@ -4,6 +4,7 @@ import { ActionResponse } from "../../../../commons/action.js";
 import { Repository } from "../../domain/repository.js";
 import { RepositorySelectionDto } from "../../dto/repository-selection.js";
 import { GitRunner } from "../git-runner.js";
+import { dedupRefs } from "../../domain/services.js";
 
 export const SelectRepositoryFromSavedStatusValues = [
   "invalidRepo",
@@ -38,16 +39,14 @@ export class SelectRepositoryFromSaved {
       remoteName: remote.name,
       url: remote.url,
     });
-    const repositoryBranches = await this.gitRunner.listBranches(
-      repositoryPath,
-      remote.name,
-    );
+    const refs = await this.gitRunner.listRefs(repositoryPath);
+    const branches = dedupRefs(branch, refs);
 
     return {
       success: true,
       status: "success",
       action: "selectRepositoryFromSaved",
-      data: { repository, branches: repositoryBranches },
+      data: { repository, branches },
     };
   }
 }

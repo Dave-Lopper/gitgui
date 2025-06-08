@@ -4,6 +4,7 @@ import { GitRunner } from "../application/git-runner";
 import { Remote } from "../dto/remote";
 import { ChangedFile, ModType } from "../domain/changed-file";
 import { Branch } from "../domain/branch";
+import { RepositoryReferences } from "../dto/reference";
 
 type BranchRemote = {
   branchName: string;
@@ -140,5 +141,39 @@ export class GitNodeGitRunner implements GitRunner {
     }
 
     return branches;
+  }
+
+  async listRefs(path: string): Promise<RepositoryReferences> {
+    const rv: RepositoryReferences = { local: [], remote: [] };
+    const repo = await Git.Repository.open(path);
+    const refs = await repo.getReferences();
+
+    for (let i = 0; i < refs.length; i++) {
+      const ref = refs[i];
+      if (ref.isTag() || ref.isNote() || ref.isSymbolic()) {
+        continue;
+      }
+
+      if (ref.isHead()) {
+        rv.local.push({ name: ref.name().replace("refs/heads/", "") });
+      } else if (ref.isRemote()) {
+        const remoteBranchName = ref.name().split("refs/remotes/").pop();
+        if (!remoteBranchName) {
+          console.warn(`Seemingly malformed remote ref name: ${ref.name()}`);
+          continue;
+        }
+
+        const remoteBranchNameParts = remoteBranchName.split("/");
+        const remoteName = remoteBranchNameParts.shift();
+        const branchName = remoteBranchNameParts.join("/");
+        if (!remoteName || !branchName) {
+          console.warn(`Seemingly malformed remote ref name: ${ref.name()}`);
+          continue;
+        }
+
+        rv.remote.push({ name: branchName, remoteName });
+      }
+    }
+    return rv;
   }
 }
