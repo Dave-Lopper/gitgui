@@ -1,5 +1,4 @@
-export type RepositoryRemote = {
+export type Remote = Readonly<{
   name: string;
   url: string;
-  verb: string;
-};
+}>;

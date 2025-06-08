@@ -1,11 +1,11 @@
 import { ExecOptionsWithStringEncoding, execSync } from "child_process";
 
 import { v4 as uuidv4 } from "uuid";
-import Git from "nodegit";
 
 import { GitRunner } from "../application/git-runner.js";
-import { RepositoryRemote } from "../dto/remote.js";
+import { Branch } from "../domain/branch.js";
 import { GitError } from "../domain/git-error.js";
+import { Remote } from "../dto/remote.js";
 import { ChangedFile, ModType } from "../domain/changed-file.js";
 
 const validGitActions = ["M", "T", "A", "D", "R", "C", "U", "??"] as const;
@@ -60,8 +60,45 @@ export class GitCliRunner implements GitRunner {
     }
   }
 
+  private splitLines(output: string): string[] {
+    const lines = [];
+    const rawLines = output.split("\n");
+
+    for (let i = 0; i < rawLines.length; i++) {
+      const rawLine = rawLines[i].trim();
+      if (!rawLine) {
+        continue;
+      }
+      lines.push(rawLine);
+    }
+    return lines;
+  }
+
   private cleanLine(output: string): string {
     return output.replace("\n", "");
+  }
+
+  async listRemotes(path: string): Promise<Remote[]> {
+    const commandResult = this.runCommand(
+      "git remote -v | awk '{print $1, $2}' | uniq",
+      { encoding: "utf8", cwd: path },
+    );
+
+    const lines = this.splitLines(commandResult);
+    const remotes = [];
+
+    for (let i = 0; i < lines.length; i++) {
+      const parts = lines[i].split(" ");
+      if (parts.length !== 2) {
+        console.warn(
+          `Seemingly malformed git remote -v output line: ${lines[i]}`,
+        );
+        continue;
+      }
+
+      remotes.push({ name: parts[0], url: parts[1] });
+    }
+    return remotes;
   }
 
   async cloneRepository(url: string): Promise<string> {
@@ -95,15 +132,15 @@ export class GitCliRunner implements GitRunner {
     return value;
   }
 
-  async getCurrentRemote(path: string): Promise<RepositoryRemote> {
+  async getCurrentRemote(path: string): Promise<Remote> {
     const commandResult = this.runCommand(`git remote -v`, {
       cwd: path,
       encoding: "utf8",
     });
-    const lines = commandResult.split("\n").filter((_) => _);
+    const lines = this.splitLines(commandResult);
 
     const cache: string[] = [];
-    const remotes: RepositoryRemote[] = [];
+    const remotes: Remote[] = [];
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       const parts = line.split("\t");
@@ -120,17 +157,14 @@ export class GitCliRunner implements GitRunner {
         throw new Error(`Failed to parse CLI remote -v line: ${line}`);
       }
       const url = urlVerb[0];
-      const verb = urlVerb[1];
 
-      remotes.push({ name, url, verb });
+      remotes.push({ name, url });
     }
 
     return remotes[0];
   }
 
-  async getFileDiff(filePath: string, repositoryPath: string): Promise<void> {
-    
-  }
+  async getFileDiff(filePath: string, repositoryPath: string): Promise<void> {}
 
   async getModifiedFiles(path: string): Promise<ChangedFile[]> {
     const rv = this.runCommand("git status --porcelain", {
@@ -138,12 +172,9 @@ export class GitCliRunner implements GitRunner {
       encoding: "utf8",
     });
     const files: ChangedFile[] = [];
-    const rawLines = rv.split("\n");
-    for (let i = 0; i < rawLines.length; i++) {
-      if (!rawLines[i]) {
-        continue;
-      }
-      const line = rawLines[i].trim();
+    const lines = this.splitLines(rv);
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
       const parts = line.split(" ");
 
       if (parts.length !== 2) {
@@ -168,32 +199,79 @@ export class GitCliRunner implements GitRunner {
     return files;
   }
 
-  async listBranches(path: string, remoteName: string): Promise<string[]> {
-    const rv = this.runCommand(`git ls-remote ${remoteName}`, {
-      cwd: path,
-      encoding: "utf-8",
-    });
-    const lines = rv.split("\n").filter((_) => _);
-    const branches: string[] = [];
+  async listBranches(
+    path: string,
+    currentBranchName: string,
+  ): Promise<Branch[]> {
+    const commandResult = this.runCommand(
+      "git for-each-ref --format='%(refname:short) %(refname) %(upstream:short)' refs/heads refs/remotes",
+      { encoding: "utf8", cwd: path },
+    );
+    const lines = this.splitLines(commandResult);
+    const branchesMap: Map<string, Branch> = new Map();
+
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-      const splitted = line.split("\t");
-      if (splitted.length < 2) {
-        console.warn(`Malformed git ls-remote line: ${line}`);
+      const parts = line.split(" ");
+      if (parts.length < 2 || parts.length > 3) {
+        console.warn(
+          `Seemingly malformed git for-each-ref output line: ${line}`,
+        );
         continue;
       }
 
-      let refName = splitted[1];
-      refName = refName.replace("\n", "").trim();
-      if (refName.startsWith("refs/heads/")) {
-        branches.push(refName.replace("refs/heads/", ""));
+      const shortRefName = parts[0];
+      const refName = parts[1];
+      const upstream = parts[2];
+
+      if (refName.startsWith("refs/head")) {
+        if (branchesMap.has(shortRefName)) {
+          const existingBranch = branchesMap.get(shortRefName)!;
+          if (!existingBranch.isLocal) {
+            existingBranch.isLocal = true;
+            branchesMap.set(shortRefName, existingBranch);
+          }
+        } else {
+          branchesMap.set(shortRefName, {
+            isCurrent: shortRefName === currentBranchName,
+            isLocal: true,
+            name: shortRefName,
+            remote: upstream ? upstream.split("/")[0] : undefined,
+          });
+        }
+      } else if (refName.startsWith("refs/remote")) {
+        const refNameParts = shortRefName.split("/");
+        if (refNameParts.length < 2) {
+          console.warn(
+            `Seemingly malformed git for-each-ref output line: ${line}`,
+          );
+          continue;
+        }
+        const branchName = refNameParts.pop();
+        const remoteName = refNameParts[0];
+        if (!branchName || !remoteName) {
+          console.warn(
+            `Seemingly malformed git for-each-ref output line: ${line}`,
+          );
+          continue;
+        }
+        if (branchesMap.has(branchName)) {
+          const existingBranch = branchesMap.get(branchName)!;
+          if (!existingBranch.remote) {
+            existingBranch.remote = remoteName;
+            branchesMap.set(branchName, existingBranch);
+          }
+        } else {
+          branchesMap.set(branchName, {
+            isCurrent: branchName === currentBranchName,
+            isLocal: false,
+            name: branchName,
+            remote: remoteName,
+          });
+        }
       }
     }
-    return branches;
+
+    return Array.from(branchesMap.values());
   }
 }
-
-const runner = new GitCliRunner();
-runner
-  .getModifiedFiles("/home/alexis-haim/upscale/upscale-backend")
-  .then((res) => console.log(res));

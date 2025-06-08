@@ -1,12 +1,13 @@
+import { Branch } from "../domain/branch.js";
 import { ChangedFile } from "../domain/changed-file.js";
-import { RepositoryRemote } from "../dto/remote.js";
+import { Remote } from "../dto/remote.js";
 
 export interface GitRunner {
   cloneRepository(url: string, path: string): Promise<string>;
 
   isValidRepository(path: string): Promise<boolean>;
 
-  getCurrentRemote(path: string): Promise<RepositoryRemote>;
+  getCurrentRemote(path: string): Promise<Remote>;
 
   getCurrentBranch(path: string): Promise<string>;
 
@@ -14,5 +15,5 @@ export interface GitRunner {
 
   getModifiedFiles(path: string): Promise<ChangedFile[]>;
 
-  listBranches(path: string, remoteName: string): Promise<string[]>;
+  listBranches(path: string, currentBranchName: string): Promise<Branch[]>;
 }
