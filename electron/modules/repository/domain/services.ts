@@ -25,7 +25,7 @@ export function dedupRefs(
   currentBranch: string,
   refs: RepositoryReferences,
 ): Branch[] {
-  const branchesMap: Map<string, Branch> = new Map();
+  const branchesMap = new Map<string, Branch>();
 
   for (let i = 0; i < refs.remote.length; i++) {
     const ref = refs.remote[i];

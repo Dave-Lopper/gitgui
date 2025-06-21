@@ -1,6 +1,5 @@
-import { GitError } from "../types";
-import { CloseIcon } from "../icons";
-import { error } from "node:console";
+import { GitError } from "../../types";
+import { CloseIcon } from "../../icons";
 
 export default function ErrorPopup({
   errors,

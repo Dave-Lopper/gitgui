@@ -7,6 +7,7 @@ import { GitRunner } from "../git-runner.js";
 import { RepositoryStore } from "../store.js";
 import { Repository } from "../../domain/repository.js";
 import { RepositorySelectionDto } from "../../dto/repository-selection.js";
+import { parseDiff } from "../../../file/domain.js";
 import { ActionResponse } from "../../../../commons/action.js";
 import { safeGit } from "../../../../commons/safe-git.js";
 
@@ -15,6 +16,7 @@ import {
   getRepositoryNameFromRemoteUrl,
 } from "../../domain/services.js";
 import { FilesRepository } from "../files-repository.js";
+import { GetDiff } from "../../../file/entrypoints/get-diff.js";
 
 export class CloneRepository {
   constructor(
@@ -80,10 +82,13 @@ export class CloneRepository {
     if (!reopositoryExists) {
       await this.store.save(repository);
     }
+    const diffService = new GetDiff(this.gitRunner);
+    const diff = await diffService.execute(repositoryPath, window);
+
     return {
       action: "cloneRepository",
       success: true,
-      data: { repository, branches },
+      data: { repository, branches, diff },
     };
   }
 }

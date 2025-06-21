@@ -1,14 +1,19 @@
 import { spawn, ExecOptions } from "child_process";
 
-import { CommandResult, CommandRunner } from "../application/command-runner.js";
+import {
+  CommandOptions,
+  CommandResult,
+  CommandRunner,
+} from "../application/command-runner.js";
 
 export class ShellRunner implements CommandRunner {
-  private splitLines(output: string): string[] {
+  private splitLines(output: string, trim: boolean): string[] {
     const lines = [];
     const rawLines = output.split("\n");
 
     for (let i = 0; i < rawLines.length; i++) {
-      const rawLine = rawLines[i].trim();
+      // const rawLine = rawLines[i].trim();
+      const rawLine = rawLines[i];
       if (!rawLine) {
         continue;
       }
@@ -20,7 +25,7 @@ export class ShellRunner implements CommandRunner {
   async run(
     command: string,
     args: string[] = [],
-    options?: ExecOptions,
+    options?: CommandOptions,
   ): Promise<CommandResult> {
     return new Promise((resolve, reject) => {
       const child = spawn(command, args, {
@@ -59,8 +64,8 @@ export class ShellRunner implements CommandRunner {
 
           resolve({
             command: `${command} ${args.join(" ")}`,
-            stdout: this.splitLines(stdout),
-            stderr: this.splitLines(stderr),
+            stdout: this.splitLines(stdout, options?.trimOutput ?? true),
+            stderr: this.splitLines(stderr, options?.trimOutput ?? true),
             exitCode: code ?? -1,
           });
         }

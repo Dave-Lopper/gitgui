@@ -1,5 +1,4 @@
-import { Branch } from "../domain/branch.js";
-import { ChangedFile } from "../domain/changed-file.js";
+import { ChangedFile } from "../../file/domain.js";
 import { RepositoryReferences } from "../dto/reference.js";
 import { Remote } from "../dto/remote.js";
 
@@ -12,7 +11,7 @@ export interface GitRunner {
 
   getCurrentBranch(path: string): Promise<string>;
 
-  getFileDiff(filePath: string, repositoryPath: string): Promise<void>;
+  getRepoDiff(repositoryPath: string, staged: boolean): Promise<string[]>;
 
   getModifiedFiles(path: string): Promise<ChangedFile[]>;
 

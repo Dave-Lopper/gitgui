@@ -1,10 +1,11 @@
 import { useCallback, useRef, useState } from "react";
-import { Branch, Repository } from "../types";
 
-export default function CloneRepositoryInput({
+import { Branch, Repository } from "../../types";
+
+export default function CloneInput({
   callback,
 }: {
-  callback: (repository: Repository, branches: Branch[]) => void;
+  callback: (repository: Repository) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isInvalidUrl, setIsInvalidUrl] = useState(false);
@@ -19,7 +20,10 @@ export default function CloneRepositoryInput({
     setIsInvalidUrl(false);
 
     if (results.success) {
-      callback(results.data.repository, results.data.branches);
+      callback({
+        ...results.data.repository,
+        branches: results.data.branches,
+      });
     }
   }, []);
 

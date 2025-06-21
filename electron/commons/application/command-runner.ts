@@ -7,10 +7,12 @@ export interface CommandResult {
   exitCode: number;
 }
 
+export type CommandOptions = ExecOptions & { trimOutput?: boolean };
+
 export interface CommandRunner {
   run(
     cmd: string,
     args: string[],
-    options?: ExecOptions,
+    options?: CommandOptions,
   ): Promise<CommandResult>;
 }

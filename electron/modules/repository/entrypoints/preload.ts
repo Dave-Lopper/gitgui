@@ -5,6 +5,7 @@ electron.contextBridge.exposeInMainWorld("electronAPI", {
     electron.ipcRenderer.invoke("repositories:clone", url),
   getBranchesForRepository: (path: string) =>
     electron.ipcRenderer.invoke("repositories:getBranchesForRepository", path),
+  getDiff: (path: string) => electron.ipcRenderer.invoke("files:getDiff", path),
   getSavedRepositories: () =>
     electron.ipcRenderer.invoke("repositories:getSaved"),
   selectRepositoryFromDisk: () =>

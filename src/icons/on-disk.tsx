@@ -1,13 +1,12 @@
 import { useCursorClassNames } from "./hooks";
-import { iconDefaultProps, IconProps } from "./types";
+import { IconProps, iconDefaultProps } from "./types";
 
-export default function CloseIcon({
+export default function OnDiskIcon({
   color = iconDefaultProps.color,
   cursor = iconDefaultProps.cursor,
   size = iconDefaultProps.size,
 }: IconProps) {
   const cursorClassNames = useCursorClassNames();
-
   return (
     <svg
       className={cursorClassNames[cursor!]}
@@ -18,16 +17,18 @@ export default function CloseIcon({
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        d="M7 17L16.8995"
+        d="M3 15C3 17.8284 3 19.2426 3.87868 20.1213C4.75736 21 6.17157 21 9 21H15C17.8284 21 19.2426 21 20.1213 20.1213C21 19.2426 21 17.8284 21 15"
         stroke={color}
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        stroke-width="1"
+        stroke-linecap="round"
+        stroke-linejoin="round"
       />
       <path
-        d="M7 7.00001L16.8995 16.8995"
+        d="M12 3V16M12 16L16 11.625M12 16L8 11.625"
         stroke={color}
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        stroke-width="1"
+        stroke-linecap="round"
+        stroke-linejoin="round"
       />
     </svg>
   );

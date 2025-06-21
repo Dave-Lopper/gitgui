@@ -6,7 +6,7 @@
   "main": "dist/electron/modules/repository/entrypoints/electron.js",
   "scripts": {
     "dev": "vite",
-    "electron": "tsc && electron .",
+    "electron": "tsc && env -i DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY PATH=$PATH HOME=$HOME electron .",
     "start": "concurrently \"npm:dev\" \"npm:electron\""
   },
   "dependencies": {

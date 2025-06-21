@@ -1,6 +1,6 @@
 import { IpcRendererEvent } from "electron";
 
-import { Branch, Repository, RepositorySelection } from "./types";
+import { Branch, FileDiff, Repository, RepositorySelection } from "./types";
 import { ActionResponse } from "../electron/commons/action";
 
 // src/global.d.ts
@@ -17,6 +17,7 @@ declare global {
       getBranchesForRepository: (
         path: string,
       ) => Promise<ActionResponse<Branch[]>>;
+      getDiff: (path: string) => Promise<ActionResponse<FileDiff[]>>;
       getSavedRepositories: () => Promise<ActionResponse<Repository[]>>;
       selectRepositoryFromDisk: () => Promise<
         ActionResponse<RepositorySelection>

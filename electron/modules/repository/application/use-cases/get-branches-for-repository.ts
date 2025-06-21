@@ -13,10 +13,6 @@ export class GetBranchesForRepository {
     repositoryPath: string,
     window: BrowserWindow,
   ): Promise<ActionResponse<Branch[]>> {
-    const remote = await safeGit(
-      this.gitRunner.getCurrentRemote(repositoryPath),
-      window,
-    );
     const currentBranch = await safeGit(
       this.gitRunner.getCurrentBranch(repositoryPath),
       window,

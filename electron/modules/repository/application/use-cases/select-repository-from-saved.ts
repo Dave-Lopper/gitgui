@@ -1,10 +1,14 @@
 import path from "path";
 
+import { BrowserWindow } from "electron";
+
 import { ActionResponse } from "../../../../commons/action.js";
 import { Repository } from "../../domain/repository.js";
 import { RepositorySelectionDto } from "../../dto/repository-selection.js";
 import { GitRunner } from "../git-runner.js";
 import { dedupRefs } from "../../domain/services.js";
+import { safeGit } from "../../../../commons/safe-git.js";
+import { GetDiff } from "../../../file/entrypoints/get-diff.js";
 
 export const SelectRepositoryFromSavedStatusValues = [
   "invalidRepo",
@@ -18,6 +22,7 @@ export class SelectRepositoryFromSaved {
 
   async execute(
     repositoryPath: string,
+    window: BrowserWindow,
   ): Promise<ActionResponse<RepositorySelectionDto>> {
     const isValidRepository =
       await this.gitRunner.isValidRepository(repositoryPath);
@@ -39,14 +44,16 @@ export class SelectRepositoryFromSaved {
       remoteName: remote.name,
       url: remote.url,
     });
-    const refs = await this.gitRunner.listRefs(repositoryPath);
+    const refs = await safeGit(this.gitRunner.listRefs(repositoryPath), window);
     const branches = dedupRefs(branch, refs);
+    const diffService = new GetDiff(this.gitRunner);
+    const diff = await diffService.execute(repositoryPath, window);
 
     return {
       success: true,
       status: "success",
       action: "selectRepositoryFromSaved",
-      data: { repository, branches },
+      data: { repository, branches, diff },
     };
   }
 }

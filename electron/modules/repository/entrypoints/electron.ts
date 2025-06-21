@@ -3,7 +3,7 @@ import { fileURLToPath } from "url";
 
 import { app, BrowserWindow, ipcMain } from "electron";
 
-import { bootstrap } from "../application/bootstrap.js";
+import { bootstrap } from "../../../commons/application/bootstrap.js";
 
 let window: Electron.BrowserWindow;
 let useCases: Awaited<ReturnType<typeof bootstrap>>;
@@ -11,7 +11,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function createWindow() {
-  console.log(path.join(__dirname, "preload.js"));
   window = new BrowserWindow({
     width: 800,
     height: 600,
@@ -27,6 +26,11 @@ async function createWindow() {
 
   useCases = await bootstrap();
 
+  ipcMain.handle(
+    "files:getDiff",
+    async (event, message) => await useCases.getDiff.execute(message, window),
+  );
+
   ipcMain.handle("repositories:clone", async (event, message) => {
     const res = await useCases.cloneRepository.execute(message, window);
     return res;
@@ -40,7 +44,8 @@ async function createWindow() {
 
   ipcMain.handle(
     "repositories:getSaved",
-    async (event, message) => await useCases.getSavedRepositories.execute(),
+    async (event, message) =>
+      await useCases.getSavedRepositories.execute(window),
   );
 
   ipcMain.handle(
@@ -52,7 +57,7 @@ async function createWindow() {
   ipcMain.handle(
     "repositories:selectFromSaved",
     async (event, message) =>
-      await useCases.selectRepositoryFromSaved.execute(message),
+      await useCases.selectRepositoryFromSaved.execute(message, window),
   );
 }
 

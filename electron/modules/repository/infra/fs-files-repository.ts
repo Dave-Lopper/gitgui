@@ -22,6 +22,11 @@ export class FsFilesRepository implements FilesRepository {
     }
   }
 
+  async getLastModifiedTime(filePath: string): Promise<Date> {
+    const stats = await fs.stat(filePath);
+    return stats.mtime;
+  }
+
   async pathsExist(paths: string[]): Promise<boolean> {
     const promises = paths.map((path) => this.pathExists(path));
     const results = await Promise.all(promises);

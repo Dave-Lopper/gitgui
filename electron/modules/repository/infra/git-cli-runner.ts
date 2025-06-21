@@ -1,20 +1,16 @@
-import {
-  ExecOptions,
-  ExecOptionsWithStringEncoding,
-  execSync,
-} from "child_process";
-
 import { v4 as uuidv4 } from "uuid";
 
-import { CommandRunner } from "../../../commons/application/command-runner.js";
+import {
+  CommandOptions,
+  CommandRunner,
+} from "../../../commons/application/command-runner.js";
 import { GitRunner } from "../application/git-runner.js";
 import { Branch } from "../domain/branch.js";
 import { GitError } from "../domain/git-error.js";
 import { RepositoryReferences } from "../dto/reference.js";
 import { Remote } from "../dto/remote.js";
-import { ChangedFile, ModType } from "../domain/changed-file.js";
+import { ChangedFile, ModType, parseDiff } from "../../file/domain.js";
 import { ShellRunner } from "../../../commons/infra/shell-runner.js";
-import { stderr } from "process";
 
 const validGitActions = ["M", "T", "A", "D", "R", "C", "U", "??"] as const;
 type GitFileAction = (typeof validGitActions)[number];
@@ -44,7 +40,7 @@ export class GitCliRunner implements GitRunner {
   private async safeRun(
     command: string,
     args: string[],
-    options?: ExecOptions,
+    options?: CommandOptions,
   ): Promise<string[]> {
     const res = await this.cmdRunner.run(command, args, {
       cwd: options?.cwd || process.cwd(),
@@ -117,7 +113,22 @@ export class GitCliRunner implements GitRunner {
     return remotes[0];
   }
 
-  async getFileDiff(filePath: string, repositoryPath: string): Promise<void> {}
+  async getRepoDiff(
+    repositoryPath: string,
+    staged: boolean = false,
+  ): Promise<string[]> {
+    const args = ["diff", "--no-color", "--word-diff=porcelain"];
+    if (staged) {
+      args.push("--cached");
+    }
+    const lines = await this.safeRun(
+      "git",
+      ["diff", "--no-color", "--word-diff=porcelain"],
+      { trimOutput: false, cwd: repositoryPath },
+    );
+    parseDiff(lines);
+    return lines;
+  }
 
   async getModifiedFiles(path: string): Promise<ChangedFile[]> {
     const lines = await this.safeRun("git", ["status", "--porcelain"], {
@@ -156,7 +167,7 @@ export class GitCliRunner implements GitRunner {
       "git",
       [
         "for-each-ref",
-        "--format='%(refname:short) $(refname) $(upstream:remotename)'",
+        "--format='%(refname:short) %(refname) %(upstream:remotename)'",
         "refs/heads",
         "refs/remotes",
       ],
@@ -164,7 +175,13 @@ export class GitCliRunner implements GitRunner {
     );
     const rv: RepositoryReferences = { local: [], remote: [] };
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
+      let line = lines[i];
+      if (line.startsWith("'")) {
+        line = line.slice(1);
+      }
+      if (line.endsWith("'")) {
+        line = line.slice(0, line.length - 1);
+      }
       const parts = line.split(" ");
       if (parts.length < 2 || parts.length > 3) {
         console.warn(
@@ -175,6 +192,9 @@ export class GitCliRunner implements GitRunner {
 
       const shortRefName = parts[0];
       const refName = parts[1];
+      if (refName.startsWith("refs/remotes/") && refName.endsWith("/HEAD")) {
+        continue;
+      }
 
       if (refName.startsWith("refs/head")) {
         rv.local.push({
@@ -183,6 +203,7 @@ export class GitCliRunner implements GitRunner {
       } else {
         const refNameParts = shortRefName.split("/");
         const remoteName = refNameParts.shift();
+
         if (!remoteName) {
           console.warn(
             `Seemingly malformed git for-each-ref output line: ${line}`,
