@@ -7,9 +7,10 @@ import {
   ErrorPopup,
   Files,
 } from "./components/molecules";
-import { Actiontype, FileDiff, GitError, Repository } from "./types";
+import { Actiontype, FileDiff, GitError, Repository, RepositorySelection } from "./types";
 
 import "./App.css";
+import { ActionResponse } from "../electron/commons/action";
 
 export default function App() {
   const [checkedOutBranch, setCheckedOutBranch] = useState<
@@ -28,33 +29,15 @@ export default function App() {
   const selectRepositoryFromDisk = useCallback(async () => {
     const response = await window.electronAPI.selectRepositoryFromDisk();
     if (response.success) {
-      setCurrentRepository({
-        ...response.data.repository,
-        branches: response.data.branches,
-      });
-      setCheckedOutBranch(response.data.repository.checkedOutBranch);
-      setCurrentDiff(response.data.diff);
-      setCurrentAction(undefined);
+      repositorySelectionCallback(response.data);
     }
   }, []);
 
   const selectRepositoryFromSaved = useCallback(async (path: string) => {
     const response = await window.electronAPI.selectRepositoryFromSaved(path);
     if (response.success) {
-      setCurrentRepository({
-        ...response.data.repository,
-        branches: response.data.branches,
-      });
-      setCheckedOutBranch(response.data.repository.checkedOutBranch);
-      setCurrentDiff(response.data.diff);
-      setCurrentAction(undefined);
+      repositorySelectionCallback(response.data);
     }
-  }, []);
-
-  const cloneRepositoryCallback = useCallback((repo: Repository) => {
-    setCurrentRepository(repo);
-    setCheckedOutBranch(repo.checkedOutBranch);
-    setCurrentAction(undefined);
   }, []);
 
   const commit = useCallback((name: string, description?: string) => {}, []);
@@ -74,6 +57,17 @@ export default function App() {
     });
   }, []);
 
+  const repositorySelectionCallback = useCallback((data: RepositorySelection) => {
+     setCurrentRepository({
+        ...data.repository,
+        branches: data.branches,
+      });
+      setCheckedOutBranch(data.repository.checkedOutBranch);
+      setCurrentDiff(data.diff);
+      setCurrentFile(data.diff[0]);
+      setCurrentAction(undefined);
+  }, [])
+
   return (
     <div className="m-0 h-full w-full p-0">
       {showErrorPopup && (
@@ -88,7 +82,7 @@ export default function App() {
       <div className="flex w-full p-0">
         <div className="flex h-screen w-1/2 flex-col border-r-1 border-r-white pt-22">
           <RepoDropdown
-            cloneRepoCallback={cloneRepositoryCallback}
+            cloneRepoCallback={repositorySelectionCallback}
             currentAction={currentAction}
             currentRepository={currentRepository}
             savedRepositories={savedRepositories}

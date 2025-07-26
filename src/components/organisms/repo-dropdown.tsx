@@ -1,4 +1,4 @@
-import { Actiontype, Repository } from "../../types";
+import { Actiontype, Repository, RepositorySelection } from "../../types";
 import {
   Button,
   CloneInput,
@@ -15,7 +15,7 @@ export default function RepoDropdown({
   selectRepositoryFromSaved,
   setCurrentAction,
 }: {
-  cloneRepoCallback: (repo: Repository) => void;
+  cloneRepoCallback: (data: RepositorySelection) => void;
   currentAction?: Actiontype;
   currentRepository?: Repository;
   savedRepositories: Repository[];

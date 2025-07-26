@@ -1,11 +1,11 @@
 import { useCallback, useRef, useState } from "react";
 
-import { Branch, Repository } from "../../types";
+import { RepositorySelection } from "../../types";
 
 export default function CloneInput({
   callback,
 }: {
-  callback: (repository: Repository) => void;
+  callback: (repository: RepositorySelection) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isInvalidUrl, setIsInvalidUrl] = useState(false);
@@ -20,15 +20,12 @@ export default function CloneInput({
     setIsInvalidUrl(false);
 
     if (results.success) {
-      callback({
-        ...results.data.repository,
-        branches: results.data.branches,
-      });
+      callback(results.data);
     }
   }, []);
 
   return (
-    <div className="flex w-4/5 flex-col">
+    <div className="flex w-full pr-15 pl-15 flex-col m-auto">
       <label className="mb-4">Please paste the URL of the repository</label>
       <div className="flex items-center justify-start">
         <input

@@ -20,7 +20,7 @@ export default function SlidingVerticalBar({
 
   return (
     <div
-      className={`absolute top-22 bottom-0 ${leftClass} flex w-1/2 flex-col ${borderClass} overflow-y-auto border-white bg-stone-800 transition-transform`}
+      className={`absolute z-40 top-22 bottom-0 ${leftClass} flex w-1/2 flex-col ${borderClass} overflow-y-auto border-white bg-stone-800 transition-transform`}
       style={{
         transformOrigin: "top",
         transform: `scaleY(${show ? 1 : 0})`,
