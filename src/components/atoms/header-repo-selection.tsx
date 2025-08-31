@@ -36,11 +36,17 @@ export default function HeaderRepoSelection({
 
   return (
     <div className="flex h-full w-1/2 items-center justify-center border-r-1 border-gray-400 text-sm">
-      <div className="mr-2 flex cursor-pointer">
-        <div
-          className="mr-4 flex items-center text-sm"
-          onClick={() => setCurrentAction("RepoMethodSelection")}
-        >
+      <div
+        className="mr-2 flex cursor-pointer"
+        onClick={() =>
+          setCurrentAction(
+            currentAction === "RepoMethodSelection"
+              ? undefined
+              : "RepoMethodSelection",
+          )
+        }
+      >
+        <div className="mr-4 flex items-center text-sm">
           Select a repository to get started
         </div>{" "}
         <PlusIcon cursor="pointer" />

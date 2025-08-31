@@ -40,16 +40,21 @@ export default function Diff({ diff }: { diff: FileDiff }) {
                     style={{ backgroundColor: lineColor }}
                     dangerouslySetInnerHTML={{
                       __html: line.content
+                        .replace(/&/g, "&amp;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;")
+                        .replace(/"/g, "&quot;")
+                        .replace(/'/g, "&#39;")
                         .replace(
-                          /\<\+\>/g,
+                          /\{\{\+\}\}/g,
                           `<span style="background-color: rgba(41, 234, 105, 0.5);white-space: pre;">`,
                         )
                         .replace(
-                          /\<\-\>/g,
+                          /\{\{\-\}\}/g,
                           `<span style="background-color: rgba(234, 41, 102, 0.5);white-space: pre;">`,
                         )
-                        .replace(/<\/->/g, "</span>&nbsp;")
-                        .replace(/<\/\+>/g, "</span>&nbsp;"),
+                        .replace(/\{\{\/\+\}\}/g, "</span>")
+                        .replace(/\{\{\/\-\}\}/g, "</span>"),
                     }}
                   ></div>
                 </div>

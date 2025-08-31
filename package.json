@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "main": "dist/electron/modules/repository/entrypoints/electron.js",
+  "main": "dist/electron/commons/infra/electron.js",
   "scripts": {
     "dev": "vite",
     "electron": "tsc && env -i DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY PATH=$PATH HOME=$HOME electron .",

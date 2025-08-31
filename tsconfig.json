@@ -11,5 +11,5 @@
     "skipLibCheck": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", "electron"]
+  "include": ["src", "electron", "server/commons/errors.ts"]
 }
