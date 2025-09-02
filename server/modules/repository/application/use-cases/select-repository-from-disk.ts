@@ -27,7 +27,7 @@ export class SelectRepositoryFromDisk {
   async execute(
     window: BrowserWindow,
   ): Promise<ActionResponse<RepositorySelectionDto>> {
-    const result: any = await dialog.showOpenDialog(window, {
+    const result: any = dialog.showOpenDialog(window, {
       properties: ["openDirectory"],
       defaultPath: os.homedir(),
     });

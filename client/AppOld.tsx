@@ -7,10 +7,15 @@ import {
   ErrorPopup,
   Files,
 } from "./components/molecules";
-import { Actiontype, FileDiff, GitError, Repository, RepositorySelection } from "./types";
+import {
+  Actiontype,
+  FileDiff,
+  GitError,
+  Repository,
+  RepositorySelection,
+} from "./types";
 
 import "./App.css";
-import { ActionResponse } from "../electron/commons/action";
 
 export default function App() {
   const [checkedOutBranch, setCheckedOutBranch] = useState<
@@ -57,8 +62,9 @@ export default function App() {
     });
   }, []);
 
-  const repositorySelectionCallback = useCallback((data: RepositorySelection) => {
-     setCurrentRepository({
+  const repositorySelectionCallback = useCallback(
+    (data: RepositorySelection) => {
+      setCurrentRepository({
         ...data.repository,
         branches: data.branches,
       });
@@ -66,7 +72,9 @@ export default function App() {
       setCurrentDiff(data.diff);
       setCurrentFile(data.diff[0]);
       setCurrentAction(undefined);
-  }, [])
+    },
+    [],
+  );
 
   return (
     <div className="m-0 h-full w-full p-0">
