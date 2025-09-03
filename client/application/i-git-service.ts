@@ -10,8 +10,6 @@ export interface IGitService {
 
   clone(url: string): Promise<RepositorySelectionDto>;
 
-  consultCommitDiff(commitHash: string): Promise<void>;
-
   getHistory(
     page: number,
     pageSize: number,

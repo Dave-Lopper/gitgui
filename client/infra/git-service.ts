@@ -26,4 +26,31 @@ export class GitService implements IGitService {
     }
     return result.data;
   }
+
+  async getHistory(
+    page: number,
+    pageSize: number,
+    repositoryPath: string,
+  ): Promise<Commit[]> {
+    return await window.electronAPI.getHistory(page, pageSize, repositoryPath);
+  }
+
+  async selectRepoFromDisk(): Promise<RepositorySelectionDto> {
+    const result = await window.electronAPI.selectRepositoryFromDisk();
+    if (!result.success) {
+      throw new Error(result.message);
+    }
+    return result.data;
+  }
+
+  async selectRepoFromSaved(
+    repositoryPath: string,
+  ): Promise<RepositorySelectionDto> {
+    const result =
+      await window.electronAPI.selectRepositoryFromSaved(repositoryPath);
+    if (!result.success) {
+      throw new Error(result.message);
+    }
+    return result.data;
+  }
 }
