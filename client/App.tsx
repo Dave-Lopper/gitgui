@@ -18,10 +18,20 @@ function RightPane() {
   );
 }
 
+function Divider() {
+  return (
+    <div className="h-full w-1 cursor-col-resize bg-white transition-colors duration-300 hover:bg-blue-500"></div>
+  );
+}
+
 export default function App() {
   return (
-    <div className="h-screen pt-20">
-      <SplitPane rightPane={<RightPane />} leftPane={<LeftPane />}></SplitPane>
+    <div className="h-screen">
+      <SplitPane
+        divider={<Divider />}
+        rightPane={<RightPane />}
+        leftPane={<LeftPane />}
+      ></SplitPane>
     </div>
   );
 }
