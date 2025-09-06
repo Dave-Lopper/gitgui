@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 
-import { ThemeContext } from "../contexts/theme";
+import { UiSettingsContext } from "../contexts/ui-settings";
 import { useSoundEffect } from "./sound-effect";
 
 export function useDropdown() {
@@ -17,19 +17,19 @@ export function useDropdown() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
 
-  const theme = useContext(ThemeContext);
+  const settings = useContext(UiSettingsContext);
 
-  const maximizeSoundEffect = useSoundEffect("MAXIMIZE", theme);
-  const minimizeSoundEffect = useSoundEffect("MINIMIZE", theme);
+  const maximizeSoundEffect = useSoundEffect("MAXIMIZE", settings.theme);
+  const minimizeSoundEffect = useSoundEffect("MINIMIZE", settings.theme);
 
   const close = useCallback(() => {
     setIsExpanded(false);
     minimizeSoundEffect.play();
-  }, [theme]);
+  }, [settings]);
   const open = useCallback(() => {
     setIsExpanded(true);
     maximizeSoundEffect.play();
-  }, [theme]);
+  }, [settings]);
   const toggle = useCallback(() => {
     setIsExpanded((prev) => {
       if (prev === true) {
@@ -37,6 +37,7 @@ export function useDropdown() {
       } else {
         maximizeSoundEffect.play();
       }
+
       return !prev;
     });
   }, []);
