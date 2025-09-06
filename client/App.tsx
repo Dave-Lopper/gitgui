@@ -1,7 +1,4 @@
-import {
-  defaultSettings,
-  UiSettingsContext,
-} from "./presenters/contexts/ui-settings";
+import { UiSettingsContextProvider } from "./presenters/contexts";
 import { Dropdown, SplitPane } from "./presenters/headless";
 
 function LeftPane() {
@@ -74,7 +71,7 @@ const options = ["Option 1", "Option 2", "Option 3", "Option 4"];
 
 export default function App() {
   return (
-    <UiSettingsContext value={defaultSettings}>
+    <UiSettingsContextProvider>
       <div className="flex h-screen w-screen items-start justify-start">
         <SplitPane
           rightPane={<RightPane />}
@@ -82,6 +79,6 @@ export default function App() {
           divider={<Divider />}
         />
       </div>
-    </UiSettingsContext>
+    </UiSettingsContextProvider>
   );
 }

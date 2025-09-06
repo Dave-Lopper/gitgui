@@ -1,7 +1,7 @@
 import { useCallback, useContext, useRef } from "react";
 
 import { Theme } from "../../application/theme";
-import { UiSettingsContext } from "../contexts/ui-settings";
+import { UiSettingsContext } from "../contexts/ui-settings/context";
 
 const soundEffectsMapping = {
   MAXIMIZE: { RETRO: "maximize.mp3", MODERN: "maximize.mp3" },
