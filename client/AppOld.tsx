@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { Diff, Header, RepoDropdown } from "./components/organisms";
+import { Diff, Header, RepoDropdown } from "./components-old/organisms";
 import {
   BranchDropdown,
   CommitForm,
   ErrorPopup,
   Files,
-} from "./components/molecules";
+} from "./components-old/molecules";
 import {
   Actiontype,
   FileDiff,

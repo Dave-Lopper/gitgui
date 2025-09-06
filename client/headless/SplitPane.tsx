@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-import { useSplitPane } from "../controlers/split-pane";
+import { useSplitPane } from "../hooks/split-pane";
 
 export default function SplitPane({
   divider,

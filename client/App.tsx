@@ -1,19 +1,27 @@
-import { SplitPane } from "./containers";
+import { Dropdown, SplitPane } from "./headless";
 
 function LeftPane() {
   return (
-    <div>
-      <h1>My left pane</h1>
-      <p>Some text</p>
+    <div className="flex h-screen w-full items-start justify-start">
+      <Dropdown
+        trigger={Trigger}
+        children={options.map((option) => (isSelected: boolean) => (
+          <Option isSelected={isSelected} text={option} key={option} />
+        ))}
+      />
     </div>
   );
 }
 
 function RightPane() {
   return (
-    <div>
-      <h1>My right pane</h1>
-      <p>Some more text</p>
+    <div className="flex h-screen w-full items-start justify-start">
+      <Dropdown
+        trigger={Trigger2}
+        children={options.map((option) => (isSelected: boolean) => (
+          <Option isSelected={isSelected} text={option} key={option} />
+        ))}
+      />
     </div>
   );
 }
@@ -24,14 +32,46 @@ function Divider() {
   );
 }
 
+function Trigger({ isFocused }: { isFocused: boolean }) {
+  return (
+    <div
+      className={`flex w-full cursor-pointer items-center justify-center p-4 text-black ${isFocused ? "bg-blue-400" : "bg-gray-200"}`}
+    >
+      <p>Select repository</p>
+    </div>
+  );
+}
+
+function Trigger2({ isFocused }: { isFocused: boolean }) {
+  return (
+    <div
+      className={`flex w-full cursor-pointer items-center justify-center p-4 text-black ${isFocused ? "bg-blue-400" : "bg-gray-200"}`}
+    >
+      <p>Select branch</p>
+    </div>
+  );
+}
+
+function Option({ text, isSelected }: { text: string; isSelected?: boolean }) {
+  return (
+    <div
+      className={`flex w-full items-center justify-center ${isSelected ? `bg-blue-400` : `bg-gray-200`} cursor-pointer p-4 text-black`}
+    >
+      <p>{text}</p>
+    </div>
+  );
+}
+
+const options = ["Option 1", "Option 2", "Option 3", "Option 4"];
+
 export default function App() {
   return (
-    <div className="h-screen">
+    <div className="flex h-screen w-screen items-start justify-start">
       <SplitPane
-        divider={<Divider />}
         rightPane={<RightPane />}
         leftPane={<LeftPane />}
-      ></SplitPane>
+        divider={<Divider />}
+      />
     </div>
   );
 }
