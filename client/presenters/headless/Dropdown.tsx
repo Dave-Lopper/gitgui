@@ -1,5 +1,6 @@
 import { ComponentType, ReactNode } from "react";
 
+import { Theme } from "../../application/theme";
 import { useDropdown } from "../hooks/dropdown";
 
 type DropdownProps = {
@@ -37,7 +38,7 @@ export default function Dropdown({
         <Trigger isFocused={isFocused} />
       </div>
       <div
-      className="absolute flex w-full"
+        className="absolute flex w-full"
         style={{
           transition: "transform 0.5s ease-in-out",
           transform: `scaleY(${isExpanded ? 1 : 0})`,

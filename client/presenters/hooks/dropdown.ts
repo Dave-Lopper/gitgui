@@ -1,4 +1,14 @@
-import { KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
+import {
+  KeyboardEvent,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
+import { ThemeContext } from "../contexts/theme";
+import { useSoundEffect } from "./sound-effect";
 
 export function useDropdown() {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -7,10 +17,29 @@ export function useDropdown() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
 
+  const theme = useContext(ThemeContext);
+
+  const maximizeSoundEffect = useSoundEffect("MAXIMIZE", theme);
+  const minimizeSoundEffect = useSoundEffect("MINIMIZE", theme);
+
   const close = useCallback(() => {
     setIsExpanded(false);
+    minimizeSoundEffect.play();
+  }, [theme]);
+  const open = useCallback(() => {
+    setIsExpanded(true);
+    maximizeSoundEffect.play();
+  }, [theme]);
+  const toggle = useCallback(() => {
+    setIsExpanded((prev) => {
+      if (prev === true) {
+        minimizeSoundEffect.play();
+      } else {
+        maximizeSoundEffect.play();
+      }
+      return !prev;
+    });
   }, []);
-  const toggle = useCallback(() => setIsExpanded((prev) => !prev), []);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLElement>) => {
@@ -24,7 +53,7 @@ export function useDropdown() {
         case " ":
           e.preventDefault();
           if (isFocused === true && !isExpanded) {
-            setIsExpanded(true);
+            open();
           } else if (isExpanded) {
             close();
           }

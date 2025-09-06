@@ -1,4 +1,5 @@
-import { Dropdown, SplitPane } from "./headless";
+import { ThemeContext } from "./presenters/contexts/theme";
+import { Dropdown, SplitPane } from "./presenters/headless";
 
 function LeftPane() {
   return (
@@ -39,9 +40,9 @@ function Divider() {
 function Trigger({ isFocused }: { isFocused: boolean }) {
   return (
     <div
-      className={`flex w-full cursor-pointer items-center justify-center p-4 text-black ${isFocused ? "bg-blue-400" : "bg-gray-200"}`}
+      className={`flex w-full cursor-pointer items-center justify-center p-2 text-black ${isFocused ? "bg-blue-400" : "bg-gray-200"}`}
     >
-      <p>Select repository</p>
+      <p style={{ fontFamily: "Microsoft Sans Serif" }}>Select repository</p>
     </div>
   );
 }
@@ -70,12 +71,14 @@ const options = ["Option 1", "Option 2", "Option 3", "Option 4"];
 
 export default function App() {
   return (
-    <div className="flex h-screen w-screen items-start justify-start">
-      <SplitPane
-        rightPane={<RightPane />}
-        leftPane={<LeftPane />}
-        divider={<Divider />}
-      />
-    </div>
+    <ThemeContext value="MODERN">
+      <div className="flex h-screen w-screen items-start justify-start">
+        <SplitPane
+          rightPane={<RightPane />}
+          leftPane={<LeftPane />}
+          divider={<Divider />}
+        />
+      </div>
+    </ThemeContext>
   );
 }
