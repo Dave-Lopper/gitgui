@@ -5,9 +5,11 @@ function LeftPane() {
     <div className="flex h-screen w-full items-start justify-start">
       <Dropdown
         trigger={Trigger}
-        children={options.map((option) => (isSelected: boolean) => (
-          <Option isSelected={isSelected} text={option} key={option} />
-        ))}
+        children={
+          <div className="w-full bg-gray-300">
+            <h2>Select repository</h2>
+          </div>
+        }
       />
     </div>
   );
@@ -18,9 +20,11 @@ function RightPane() {
     <div className="flex h-screen w-full items-start justify-start">
       <Dropdown
         trigger={Trigger2}
-        children={options.map((option) => (isSelected: boolean) => (
-          <Option isSelected={isSelected} text={option} key={option} />
-        ))}
+        children={
+          <div className="w-full bg-gray-300">
+            <h2>Select branch</h2>
+          </div>
+        }
       />
     </div>
   );

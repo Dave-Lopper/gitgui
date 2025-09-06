@@ -1,10 +1,9 @@
-import { ComponentType, KeyboardEvent } from "react";
+import { ComponentType, ReactNode } from "react";
 
 import { useDropdown } from "../hooks/dropdown";
 
-type SelectableChild = (isSelected: boolean) => React.ReactNode;
 type DropdownProps = {
-  children: SelectableChild[];
+  children: ReactNode;
   trigger: ComponentType<{ isFocused: boolean }>;
 };
 
@@ -15,7 +14,6 @@ export default function Dropdown({
   const {
     isExpanded,
     isFocused,
-    selectedIndex,
     dropdownRef,
     triggerRef,
     toggle,
@@ -23,16 +21,12 @@ export default function Dropdown({
     setIsFocused,
   } = useDropdown();
 
-  const handleTriggerKeyDown = (e: KeyboardEvent<HTMLElement>) => {
-    const result = handleKeyDown(e, children.length);
-  };
-
   return (
-    <div ref={dropdownRef} className="relative inline-block w-full">
+    <div ref={dropdownRef} className="relative inline-block h-screen w-full">
       <div
         ref={triggerRef}
         onClick={toggle}
-        onKeyDown={handleTriggerKeyDown}
+        onKeyDown={handleKeyDown}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         tabIndex={0}
@@ -42,16 +36,18 @@ export default function Dropdown({
       >
         <Trigger isFocused={isFocused} />
       </div>
-
       <div
+      className="absolute flex w-full"
         style={{
           transition: "transform 0.5s ease-in-out",
           transform: `scaleY(${isExpanded ? 1 : 0})`,
           transformOrigin: "top",
+          top: `${triggerRef.current?.offsetHeight}px`,
+          height: `calc(100vh - ${triggerRef.current?.offsetHeight}px)`,
         }}
         role="menu"
       >
-        {children.map((child, index) => child(index === selectedIndex))}
+        {children}
       </div>
     </div>
   );
