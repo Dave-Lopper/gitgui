@@ -1,35 +1,41 @@
-import { ComponentType, ReactNode } from "react";
+import { ComponentType, KeyboardEvent } from "react";
 
-import { Theme } from "../../application/theme";
-import { useDropdown } from "../hooks/dropdown";
+import { useSelectDropdown } from "../hooks/select-dropdown";
 
+type SelectableChild = (isSelected: boolean) => React.ReactNode;
 type DropdownProps = {
   animate: boolean;
-  children: ReactNode;
+  children: SelectableChild[];
+  handleSelect: (index: number | null) => void;
   trigger: ComponentType<{ isFocused: boolean }>;
 };
 
-export default function Dropdown({
+export default function SelectDropdown({
   animate,
-  trigger: Trigger,
   children,
+  handleSelect,
+  trigger: Trigger,
 }: DropdownProps) {
   const {
     isExpanded,
     isFocused,
+    selectedIndex,
     dropdownRef,
     triggerRef,
     toggle,
     handleKeyDown,
     setIsFocused,
-  } = useDropdown();
+  } = useSelectDropdown();
+
+  const handleTriggerKeyDown = (e: KeyboardEvent<HTMLElement>) =>
+    handleSelect(handleKeyDown(e, children.length));
 
   return (
-    <div ref={dropdownRef} className="relative inline-block h-screen w-full">
+    <div ref={dropdownRef} className="relative inline-block w-full">
       <div
         ref={triggerRef}
         onClick={toggle}
-        onKeyDown={handleKeyDown}
+        onKeyDown={handleTriggerKeyDown}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         tabIndex={0}
@@ -39,18 +45,16 @@ export default function Dropdown({
       >
         <Trigger isFocused={isFocused} />
       </div>
+
       <div
-        className="absolute flex w-full"
         style={{
           transition: animate ? "transform 0.5s ease-in-out" : "unset",
           transform: `scaleY(${isExpanded ? 1 : 0})`,
           transformOrigin: "top",
-          top: `${triggerRef.current?.offsetHeight}px`,
-          height: `calc(100vh - ${triggerRef.current?.offsetHeight}px)`,
         }}
         role="menu"
       >
-        {children}
+        {children.map((child, index) => child(index === selectedIndex))}
       </div>
     </div>
   );

@@ -4,8 +4,14 @@ import { Theme } from "../../application/theme";
 import { UiSettingsContext } from "../contexts/ui-settings/context";
 
 const soundEffectsMapping = {
-  MAXIMIZE: { RETRO: "maximize.mp3", MODERN: "maximize.mp3" },
-  MINIMIZE: { RETRO: "minimize.mp3", MODERN: "minimize.mp3" },
+  MAXIMIZE: {
+    RETRO: "sound/retro/maximize.mp3",
+    MODERN: "sound/modern/maximize.mp3",
+  },
+  MINIMIZE: {
+    RETRO: "sound/retro/minimize.mp3",
+    MODERN: "sound/modern/minimize.mp3",
+  },
 } as const;
 export type SoundEffect = keyof typeof soundEffectsMapping;
 

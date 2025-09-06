@@ -1,2 +1,2 @@
-export { UiSettings } from "./context";
+export type { UiSettings } from "./context";
 export { UiSettingsContextProvider } from "./provider";

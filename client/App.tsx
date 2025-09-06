@@ -1,16 +1,16 @@
 import { UiSettingsContextProvider } from "./presenters/contexts";
-import { Dropdown, SplitPane } from "./presenters/headless";
+import { Dropdown, SelectDropdown, SplitPane } from "./presenters/headless";
 
 function LeftPane() {
   return (
     <div className="flex h-screen w-full items-start justify-start">
-      <Dropdown
+      <SelectDropdown
+        animate
+        children={options.map((option) => (isSelected: boolean) => (
+          <Option isSelected={isSelected} text={option} key={option} />
+        ))}
+        handleSelect={(val: number | null) => console.log({ val })}
         trigger={Trigger}
-        children={
-          <div className="w-full bg-gray-300">
-            <h2>Select repository</h2>
-          </div>
-        }
       />
     </div>
   );
@@ -20,6 +20,7 @@ function RightPane() {
   return (
     <div className="flex h-screen w-full items-start justify-start">
       <Dropdown
+        animate
         trigger={Trigger2}
         children={
           <div className="w-full bg-gray-300">
