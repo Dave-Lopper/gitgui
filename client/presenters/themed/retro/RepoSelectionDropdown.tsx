@@ -23,7 +23,7 @@ function RetroRepositoryDropdownTrigger({
   }, [isFocused]);
 
   return (
-    <RetroButton isActive={isActive} ref={buttonRef} className="w-full">
+    <RetroButton isActive={isActive} ref={buttonRef} className="w-full px-8">
       Select repository
     </RetroButton>
   );

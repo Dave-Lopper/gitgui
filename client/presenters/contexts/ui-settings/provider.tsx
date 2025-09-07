@@ -1,7 +1,7 @@
 import { ReactNode, useState } from "react";
 
 import { defaultSettings, UiSettingsContext } from "./context";
-import { Theme } from "../../../application/theme";
+import { Theme } from "../../themed/constants";
 
 export function UiSettingsContextProvider({
   children,

@@ -19,8 +19,8 @@ export function useSelectDropdown() {
   const triggerRef = useRef<HTMLDivElement>(null);
 
   const { theme, isSoundEnabled } = useContext(UiSettingsContext);
-  const maximizeSoundEffect = useSoundEffect("MAXIMIZE", theme);
-  const minimizeSoundEffect = useSoundEffect("MINIMIZE", theme);
+  const maximizeSoundEffect = useSoundEffect("MAXIMIZE");
+  const minimizeSoundEffect = useSoundEffect("MINIMIZE");
 
   const collapse = useCallback(() => {
     setIsExpanded(false);
@@ -44,7 +44,7 @@ export function useSelectDropdown() {
 
       return !prev;
     });
-  }, []);
+  }, [isSoundEnabled]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLElement>, itemsCount: number) => {
@@ -81,6 +81,7 @@ export function useSelectDropdown() {
           if (isExpanded) {
             setSelectedIndex((prev) => (prev - 1) % itemsCount);
           }
+          break;
         case "Tab":
           collapse();
           triggerRef.current?.blur();

@@ -19,7 +19,7 @@ export default forwardRef<
 
   return (
     <button
-      className={`bg-retro-menu font-retro retro-button border-2 px-8 py-2 text-black ${className ? className : ""} ${isPressed || isActive ? "pressed" : ""}`}
+      className={`bg-retro-menu font-retro retro-button h-12 cursor-pointer border-2 py-2 text-black ${className ? className : ""} ${isPressed || isActive ? "pressed" : ""}`}
       onKeyDown={handleKeyDown}
       onKeyUp={handleKeyUp}
       onMouseDown={handleMouseDown}

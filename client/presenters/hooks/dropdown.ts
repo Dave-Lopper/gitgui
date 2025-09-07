@@ -19,8 +19,8 @@ export function useDropdown() {
 
   const { theme, isSoundEnabled } = useContext(UiSettingsContext);
 
-  const maximizeSoundEffect = useSoundEffect("MAXIMIZE", theme);
-  const minimizeSoundEffect = useSoundEffect("MINIMIZE", theme);
+  const maximizeSoundEffect = useSoundEffect("MAXIMIZE");
+  const minimizeSoundEffect = useSoundEffect("MINIMIZE");
 
   const collapse = useCallback(() => {
     setIsExpanded(false);
@@ -40,7 +40,7 @@ export function useDropdown() {
 
       return !prev;
     });
-  }, []);
+  }, [isSoundEnabled]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLElement>) => {

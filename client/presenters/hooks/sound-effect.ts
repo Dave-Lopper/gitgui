@@ -1,6 +1,5 @@
-import { useCallback, useContext, useRef } from "react";
+import { use, useCallback, useContext, useEffect, useRef } from "react";
 
-import { Theme } from "../../application/theme";
 import { UiSettingsContext } from "../contexts/ui-settings/context";
 
 const soundEffectsMapping = {
@@ -15,19 +14,20 @@ const soundEffectsMapping = {
 } as const;
 export type SoundEffect = keyof typeof soundEffectsMapping;
 
-export function useSoundEffect(effect: SoundEffect, theme: Theme) {
+export function useSoundEffect(effect: SoundEffect) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const settings = useContext(UiSettingsContext);
+  const { isSoundEnabled, theme } = useContext(UiSettingsContext);
 
-  if (!audioRef.current) {
+  useEffect(() => {
     audioRef.current = new Audio(soundEffectsMapping[effect][theme]);
-  }
+  }, [effect, theme]);
 
-  const play = useCallback(() => {
-    if (settings.isSoundEnabled) {
+  const play = () => {
+    console.log({ isSoundEnabled });
+    if (isSoundEnabled) {
       audioRef.current?.play();
     }
-  }, []);
+  };
 
   const pause = useCallback(() => {
     audioRef.current?.pause();

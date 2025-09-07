@@ -1,5 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
+import { eventBus } from "../../../bootstrap";
+import { RepositorySelectionDto } from "../../../dto/repo-selection";
 import { SelectDropdown as HeadlessSelectDropdown } from "../../headless";
 import RetroButton from "./Button";
 
@@ -23,7 +25,7 @@ function RetroBranchDropdownTrigger({
   }, [isFocused]);
 
   return (
-    <RetroButton isActive={isActive} ref={buttonRef} className="w-full">
+    <RetroButton isActive={isActive} ref={buttonRef} className="w-full px-8">
       Select branch
     </RetroButton>
   );
@@ -32,6 +34,19 @@ function RetroBranchDropdownTrigger({
 const options = ["branch1", "branch2", "branch3"];
 
 export default function RetroBranchDropdown() {
+  const [repositorySelection, setRepositorySelection] =
+    useState<RepositorySelectionDto>();
+
+  eventBus.subscribe("RepositorySelected", (event) =>
+    setRepositorySelection(event.payload),
+  );
+
+  if (!repositorySelection) {
+    return (
+      <div className="h-12" style={{ borderBottom: "1px solid #404040" }}></div>
+    );
+  }
+
   return (
     <HeadlessSelectDropdown
       animate={false}
@@ -39,7 +54,7 @@ export default function RetroBranchDropdown() {
       children={options.map((option) => (isSelected: boolean) => (
         <div
           key={option}
-          className={`${isSelected ? "bg-retro-active text-white" : ""} hover:bg-retro-pressed bg-retro text-black`}
+          className={`${isSelected ? "bg-retro-active text-white" : ""} hover:bg-retro-pressed bg-retro cursor-pointer text-black`}
         >
           {option}
         </div>

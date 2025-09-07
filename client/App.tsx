@@ -7,6 +7,7 @@ import { useState } from "react";
 import RetroRepositoryDropdown from "./presenters/themed/retro/RepoSelectionDropdown";
 import Header from "./presenters/headless/Header";
 import RetroBranchDropdown from "./presenters/themed/retro/BranchSelectionDropdown";
+import RetroSettingsMenu from "./presenters/themed/retro/SettingsMenu";
 
 // function LeftPane() {
 //   return (
@@ -100,6 +101,7 @@ export default function App() {
         <Header
           branchDropdown={<RetroBranchDropdown />}
           repositoryDropdown={<RetroRepositoryDropdown />}
+          uiSettings={<RetroSettingsMenu />}
         />
       </div>
     </UiSettingsContextProvider>

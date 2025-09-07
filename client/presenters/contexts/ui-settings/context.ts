@@ -1,17 +1,17 @@
-import { createContext } from "react";
+import { createContext, Dispatch, SetStateAction } from "react";
 
-import { Theme } from "../../../application/theme";
+import { Theme } from "../../themed/constants";
 
 export type UiSettings = {
   theme: Theme;
   isSoundEnabled: boolean;
 
   setTheme: (theme: Theme) => void;
-  setIsSoundEnabled: (isSoundEnabled: boolean) => void;
+  setIsSoundEnabled: Dispatch<SetStateAction<boolean>>;
 };
 
 export const defaultSettings = {
-  theme: "MODERN",
+  theme: "RETRO",
   isSoundEnabled: false,
 } as const;
 
