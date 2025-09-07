@@ -1,18 +1,21 @@
 import { ComponentType, ReactNode } from "react";
 
-import { Theme } from "../../application/theme";
 import { useDropdown } from "../hooks/dropdown";
 
-type DropdownProps = {
+export type DropdownProps = {
   animate: boolean;
   children: ReactNode;
-  trigger: ComponentType<{ isFocused: boolean }>;
+  className?: string;
+  tabIndex?: number;
+  trigger: ComponentType<{ isActive: boolean; isFocused: boolean }>;
 };
 
 export default function Dropdown({
   animate,
-  trigger: Trigger,
+  className,
   children,
+  tabIndex,
+  trigger: Trigger,
 }: DropdownProps) {
   const {
     isExpanded,
@@ -25,19 +28,22 @@ export default function Dropdown({
   } = useDropdown();
 
   return (
-    <div ref={dropdownRef} className="relative inline-block h-screen w-full">
+    <div
+      ref={dropdownRef}
+      className={`relative inline-block h-screen ${className}`}
+    >
       <div
         ref={triggerRef}
         onClick={toggle}
         onKeyDown={handleKeyDown}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        tabIndex={0}
+        tabIndex={tabIndex || 0}
         role="button"
         aria-haspopup="true"
         aria-expanded={isExpanded}
       >
-        <Trigger isFocused={isFocused} />
+        <Trigger isActive={isExpanded} isFocused={isFocused} />
       </div>
       <div
         className="absolute flex w-full"

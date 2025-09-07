@@ -8,4 +8,4 @@ export const iconDefaultProps: IconProps = {
   color: "#ffffff",
   size: 24,
   cursor: "default",
-};
+} as const;

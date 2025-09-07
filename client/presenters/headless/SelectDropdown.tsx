@@ -3,19 +3,23 @@ import { ComponentType, KeyboardEvent } from "react";
 import { useSelectDropdown } from "../hooks/select-dropdown";
 
 type SelectableChild = (isSelected: boolean) => React.ReactNode;
-type DropdownProps = {
+export type SelectDropdownProps = {
   animate: boolean;
   children: SelectableChild[];
+  className?: string;
   handleSelect: (index: number | null) => void;
-  trigger: ComponentType<{ isFocused: boolean }>;
+  tabIndex?: number;
+  trigger: ComponentType<{ isActive: boolean; isFocused: boolean }>;
 };
 
 export default function SelectDropdown({
   animate,
   children,
+  className,
   handleSelect,
+  tabIndex,
   trigger: Trigger,
-}: DropdownProps) {
+}: SelectDropdownProps) {
   const {
     isExpanded,
     isFocused,
@@ -31,19 +35,22 @@ export default function SelectDropdown({
     handleSelect(handleKeyDown(e, children.length));
 
   return (
-    <div ref={dropdownRef} className="relative inline-block w-full">
+    <div
+      ref={dropdownRef}
+      className={`relative inline-block w-full ${className}`}
+    >
       <div
         ref={triggerRef}
         onClick={toggle}
         onKeyDown={handleTriggerKeyDown}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        tabIndex={0}
+        tabIndex={tabIndex || 0}
         role="button"
         aria-haspopup="true"
         aria-expanded={isExpanded}
       >
-        <Trigger isFocused={isFocused} />
+        <Trigger isActive={isExpanded} isFocused={isFocused} />
       </div>
 
       <div

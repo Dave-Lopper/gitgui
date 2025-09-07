@@ -17,3 +17,15 @@ body {
   font-weight: normal;
   font-style: normal;
 }
+
+@theme {
+  --font-modern: "Helvetica", sans-serif;
+  --font-retro: "Microsoft Sans Serif";
+  --color-retro: #c4c4c4;
+  --color-retro-pressed: #d4d4d4;
+  --color-retro-active: #02027d;
+}
+
+.retro-borders {
+  border-color: #fff #404040 #404040 #fff;
+}

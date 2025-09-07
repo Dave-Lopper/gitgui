@@ -1,0 +1,13 @@
+.retro-button {
+  border-color: #fff #404040 #404040 #fff;
+}
+
+.pressed {
+  border-color: #404040 #fff #fff #404040;
+  background-color: #d4d4d4;
+}
+
+.retro-button:focus {
+  outline: 1px dotted #000;
+  outline-offset: -4px;
+}

@@ -22,13 +22,13 @@ export function useSelectDropdown() {
   const maximizeSoundEffect = useSoundEffect("MAXIMIZE", theme);
   const minimizeSoundEffect = useSoundEffect("MINIMIZE", theme);
 
-  const close = useCallback(() => {
+  const collapse = useCallback(() => {
     setIsExpanded(false);
     setSelectedIndex(-1);
     minimizeSoundEffect.play();
   }, [isSoundEnabled, theme]);
 
-  const open = useCallback(() => {
+  const expand = useCallback(() => {
     setIsExpanded(true);
     maximizeSoundEffect.play();
   }, [isSoundEnabled, theme]);
@@ -51,25 +51,27 @@ export function useSelectDropdown() {
       switch (e.key) {
         case "Escape":
           e.preventDefault();
-          close();
-          triggerRef.current?.focus();
+          if (isExpanded) {
+            collapse();
+            triggerRef.current?.focus();
+          }
           break;
         case "Enter":
         case " ":
           e.preventDefault();
           if (isFocused === true && !isExpanded) {
-            open();
-          } else if (isExpanded && selectedIndex === -1) {
-            close();
+            expand();
           } else if (isExpanded) {
-            close();
-            return selectedIndex;
+            collapse();
+            if (selectedIndex !== -1) {
+              return selectedIndex;
+            }
           }
           break;
         case "ArrowDown":
           e.preventDefault();
           if (isFocused && !isExpanded) {
-            open();
+            expand();
           } else if (isExpanded) {
             setSelectedIndex((prev) => (prev + 1) % itemsCount);
           }
@@ -80,13 +82,13 @@ export function useSelectDropdown() {
             setSelectedIndex((prev) => (prev - 1) % itemsCount);
           }
         case "Tab":
-          close();
+          collapse();
           triggerRef.current?.blur();
           break;
       }
       return null;
     },
-    [isExpanded, isFocused, selectedIndex, open, close],
+    [isExpanded, isFocused, selectedIndex, expand, collapse],
   );
 
   useEffect(() => {
@@ -95,7 +97,7 @@ export function useSelectDropdown() {
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
-        close();
+        collapse();
       }
     }
 
@@ -104,7 +106,7 @@ export function useSelectDropdown() {
       return () =>
         document.removeEventListener("mousedown", handleClickOutside);
     }
-  }, [isExpanded, close]);
+  }, [isExpanded, collapse]);
 
   return {
     isFocused,
@@ -112,7 +114,7 @@ export function useSelectDropdown() {
     selectedIndex,
     dropdownRef,
     triggerRef,
-    close,
+    collapse,
     toggle,
     handleKeyDown,
     setIsFocused,

@@ -22,11 +22,11 @@ export function useDropdown() {
   const maximizeSoundEffect = useSoundEffect("MAXIMIZE", theme);
   const minimizeSoundEffect = useSoundEffect("MINIMIZE", theme);
 
-  const close = useCallback(() => {
+  const collapse = useCallback(() => {
     setIsExpanded(false);
     minimizeSoundEffect.play();
   }, [isSoundEnabled, theme]);
-  const open = useCallback(() => {
+  const expand = useCallback(() => {
     setIsExpanded(true);
     maximizeSoundEffect.play();
   }, [isSoundEnabled, theme]);
@@ -47,25 +47,25 @@ export function useDropdown() {
       switch (e.key) {
         case "Escape":
           e.preventDefault();
-          close();
+          collapse();
           triggerRef.current?.focus();
           break;
         case "Enter":
         case " ":
           e.preventDefault();
           if (isFocused === true && !isExpanded) {
-            open();
+            expand();
           } else if (isExpanded) {
-            close();
+            collapse();
           }
           break;
         case "Tab":
-          close();
+          collapse();
           break;
       }
       return null;
     },
-    [isExpanded, isFocused, open, close],
+    [isExpanded, isFocused, expand, collapse],
   );
 
   useEffect(() => {
@@ -74,7 +74,7 @@ export function useDropdown() {
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
-        close();
+        collapse();
       }
     }
 
@@ -83,14 +83,14 @@ export function useDropdown() {
       return () =>
         document.removeEventListener("mousedown", handleClickOutside);
     }
-  }, [isExpanded, close]);
+  }, [isExpanded, collapse]);
 
   return {
     isFocused,
     isExpanded,
     dropdownRef,
     triggerRef,
-    close,
+    collapse,
     toggle,
     handleKeyDown,
     setIsFocused,
