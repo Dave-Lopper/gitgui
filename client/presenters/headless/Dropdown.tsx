@@ -30,7 +30,7 @@ export default function Dropdown({
   return (
     <div
       ref={dropdownRef}
-      className={`relative inline-block h-screen ${className}`}
+      className={`relative inline-block h-screen ${className} focus:outline-none`}
     >
       <div
         ref={triggerRef}
@@ -42,6 +42,7 @@ export default function Dropdown({
         role="button"
         aria-haspopup="true"
         aria-expanded={isExpanded}
+        className="focus:outline-none"
       >
         <Trigger isActive={isExpanded} isFocused={isFocused} />
       </div>

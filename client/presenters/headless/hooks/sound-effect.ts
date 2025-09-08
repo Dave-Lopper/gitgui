@@ -11,6 +11,10 @@ const soundEffectsMapping = {
     RETRO: "sound/retro/minimize.mp3",
     MODERN: "sound/modern/minimize.mp3",
   },
+  SWITCH: {
+    RETRO: "sound/retro/switch.mp3",
+    MODERN: "sound/modern/switch.mp3",
+  },
 } as const;
 export type SoundEffect = keyof typeof soundEffectsMapping;
 
