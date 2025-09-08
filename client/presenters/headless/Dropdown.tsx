@@ -1,6 +1,6 @@
 import { ComponentType, ReactNode } from "react";
 
-import { useDropdown } from "../hooks/dropdown";
+import { useDropdown } from "./hooks/dropdown";
 
 export type DropdownProps = {
   animate: boolean;

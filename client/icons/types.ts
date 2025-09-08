@@ -3,6 +3,7 @@ export type IconProps = {
   color?: string;
   size?: number;
   cursor?: IconSupportedCursors;
+  className?: string;
 };
 export const iconDefaultProps: IconProps = {
   color: "#ffffff",

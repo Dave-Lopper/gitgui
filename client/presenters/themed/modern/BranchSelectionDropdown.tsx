@@ -1,31 +1,18 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 import { eventBus } from "../../../bootstrap";
 import { RepositorySelectionDto } from "../../../dto/repo-selection";
 import { SelectDropdown as HeadlessSelectDropdown } from "../../headless";
-import RetroButton from "./Button";
 import { DropdownTriggerProps } from "../../headless/SelectDropdown";
+import ModernDropdownTrigger from "./DropdownTrigger";
 
-function RetroBranchDropdownTrigger({
-  isActive,
-  isFocused,
-}: DropdownTriggerProps) {
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
-    if (!buttonRef.current) {
-      return;
-    }
-    if (isFocused) {
-      buttonRef.current.focus();
-    } else {
-      buttonRef.current.blur();
-    }
-  }, [isFocused]);
-
+function BranchDropdownTrigger({ isActive, isFocused }: DropdownTriggerProps) {
   return (
-    <RetroButton isActive={isActive} ref={buttonRef} className="w-full px-8">
-      Select branch
-    </RetroButton>
+    <ModernDropdownTrigger
+      copy="Select branch"
+      isActive={isActive}
+      isFocused={isFocused}
+    />
   );
 }
 
@@ -41,7 +28,7 @@ export default function RetroBranchDropdown() {
 
   if (!repositorySelection) {
     return (
-      <div className="h-12" style={{ borderBottom: "2px solid white" }}></div>
+      <div className="border-b-modern-dark-border bg-modern-dark-pri h-24 border-b-1 border-solid"></div>
     );
   }
 
@@ -52,14 +39,14 @@ export default function RetroBranchDropdown() {
       children={options.map((option) => (isSelected: boolean) => (
         <div
           key={option}
-          className={`${isSelected ? "bg-retro-active text-white" : ""} hover:bg-retro-pressed bg-retro cursor-pointer text-black`}
+          className={`bg-modern-sec cursor-pointer text-white hover:underline`}
         >
           {option}
         </div>
       ))}
       className="w-full"
       tabIndex={2}
-      trigger={RetroBranchDropdownTrigger}
+      trigger={BranchDropdownTrigger}
     ></HeadlessSelectDropdown>
   );
 }

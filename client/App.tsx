@@ -1,13 +1,7 @@
-import RetroSoundOffIcon from "./icons/retro/SoundOff";
 import { UiSettingsContextProvider } from "./presenters/contexts";
-import { Dropdown, SelectDropdown, SplitPane } from "./presenters/headless";
-import RetroButton from "./presenters/themed/retro/Button";
 import "./App.css";
-import { useState } from "react";
-import RetroRepositoryDropdown from "./presenters/themed/retro/RepoSelectionDropdown";
-import Header from "./presenters/headless/Header";
-import RetroBranchDropdown from "./presenters/themed/retro/BranchSelectionDropdown";
-import RetroSettingsMenu from "./presenters/themed/retro/SettingsMenu";
+
+import AppLayout from "./presenters/AppLayout";
 
 // function LeftPane() {
 //   return (
@@ -94,16 +88,9 @@ import RetroSettingsMenu from "./presenters/themed/retro/SettingsMenu";
 // }
 
 export default function App() {
-  const [isActive, setIsActive] = useState(false);
   return (
     <UiSettingsContextProvider>
-      <div className="bg-retro flex h-screen w-screen items-center justify-center">
-        <Header
-          branchDropdown={<RetroBranchDropdown />}
-          repositoryDropdown={<RetroRepositoryDropdown />}
-          uiSettings={<RetroSettingsMenu />}
-        />
-      </div>
+      <AppLayout />
     </UiSettingsContextProvider>
   );
 }

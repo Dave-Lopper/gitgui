@@ -6,7 +6,7 @@ export type UiSettings = {
   theme: Theme;
   isSoundEnabled: boolean;
 
-  setTheme: (theme: Theme) => void;
+  setTheme: Dispatch<SetStateAction<Theme>>;
   setIsSoundEnabled: Dispatch<SetStateAction<boolean>>;
 };
 

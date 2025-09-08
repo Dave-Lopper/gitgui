@@ -1,15 +1,16 @@
 import { ComponentType, KeyboardEvent } from "react";
 
-import { useSelectDropdown } from "../hooks/select-dropdown";
+import { useSelectDropdown } from "./hooks/select-dropdown";
 
 type SelectableChild = (isSelected: boolean) => React.ReactNode;
+export type DropdownTriggerProps = { isActive: boolean; isFocused: boolean };
 export type SelectDropdownProps = {
   animate: boolean;
   children: SelectableChild[];
   className?: string;
   handleSelect: (index: number | null) => void;
   tabIndex?: number;
-  trigger: ComponentType<{ isActive: boolean; isFocused: boolean }>;
+  trigger: ComponentType<DropdownTriggerProps>;
 };
 
 export default function SelectDropdown({
@@ -21,6 +22,7 @@ export default function SelectDropdown({
   trigger: Trigger,
 }: SelectDropdownProps) {
   const {
+    collapse,
     isExpanded,
     isFocused,
     selectedIndex,
@@ -29,6 +31,7 @@ export default function SelectDropdown({
     toggle,
     handleKeyDown,
     setIsFocused,
+    setSelectedIndex,
   } = useSelectDropdown();
 
   const handleTriggerKeyDown = (e: KeyboardEvent<HTMLElement>) =>
@@ -61,7 +64,17 @@ export default function SelectDropdown({
         }}
         role="menu"
       >
-        {children.map((child, index) => child(index === selectedIndex))}
+        {children.map((child, index) => (
+          <span
+            onClick={() => {
+              setSelectedIndex(index);
+              handleSelect(index);
+              collapse();
+            }}
+          >
+            {child(index === selectedIndex)}
+          </span>
+        ))}
       </div>
     </div>
   );

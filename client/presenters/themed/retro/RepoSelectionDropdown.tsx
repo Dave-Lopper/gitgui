@@ -2,14 +2,12 @@ import { useEffect, useRef } from "react";
 
 import { Dropdown as HeadlessDropdown } from "../../headless";
 import RetroButton from "./Button";
+import { DropdownTriggerProps } from "../../headless/SelectDropdown";
 
 function RetroRepositoryDropdownTrigger({
   isActive,
   isFocused,
-}: {
-  isActive: boolean;
-  isFocused: boolean;
-}) {
+}: DropdownTriggerProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     if (!buttonRef.current) {
@@ -23,7 +21,11 @@ function RetroRepositoryDropdownTrigger({
   }, [isFocused]);
 
   return (
-    <RetroButton isActive={isActive} ref={buttonRef} className="w-full px-8">
+    <RetroButton
+      isActive={isActive}
+      ref={buttonRef}
+      className="w-full px-8 font-bold"
+    >
       Select repository
     </RetroButton>
   );

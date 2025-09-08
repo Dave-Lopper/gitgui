@@ -1,6 +1,6 @@
-import { forwardRef, Ref } from "react";
+import { forwardRef } from "react";
 
-import { useButton, ButtonProps } from "../../hooks/button";
+import { useButton, ButtonProps } from "../../headless";
 
 import "./styles/Button.css";
 

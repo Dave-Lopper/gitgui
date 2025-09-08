@@ -1,6 +1,6 @@
-import { use, useCallback, useContext, useEffect, useRef } from "react";
+import { useCallback, useContext, useEffect, useRef } from "react";
 
-import { UiSettingsContext } from "../contexts/ui-settings/context";
+import { UiSettingsContext } from "../../contexts/ui-settings/context";
 
 const soundEffectsMapping = {
   MAXIMIZE: {
@@ -22,23 +22,22 @@ export function useSoundEffect(effect: SoundEffect) {
     audioRef.current = new Audio(soundEffectsMapping[effect][theme]);
   }, [effect, theme]);
 
-  const play = () => {
-    console.log({ isSoundEnabled });
+  const play = useCallback(() => {
     if (isSoundEnabled) {
       audioRef.current?.play();
     }
-  };
+  }, [audioRef.current, isSoundEnabled]);
 
   const pause = useCallback(() => {
     audioRef.current?.pause();
-  }, []);
+  }, [audioRef.current]);
 
   const stop = useCallback(() => {
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
-  }, []);
+  }, [audioRef.current]);
 
   return { play, pause, stop, audio: audioRef.current };
 }

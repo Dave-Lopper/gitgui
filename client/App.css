@@ -21,6 +21,10 @@ body {
 @theme {
   --font-modern: "Helvetica", sans-serif;
   --font-retro: "Microsoft Sans Serif";
+  --color-modern-dark-pri: #010409;
+  --color-modern-dark-sec: #0d1117;
+  --color-modern-dark-border: #3d444d;
+  --color-modern-light: #ffffff;
   --color-retro: #c4c4c4;
   --color-retro-pressed: #d4d4d4;
   --color-retro-active: #02027d;

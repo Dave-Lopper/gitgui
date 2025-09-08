@@ -4,15 +4,10 @@ import { THEMES } from "../constants";
 import { SounOffRetroIcon } from "../../../icons/retro";
 import { UiSettingsContext } from "../../contexts/ui-settings/context";
 import { SelectDropdown as HeadlessSelectDropdown } from "../../headless";
+import { DropdownTriggerProps } from "../../headless/SelectDropdown";
 import RetroButton from "./Button";
 
-function ThemeDropdownTrigger({
-  isActive,
-  isFocused,
-}: {
-  isActive: boolean;
-  isFocused: boolean;
-}) {
+function ThemeDropdownTrigger({ isActive, isFocused }: DropdownTriggerProps) {
   const { theme } = useContext(UiSettingsContext);
   const buttonRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
@@ -28,7 +23,7 @@ function ThemeDropdownTrigger({
 
   return (
     <RetroButton isActive={isActive} ref={buttonRef} className="w-full px-6">
-      Theme ({theme})
+      Theme ({theme.toLowerCase()})
     </RetroButton>
   );
 }
