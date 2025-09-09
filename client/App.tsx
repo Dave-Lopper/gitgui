@@ -1,7 +1,9 @@
+import { useCallback, useEffect } from "react";
+
+import { useCases } from "./bootstrap";
+import AppLayout from "./presenters/AppLayout";
 import { UiSettingsContextProvider } from "./presenters/contexts";
 import "./App.css";
-
-import AppLayout from "./presenters/AppLayout";
 
 // function LeftPane() {
 //   return (
@@ -88,6 +90,17 @@ import AppLayout from "./presenters/AppLayout";
 // }
 
 export default function App() {
+  const startupCallback = useCallback(
+    async () => await useCases.getSavedRepositories.execute(),
+    [],
+  );
+
+  useEffect(() => {
+    window.addEventListener("DOMContentLoaded", startupCallback);
+    return () =>
+      window.removeEventListener("DOMContentLoaded", startupCallback);
+  }, [startupCallback]);
+
   return (
     <UiSettingsContextProvider>
       <AppLayout />

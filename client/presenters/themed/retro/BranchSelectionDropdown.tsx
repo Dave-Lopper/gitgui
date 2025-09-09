@@ -2,7 +2,10 @@ import { useEffect, useRef, useState } from "react";
 
 import { eventBus } from "../../../bootstrap";
 import { RepositorySelectionDto } from "../../../dto/repo-selection";
-import { SelectDropdown as HeadlessSelectDropdown } from "../../headless";
+import {
+  SelectDropdown as HeadlessSelectDropdown,
+  useSelectedRepository,
+} from "../../headless";
 import RetroButton from "./Button";
 import { DropdownTriggerProps } from "../../headless/SelectDropdown";
 
@@ -32,14 +35,9 @@ function RetroBranchDropdownTrigger({
 const options = ["branch1", "branch2", "branch3"];
 
 export default function RetroBranchDropdown() {
-  const [repositorySelection, setRepositorySelection] =
-    useState<RepositorySelectionDto>();
+  const { selectedRepository } = useSelectedRepository();
 
-  eventBus.subscribe("RepositorySelected", (event) =>
-    setRepositorySelection(event.payload),
-  );
-
-  if (!repositorySelection) {
+  if (!selectedRepository) {
     return (
       <div className="h-12" style={{ borderBottom: "2px solid white" }}></div>
     );

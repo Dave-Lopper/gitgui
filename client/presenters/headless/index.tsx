@@ -6,3 +6,4 @@ export type { SelectDropdownProps } from "./SelectDropdown";
 export { default as SplitPane } from "./SplitPane";
 export { useButton } from "./hooks/button";
 export type { ButtonProps } from "./hooks/button";
+export { useSelectedRepository } from "./hooks/selected-repository";
