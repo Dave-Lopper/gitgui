@@ -16,7 +16,7 @@ export interface IGitService {
     repositoryPath: string,
   ): Promise<Commit[]>;
 
-  selectRepoFromDisk(repositoryPath: string): Promise<RepositorySelectionDto>;
+  selectRepoFromDisk(): Promise<RepositorySelectionDto>;
 
   selectRepoFromSaved(repositoryPath: string): Promise<RepositorySelectionDto>;
 }
