@@ -48,8 +48,6 @@ export default function SelectDropdown({
         onKeyDown={handleTriggerKeyDown}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        tabIndex={tabIndex || 0}
-        role="button"
         aria-haspopup="true"
         aria-expanded={isExpanded}
       >

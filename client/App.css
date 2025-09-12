@@ -33,3 +33,7 @@ body {
 .retro-borders {
   border-color: #fff #404040 #404040 #fff;
 }
+
+.retro-borders-in {
+  border-color: #404040 #f2f2f2 #f2f2f2 #404040;
+}

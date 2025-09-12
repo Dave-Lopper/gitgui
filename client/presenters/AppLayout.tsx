@@ -11,6 +11,7 @@ import {
   RetroRepositoryDropdown,
   RetroBranchDropdown,
   RetroSettingsMenu,
+  RetroRepositorySelectionMenu,
 } from "./themed/retro";
 
 export default function AppLayout() {
@@ -27,8 +28,15 @@ export default function AppLayout() {
       theme === "MODERN" ? (
         <ModernRepositoryDropdown />
       ) : (
-        <RetroRepositoryDropdown />
+        <RetroRepositoryDropdown
+          repoSelectionMenu={<RetroRepositorySelectionMenu />}
+        />
       ),
+    [theme],
+  );
+
+  const repositorySelectionMenu = useMemo(
+    () => (theme === "MODERN" ? <></> : <RetroRepositorySelectionMenu />),
     [theme],
   );
 

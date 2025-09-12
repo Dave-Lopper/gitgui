@@ -7,7 +7,7 @@ import "./styles/Button.css";
 export default forwardRef<
   HTMLButtonElement,
   ButtonProps & { isActive: boolean }
->(({ className, isActive, children, onClick }, ref) => {
+>(({ className, isActive, children, onClick, tabIndex }, ref) => {
   const {
     isPressed,
     handleKeyDown,
@@ -27,6 +27,7 @@ export default forwardRef<
       onMouseLeave={handleMouseLeave}
       onClick={onClick}
       ref={ref}
+      tabIndex={tabIndex}
     >
       {children}
     </button>

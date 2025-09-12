@@ -5,6 +5,7 @@ export type ButtonProps = {
   className?: string;
   isActive: boolean;
   onClick?: () => void;
+  tabIndex?: number;
 };
 
 export function useButton(onClick?: () => void) {

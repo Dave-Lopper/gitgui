@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 
 import { Dropdown as HeadlessDropdown } from "../../headless";
 import RetroButton from "./Button";
@@ -31,17 +31,18 @@ function RetroRepositoryDropdownTrigger({
   );
 }
 
-export default function RetroRepositoryDropdown() {
+export default function RetroRepositoryDropdown({
+  repoSelectionMenu,
+}: {
+  repoSelectionMenu: ReactNode;
+}) {
   return (
     <HeadlessDropdown
       animate={false}
-      children={
-        <div className="font-retro retro-borders flex w-full items-center justify-center border-1 border-black text-black">
-          Repo selection
-        </div>
-      }
+      children={repoSelectionMenu}
       className="w-full"
-      tabIndex={1}
+      closeEvent="RepositorySelected"
+      tabIndex={0}
       trigger={RetroRepositoryDropdownTrigger}
     ></HeadlessDropdown>
   );

@@ -22,7 +22,12 @@ function ThemeDropdownTrigger({ isActive, isFocused }: DropdownTriggerProps) {
   }, [isFocused]);
 
   return (
-    <RetroButton isActive={isActive} ref={buttonRef} className="w-full px-6">
+    <RetroButton
+      isActive={isActive}
+      ref={buttonRef}
+      className="w-full px-6"
+      tabIndex={2}
+    >
       Theme ({theme.toLowerCase()})
     </RetroButton>
   );
@@ -58,13 +63,13 @@ export default function RetroSettingsMenu() {
           </div>
         ))}
         className="w-full"
-        tabIndex={2}
         trigger={ThemeDropdownTrigger}
       ></HeadlessSelectDropdown>
       <RetroButton
         isActive={!isSoundEnabled}
         onClick={() => setIsSoundEnabled((prev) => !prev)}
         className="px-2"
+        tabIndex={3}
       >
         <SounOffRetroIcon />
       </RetroButton>

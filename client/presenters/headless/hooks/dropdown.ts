@@ -59,9 +59,6 @@ export function useDropdown() {
             collapse();
           }
           break;
-        case "Tab":
-          collapse();
-          break;
       }
       return null;
     },
@@ -94,5 +91,6 @@ export function useDropdown() {
     toggle,
     handleKeyDown,
     setIsFocused,
+    setIsExpanded,
   };
 }

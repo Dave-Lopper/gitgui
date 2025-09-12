@@ -1,11 +1,15 @@
 import { ComponentType, ReactNode } from "react";
 
 import { useDropdown } from "./hooks/dropdown";
+import { useEventSubscription } from "../../infra/react-bus-helper";
+import { EventType } from "../../application/i-event-bus";
+import { set } from "zod";
 
 export type DropdownProps = {
   animate: boolean;
   children: ReactNode;
   className?: string;
+  closeEvent?: EventType;
   tabIndex?: number;
   trigger: ComponentType<{ isActive: boolean; isFocused: boolean }>;
 };
@@ -13,6 +17,7 @@ export type DropdownProps = {
 export default function Dropdown({
   animate,
   className,
+  closeEvent,
   children,
   tabIndex,
   trigger: Trigger,
@@ -24,8 +29,13 @@ export default function Dropdown({
     triggerRef,
     toggle,
     handleKeyDown,
+    setIsExpanded,
     setIsFocused,
   } = useDropdown();
+
+  if (closeEvent) {
+    useEventSubscription(closeEvent, () => setIsExpanded(false), []);
+  }
 
   return (
     <div
