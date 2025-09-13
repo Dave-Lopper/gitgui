@@ -1,6 +1,32 @@
 import { useCases } from "../../../bootstrap";
 import { Repository } from "../../../domain/repository";
-import { SavedRepositories, useFocusable } from "../../headless";
+import {
+  DiskRepositorySelector,
+  SavedRepositories,
+  CloneRepositoryForm,
+  useFocusable,
+} from "../../headless";
+import RetroButton from "./Button";
+import TextInput from "./TextInput";
+
+function SubmitButton({
+  disabled,
+  onClick,
+}: {
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <RetroButton
+      className="px-4"
+      disabled={disabled}
+      isActive={false}
+      onClick={onClick}
+    >
+      Clone repository
+    </RetroButton>
+  );
+}
 
 function RepositoryOption({
   repository,
@@ -29,14 +55,36 @@ function RepositoryOption({
 export default function RetroRepoSelectionMenu() {
   return (
     <div
-      style={{ borderRight: "2px solid #404040", borderTop: "2px solid white" }}
-      className="font-retro flex w-full flex-col items-center justify-between border-1 border-black py-8 text-black"
+      style={{
+        borderRight: "2px solid #404040",
+        borderTop: "2px solid white",
+      }}
+      className="font-retro flex h-full w-full flex-col items-center justify-between border-1 border-black py-8 text-black"
     >
       <div className="flex flex-col">
-        <p className="font-retro mb-4 text-black">Saved repositories</p>
         <SavedRepositories
+          label={
+            <p className="font-retro mb-4 text-black">Saved repositories</p>
+          }
           repositoryOption={RepositoryOption}
-          className="retro-borders-in flex flex-col border-2 bg-white"
+          className="retro-borders-in retro-scrollbar flex max-h-24 flex-col overflow-auto border-2 bg-white"
+        />
+
+        {/* <DiskRepositorySelector> */}
+        <RetroButton
+          className="my-18 px-4"
+          isActive={false}
+          onClick={async () =>
+            await useCases.selectRepositoryFromDisk.execute()
+          }
+        >
+          Select from disk
+        </RetroButton>
+        {/* </DiskRepositorySelector> */}
+
+        <CloneRepositoryForm
+          repoUrlInput={TextInput}
+          submitButton={SubmitButton}
         />
       </div>
     </div>

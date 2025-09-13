@@ -6,8 +6,8 @@ import "./styles/Button.css";
 
 export default forwardRef<
   HTMLButtonElement,
-  ButtonProps & { isActive: boolean }
->(({ className, isActive, children, onClick, tabIndex }, ref) => {
+  ButtonProps & { disabled?: boolean }
+>(({ className, disabled, isActive, children, onClick, tabIndex }, ref) => {
   const {
     isPressed,
     handleKeyDown,
@@ -19,7 +19,7 @@ export default forwardRef<
 
   return (
     <button
-      className={`bg-retro-menu font-retro retro-button h-12 cursor-pointer border-2 py-2 text-black ${className ? className : ""} ${isPressed || isActive ? "pressed" : ""}`}
+      className={`font-retro retro-button h-12 ${disabled ? "bg-retro-menu-pressed cursor-not-allowed" : "bg-retro-menu cursor-pointer"} border-2 py-2 text-black ${className ? className : ""} ${isPressed || isActive ? "pressed" : ""}`}
       onKeyDown={handleKeyDown}
       onKeyUp={handleKeyUp}
       onMouseDown={handleMouseDown}

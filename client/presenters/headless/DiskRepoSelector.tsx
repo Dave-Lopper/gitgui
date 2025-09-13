@@ -17,8 +17,6 @@ export default function DiskRepositorySelector({
   return (
     <span
       className="cursor-pointer"
-      role="button"
-      tabIndex={tabIndex || 0}
       onClick={async () => await selectRepository()}
     >
       {children}

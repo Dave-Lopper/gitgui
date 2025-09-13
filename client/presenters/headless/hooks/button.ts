@@ -1,10 +1,10 @@
-import { ReactNode, useState, useCallback } from "react";
+import { MouseEvent, ReactNode, useState, useCallback } from "react";
 
 export type ButtonProps = {
   children: ReactNode;
   className?: string;
   isActive: boolean;
-  onClick?: () => void;
+  onClick?: (e?: MouseEvent<HTMLButtonElement>) => void;
   tabIndex?: number;
 };
 

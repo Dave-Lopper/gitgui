@@ -57,7 +57,7 @@ export default function Dropdown({
         <Trigger isActive={isExpanded} isFocused={isFocused} />
       </div>
       <div
-        className="absolute flex w-full"
+        className="absolute flex w-full flex-col"
         style={{
           transition: animate ? "transform 0.5s ease-in-out" : "unset",
           transform: `scaleY(${isExpanded ? 1 : 0})`,
