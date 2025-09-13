@@ -3,10 +3,11 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "main": "dist/electron/commons/infra/electron.js",
+  "main": "dist/server/commons/entrypoints/electron.js",
   "scripts": {
     "dev": "vite",
-    "electron": "tsc && env -i DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY PATH=$PATH HOME=$HOME electron .",
+    "build-client": "vite build",
+    "electron": "tsc && env -i DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY PATH=$PATH HOME=$HOME NODE_ENV=development electron .",
     "start": "concurrently \"npm:dev\" \"npm:electron\""
   },
   "dependencies": {

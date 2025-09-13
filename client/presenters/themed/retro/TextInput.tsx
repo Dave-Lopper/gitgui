@@ -7,7 +7,7 @@ export default function TextInput({
 }) {
   return (
     <input
-      className="retro-borders-in font-retro h-12 border-2 bg-white text-lg text-black focus:outline-none"
+      className="retro-borders-in font-retro h-8 border-2 bg-white text-lg text-black focus:outline-none"
       type="text"
       onChange={onChange}
     />

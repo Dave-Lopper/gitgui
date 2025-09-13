@@ -25,7 +25,7 @@ function ThemeDropdownTrigger({ isActive, isFocused }: DropdownTriggerProps) {
     <RetroButton
       isActive={isActive}
       ref={buttonRef}
-      className="w-full px-6"
+      className="w-full px-6 h-12"
       tabIndex={2}
     >
       Theme ({theme.toLowerCase()})

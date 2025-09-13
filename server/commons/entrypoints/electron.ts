@@ -23,8 +23,13 @@ async function createWindow() {
     },
   });
 
-  window.loadURL("http://localhost:5173"); // dev URL
-  window.webContents.openDevTools();
+  if (process.env.NODE_ENV === "development") {
+    window.loadFile(path.join(__dirname, "../../../../dist-client/index.html"));
+    window.webContents.session.clearCache();
+    window.webContents.openDevTools();
+  } else {
+    window.loadFile(path.join(__dirname, "../dist/index.html"));
+  }
 
   repositoryUseCases = await repositoryBootstrap();
   commitUseCases = commitBootstrap();
@@ -77,5 +82,7 @@ async function createWindow() {
     );
   });
 }
-
+// app.commandLine.appendSwitch("no-sandbox");
+app.commandLine.appendSwitch("disable-features", "AudioServiceOutOfProcess");
+app.commandLine.appendSwitch("autoplay-policy", "no-user-gesture-required");
 app.whenReady().then(createWindow);

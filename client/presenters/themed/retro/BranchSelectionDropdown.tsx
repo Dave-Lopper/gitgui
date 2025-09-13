@@ -26,7 +26,11 @@ function RetroBranchDropdownTrigger({
   }, [isFocused]);
 
   return (
-    <RetroButton isActive={isActive} ref={buttonRef} className="w-full px-8">
+    <RetroButton
+      isActive={isActive}
+      ref={buttonRef}
+      className="h-12 w-full px-8 py-2"
+    >
       Select branch
     </RetroButton>
   );

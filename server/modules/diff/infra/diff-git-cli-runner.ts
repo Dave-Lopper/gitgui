@@ -1,4 +1,4 @@
-import { GitCliRunner } from "../../../commons/infra/git-cli-runner";
+import { GitCliRunner } from "../../../commons/infra/git-cli-runner.js";
 import { DiffGitRunner } from "../application/git-runner.js";
 
 export class DiffCliGitRunner extends GitCliRunner implements DiffGitRunner {

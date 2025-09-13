@@ -24,7 +24,7 @@ function RetroRepositoryDropdownTrigger({
     <RetroButton
       isActive={isActive}
       ref={buttonRef}
-      className="w-full px-8 font-bold"
+      className="h-12 w-full px-8 py-2 font-bold"
     >
       Select repository
     </RetroButton>

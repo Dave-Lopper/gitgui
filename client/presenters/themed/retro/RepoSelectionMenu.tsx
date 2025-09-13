@@ -18,9 +18,10 @@ function SubmitButton({
 }) {
   return (
     <RetroButton
-      className="px-4"
+      className="h-8 px-4"
       disabled={disabled}
       isActive={false}
+      sound
       onClick={onClick}
     >
       Clone repository
@@ -72,8 +73,9 @@ export default function RetroRepoSelectionMenu() {
 
         {/* <DiskRepositorySelector> */}
         <RetroButton
-          className="my-18 px-4"
+          className="my-18 h-12 px-4"
           isActive={false}
+          sound
           onClick={async () =>
             await useCases.selectRepositoryFromDisk.execute()
           }

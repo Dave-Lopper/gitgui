@@ -1,4 +1,4 @@
-import { CommandOptions } from "../command-runner";
+import { CommandOptions } from "./command-runner.js";
 
 export interface GitRunner {
   safeRun(

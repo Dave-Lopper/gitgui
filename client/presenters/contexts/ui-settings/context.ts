@@ -12,7 +12,7 @@ export type UiSettings = {
 
 export const defaultSettings = {
   theme: "RETRO",
-  isSoundEnabled: false,
+  isSoundEnabled: true,
 } as const;
 
 export const UiSettingsContext = createContext<UiSettings>({} as UiSettings);
