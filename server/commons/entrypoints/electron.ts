@@ -24,7 +24,7 @@ async function createWindow() {
   });
 
   if (process.env.NODE_ENV === "development") {
-    window.loadFile(path.join(__dirname, "../../../../dist-client/index.html"));
+    window.loadURL("http://localhost:5173");
     window.webContents.session.clearCache();
     window.webContents.openDevTools();
   } else {
