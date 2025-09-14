@@ -23,6 +23,9 @@ body {
   --font-retro: "Microsoft Sans Serif";
   --color-modern-dark-pri: #010409;
   --color-modern-dark-sec: #0d1117;
+  --color-modern-dark-ter: #3d444d;
+  --color-modern-dark-qua: #4f5860;
+  --color-modern-dark-qui: #7d8594;
   --color-modern-dark-border: #3d444d;
   --color-modern-light: #ffffff;
   --color-retro: #c4c4c4;
@@ -72,4 +75,15 @@ body {
   background: #c4c5cf
     url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='black'><polygon points='0,0 10,0 5,10'/></svg>")
     no-repeat center;
+}
+
+.modern-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.modern-scrollbar::-webkit-scrollbar-thumb {
+  width: 15px;
+  border-radius: 7px;
+  background-color: #7d8594;
+  cursor: ns-resize;
 }

@@ -1,4 +1,5 @@
-import { ChevronModernIcon } from "../../../icons/modern";
+import { ReactNode } from "react";
+
 import { Dropdown as HeadlessDropdown } from "../../headless";
 import { DropdownTriggerProps } from "../../headless/SelectDropdown";
 import ModernDropdownTrigger from "./DropdownTrigger";
@@ -16,18 +17,20 @@ function ModernRepositoryDropdownTrigger({
   );
 }
 
-export default function ModernRepositoryDropdown() {
+export default function ModernRepositoryDropdown({
+  repoSelectionMenu,
+}: {
+  repoSelectionMenu: ReactNode;
+}) {
   return (
     <HeadlessDropdown
       animate
-      children={
-        <div className="font-modern bg-modern-dark-sec flex w-full items-center justify-center text-white">
-          Repo selection
-        </div>
-      }
       className="w-full"
+      closeEvent="RepositorySelected"
       tabIndex={1}
       trigger={ModernRepositoryDropdownTrigger}
-    ></HeadlessDropdown>
+    >
+      {repoSelectionMenu}
+    </HeadlessDropdown>
   );
 }

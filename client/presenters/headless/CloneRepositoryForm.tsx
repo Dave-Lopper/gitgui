@@ -4,14 +4,17 @@ import { useCases } from "../../bootstrap";
 
 type CloneRepositoryFormProps = {
   className?: string;
+  inputPlaceholder?: string;
   repoUrlInput: ComponentType<{
     onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+    placeholder?: string;
   }>;
   submitButton: ComponentType<{ onClick: () => void; disabled: boolean }>;
 };
 
 export default function CloneRepositoryForm({
   className,
+  inputPlaceholder,
   repoUrlInput: RepoUrlInput,
   submitButton: SubmitButton,
 }: CloneRepositoryFormProps) {
@@ -28,7 +31,7 @@ export default function CloneRepositoryForm({
 
   return (
     <div className={`flex items-center ${className ? className : ""}`}>
-      <RepoUrlInput onChange={onChange} />{" "}
+      <RepoUrlInput onChange={onChange} placeholder={inputPlaceholder} />{" "}
       <SubmitButton
         onClick={async () => await cloneRepo()}
         disabled={!repoUrl}

@@ -790,15 +790,15 @@ export default function SavedRepositories({
     [useCases],
   );
 
-  // if (!repositories) {
-  //   return;
-  // }
+  if (repositories.length === 0) {
+    return;
+  }
 
   return (
     <div className="flex flex-col">
       {label}
       <div className={`flex flex-col ${className ? className : ""}`}>
-        {testRepos.map((repo, index) => (
+        {repositories.map((repo, index) => (
           <span onClick={async () => await selectRepository(repo)}>
             <RepositoryOption repository={repo} tabIndex={index + 4} />
           </span>

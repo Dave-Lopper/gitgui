@@ -1,6 +1,7 @@
 import { forwardRef } from "react";
 
-import { useButton, ButtonProps } from "../../headless";
+import { useButton } from "../../headless";
+import type { ButtonProps } from "../../headless";
 
 import "./styles/Button.css";
 

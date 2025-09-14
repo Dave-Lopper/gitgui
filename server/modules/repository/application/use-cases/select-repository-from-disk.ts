@@ -27,7 +27,7 @@ export class SelectRepositoryFromDisk {
   async execute(
     window: BrowserWindow,
   ): Promise<ActionResponse<RepositorySelectionDto>> {
-    const result: any = dialog.showOpenDialog(window, {
+    const result: any = await dialog.showOpenDialog(window, {
       properties: ["openDirectory"],
       defaultPath: os.homedir(),
     });
@@ -70,7 +70,8 @@ export class SelectRepositoryFromDisk {
     const branches = dedupRefs(branchName, refs);
     const diff = await this.repoDiffService.execute(repositoryPath, window);
 
-    if (!(await this.store.exists(repository))) {
+    const repositoryExists = await this.store.exists(repository);
+    if (!repositoryExists) {
       await this.store.save(repository);
     }
     return {

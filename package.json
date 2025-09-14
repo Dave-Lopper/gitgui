@@ -6,7 +6,6 @@
   "main": "dist/server/commons/entrypoints/electron.js",
   "scripts": {
     "dev": "vite",
-    "build-client": "vite build",
     "electron": "tsc && env -i DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY PATH=$PATH HOME=$HOME NODE_ENV=development electron .",
     "start": "concurrently \"npm:dev\" \"npm:electron\"",
     "preview": "vite build && env -i DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY PATH=$PATH HOME=$HOME NODE_ENV=production electron ."

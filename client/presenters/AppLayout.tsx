@@ -1,9 +1,11 @@
-import { useContext, useMemo } from "react";
+import { useCallback, useContext, useEffect, useMemo } from "react";
 
+import { useCases } from "../bootstrap";
 import { UiSettingsContext } from "./contexts/ui-settings/context";
 import { Header, SplitPane } from "./headless";
 import {
   ModernRepositoryDropdown,
+  ModernRepositorySelectionMenu,
   ModernBranchDropdown,
   ModernSettingsMenu,
 } from "./themed/modern";
@@ -17,6 +19,14 @@ import {
 export default function AppLayout() {
   const { theme } = useContext(UiSettingsContext);
 
+  const startupCallback = useCallback(async () => {
+    await useCases.getSavedRepositories.execute();
+  }, []);
+
+  useEffect(() => {
+    startupCallback();
+  }, [startupCallback, theme]);
+
   const branchDropdown = useMemo(
     () =>
       theme === "MODERN" ? <ModernBranchDropdown /> : <RetroBranchDropdown />,
@@ -26,17 +36,14 @@ export default function AppLayout() {
   const repositoryDropdown = useMemo(
     () =>
       theme === "MODERN" ? (
-        <ModernRepositoryDropdown />
+        <ModernRepositoryDropdown
+          repoSelectionMenu={<ModernRepositorySelectionMenu />}
+        />
       ) : (
         <RetroRepositoryDropdown
           repoSelectionMenu={<RetroRepositorySelectionMenu />}
         />
       ),
-    [theme],
-  );
-
-  const repositorySelectionMenu = useMemo(
-    () => (theme === "MODERN" ? <></> : <RetroRepositorySelectionMenu />),
     [theme],
   );
 

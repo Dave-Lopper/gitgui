@@ -39,11 +39,12 @@ export default function RetroRepositoryDropdown({
   return (
     <HeadlessDropdown
       animate={false}
-      children={repoSelectionMenu}
       className="w-full"
       closeEvent="RepositorySelected"
       tabIndex={0}
       trigger={RetroRepositoryDropdownTrigger}
-    ></HeadlessDropdown>
+    >
+      {repoSelectionMenu}
+    </HeadlessDropdown>
   );
 }

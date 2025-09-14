@@ -1,7 +1,6 @@
 import { useCases } from "../../../bootstrap";
 import { Repository } from "../../../domain/repository";
 import {
-  DiskRepositorySelector,
   SavedRepositories,
   CloneRepositoryForm,
   useFocusable,
@@ -60,35 +59,27 @@ export default function RetroRepoSelectionMenu() {
         borderRight: "2px solid #404040",
         borderTop: "2px solid white",
       }}
-      className="font-retro flex h-full w-full flex-col items-center justify-between border-1 border-black py-8 text-black"
+      className="font-retro flex min-h-full w-full flex-col items-center justify-evenly border-1 border-black py-8 text-black"
     >
-      <div className="flex flex-col">
-        <SavedRepositories
-          label={
-            <p className="font-retro mb-4 text-black">Saved repositories</p>
-          }
-          repositoryOption={RepositoryOption}
-          className="retro-borders-in retro-scrollbar flex max-h-24 flex-col overflow-auto border-2 bg-white"
-        />
+      <SavedRepositories
+        label={<p className="font-retro mb-4 text-black">Saved repositories</p>}
+        repositoryOption={RepositoryOption}
+        className="retro-borders-in retro-scrollbar flex max-h-24 flex-col overflow-auto border-2 bg-white"
+      />
 
-        {/* <DiskRepositorySelector> */}
-        <RetroButton
-          className="my-18 h-12 px-4"
-          isActive={false}
-          sound
-          onClick={async () =>
-            await useCases.selectRepositoryFromDisk.execute()
-          }
-        >
-          Select from disk
-        </RetroButton>
-        {/* </DiskRepositorySelector> */}
+      <RetroButton
+        className="my-18 h-12 px-4"
+        isActive={false}
+        sound
+        onClick={async () => await useCases.selectRepositoryFromDisk.execute()}
+      >
+        Select from disk
+      </RetroButton>
 
-        <CloneRepositoryForm
-          repoUrlInput={TextInput}
-          submitButton={SubmitButton}
-        />
-      </div>
+      <CloneRepositoryForm
+        repoUrlInput={TextInput}
+        submitButton={SubmitButton}
+      />
     </div>
   );
 }

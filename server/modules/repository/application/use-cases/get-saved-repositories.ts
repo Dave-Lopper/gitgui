@@ -46,6 +46,7 @@ export class GetSavedRepositories {
       };
       repositories.push(repository);
     }
+    console.log({ repositories });
 
     return {
       success: true,
