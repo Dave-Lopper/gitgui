@@ -41,13 +41,6 @@ export function useSoundEffect(effect: SoundEffect) {
   }, [effect, theme]);
 
   const play = useCallback(() => {
-    console.log(
-      "PLAYING",
-      audioRef.current,
-      audioRef.current?.volume,
-      audioRef.current?.muted,
-      audioRef.current?.currentSrc,
-    );
     if (isSoundEnabled) {
       audioRef.current?.play();
     }

@@ -25,7 +25,7 @@ function ThemeDropdownTrigger({ isActive, isFocused }: DropdownTriggerProps) {
     <RetroButton
       isActive={isActive}
       ref={buttonRef}
-      className="w-full px-6 h-12"
+      className="w-full px-6 h-13"
       tabIndex={2}
     >
       Theme ({theme.toLowerCase()})
@@ -48,7 +48,7 @@ export default function RetroSettingsMenu() {
 
   return (
     <div
-      className="flex h-12 justify-end"
+      className="flex h-13 justify-end"
       style={{ borderBottom: "1px solid #404040" }}
     >
       <HeadlessSelectDropdown

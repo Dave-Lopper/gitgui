@@ -1,4 +1,4 @@
-import { ComponentType, KeyboardEvent } from "react";
+import { ComponentType, KeyboardEvent, useRef } from "react";
 
 import { useSelectDropdown } from "./hooks/select-dropdown";
 
@@ -9,6 +9,7 @@ export type SelectDropdownProps<TriggerExtraProps = {}> = {
   children: SelectableChild[];
   className?: string;
   handleSelect: (index: number | null) => void;
+  selectClassName?: string;
   tabIndex?: number;
   trigger: ComponentType<DropdownTriggerProps & TriggerExtraProps>;
 } & TriggerExtraProps;
@@ -18,6 +19,7 @@ export default function SelectDropdown<TriggerExtraProps = {}>({
   children,
   className,
   handleSelect,
+  selectClassName,
   tabIndex,
   trigger: Trigger,
   ...triggerExtraProps
@@ -60,10 +62,13 @@ export default function SelectDropdown<TriggerExtraProps = {}>({
       </div>
 
       <div
+        className={`${selectClassName ? selectClassName : ""}`}
         style={{
           transition: animate ? "transform 0.5s ease-in-out" : "unset",
           transform: `scaleY(${isExpanded ? 1 : 0})`,
           transformOrigin: "top",
+          height: `calc(100vh - ${triggerRef.current?.offsetHeight}px)`,
+          overflow: "auto",
         }}
         role="menu"
       >

@@ -29,9 +29,14 @@ function RetroBranchDropdownTrigger({
     <RetroButton
       isActive={isActive}
       ref={buttonRef}
-      className="h-12 w-full px-8 py-2"
+      className="flex h-13 w-full flex-col justify-center px-8"
     >
-      {checkedOutBranchName}
+      <span className="w-full text-left text-sm" style={{ lineHeight: "1" }}>
+        Current branch
+      </span>
+      <span className="text-md/1 w-full text-left font-bold">
+        {checkedOutBranchName}
+      </span>
     </RetroButton>
   );
 }
@@ -40,10 +45,11 @@ const options = ["branch1", "branch2", "branch3"];
 
 export default function RetroBranchDropdown() {
   const { repositorySelection } = useRepositorySelection();
+  console.log({ repositorySelection });
 
   if (!repositorySelection) {
     return (
-      <div className="h-12" style={{ borderBottom: "2px solid white" }}></div>
+      <div className="h-13" style={{ borderBottom: "2px solid white" }}></div>
     );
   }
 
@@ -51,15 +57,18 @@ export default function RetroBranchDropdown() {
     <HeadlessSelectDropdown
       animate={false}
       handleSelect={(val) => console.log(val, "selected")}
-      children={options.map((option) => (isSelected: boolean) => (
-        <div
-          key={option}
-          className={`${isSelected ? "bg-retro-active text-white" : ""} hover:bg-retro-pressed bg-retro cursor-pointer text-black`}
-        >
-          {option}
-        </div>
-      ))}
+      children={repositorySelection.branches.map((branch) => {
+        return (isSelected: boolean) => (
+          <div
+            key={branch.name}
+            className={`${isSelected || branch.name === repositorySelection.repository.checkedOutBranch ? "bg-retro-active text-white" : "bg-white text-black"} hover:bg-retro-pressed cursor-pointer`}
+          >
+            {branch.name}
+          </div>
+        );
+      })}
       className="w-full"
+      selectClassName="retro-scrollbar bg-white"
       tabIndex={2}
       trigger={RetroBranchDropdownTrigger}
       checkedOutBranchName={repositorySelection.repository.checkedOutBranch}

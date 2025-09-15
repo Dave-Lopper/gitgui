@@ -29,11 +29,20 @@ function RetroRepositoryDropdownTrigger({
     <RetroButton
       isActive={isActive}
       ref={buttonRef}
-      className="h-12 w-full px-8 py-2 font-bold"
+      className="flex h-13 w-full flex-col justify-center px-8"
     >
-      {repositorySelection
-        ? repositorySelection.repository.name
-        : "Select repository"}
+      {repositorySelection ? (
+        <>
+          <span className="w-full text-left text-sm" style={{ lineHeight: "1" }}>
+            Current repository
+          </span>
+          <span className="w-full text-left text-md/1 font-bold">
+            {repositorySelection.repository.name}
+          </span>
+        </>
+      ) : (
+        "Select repository"
+      )}
     </RetroButton>
   );
 }

@@ -9,10 +9,7 @@ export function useRepositorySelection() {
 
   useEventSubscription(
     "RepositorySelected",
-    (event) => {
-      console.log("Repo selected", event);
-      setRepositorySelection(event.payload);
-    },
+    (event) => setRepositorySelection(event.payload),
     [],
   );
   return { repositorySelection };
