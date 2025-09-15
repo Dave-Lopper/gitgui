@@ -1,19 +1,19 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
-import { eventBus } from "../../../bootstrap";
-import { RepositorySelectionDto } from "../../../dto/repo-selection";
 import {
   SelectDropdown as HeadlessSelectDropdown,
-  useSelectedRepository,
+  useRepositorySelection,
 } from "../../headless";
 import RetroButton from "./Button";
 import { DropdownTriggerProps } from "../../headless/SelectDropdown";
 
 function RetroBranchDropdownTrigger({
+  checkedOutBranchName,
   isActive,
   isFocused,
-}: DropdownTriggerProps) {
+}: DropdownTriggerProps & { checkedOutBranchName: string }) {
   const buttonRef = useRef<HTMLButtonElement>(null);
+
   useEffect(() => {
     if (!buttonRef.current) {
       return;
@@ -31,7 +31,7 @@ function RetroBranchDropdownTrigger({
       ref={buttonRef}
       className="h-12 w-full px-8 py-2"
     >
-      Select branch
+      {checkedOutBranchName}
     </RetroButton>
   );
 }
@@ -39,9 +39,9 @@ function RetroBranchDropdownTrigger({
 const options = ["branch1", "branch2", "branch3"];
 
 export default function RetroBranchDropdown() {
-  const { selectedRepository } = useSelectedRepository();
+  const { repositorySelection } = useRepositorySelection();
 
-  if (!selectedRepository) {
+  if (!repositorySelection) {
     return (
       <div className="h-12" style={{ borderBottom: "2px solid white" }}></div>
     );
@@ -62,6 +62,7 @@ export default function RetroBranchDropdown() {
       className="w-full"
       tabIndex={2}
       trigger={RetroBranchDropdownTrigger}
+      checkedOutBranchName={repositorySelection.repository.checkedOutBranch}
     ></HeadlessSelectDropdown>
   );
 }

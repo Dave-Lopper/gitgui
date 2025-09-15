@@ -1,4 +1,6 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
+import { Repository } from "../../domain/repository";
+import { useEventSubscription } from "../../infra/react-bus-helper";
 
 type HeaderProps = {
   branchDropdown: ReactNode;
@@ -11,6 +13,15 @@ export default function Header({
   repositoryDropdown,
   uiSettings,
 }: HeaderProps) {
+  const [selectedRepository, setSelectedRepository] =
+    useState<Repository | null>(null);
+
+  useEventSubscription(
+    "RepositorySelected",
+    (event) => setSelectedRepository(event.payload),
+    [],
+  );
+
   return (
     <header className="flex w-full">
       <div className="w-1/3">{repositoryDropdown}</div>

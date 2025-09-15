@@ -3,14 +3,21 @@ import { ReactNode } from "react";
 import { Dropdown as HeadlessDropdown } from "../../headless";
 import { DropdownTriggerProps } from "../../headless/SelectDropdown";
 import ModernDropdownTrigger from "./DropdownTrigger";
+import { useRepositorySelection } from "../../headless/hooks/repository-selection";
 
 function ModernRepositoryDropdownTrigger({
   isActive,
   isFocused,
 }: DropdownTriggerProps) {
+  const { repositorySelection } = useRepositorySelection();
+
   return (
     <ModernDropdownTrigger
-      copy="Select repository"
+      copy={
+        repositorySelection
+          ? repositorySelection.repository.name
+          : "Select repository"
+      }
       isActive={isActive}
       isFocused={isFocused}
     />

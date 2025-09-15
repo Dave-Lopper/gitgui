@@ -4,23 +4,24 @@ import { useSelectDropdown } from "./hooks/select-dropdown";
 
 type SelectableChild = (isSelected: boolean) => React.ReactNode;
 export type DropdownTriggerProps = { isActive: boolean; isFocused: boolean };
-export type SelectDropdownProps = {
+export type SelectDropdownProps<TriggerExtraProps = {}> = {
   animate: boolean;
   children: SelectableChild[];
   className?: string;
   handleSelect: (index: number | null) => void;
   tabIndex?: number;
-  trigger: ComponentType<DropdownTriggerProps>;
-};
+  trigger: ComponentType<DropdownTriggerProps & TriggerExtraProps>;
+} & TriggerExtraProps;
 
-export default function SelectDropdown({
+export default function SelectDropdown<TriggerExtraProps = {}>({
   animate,
   children,
   className,
   handleSelect,
   tabIndex,
   trigger: Trigger,
-}: SelectDropdownProps) {
+  ...triggerExtraProps
+}: SelectDropdownProps<TriggerExtraProps>) {
   const {
     collapse,
     isExpanded,
@@ -51,7 +52,11 @@ export default function SelectDropdown({
         aria-haspopup="true"
         aria-expanded={isExpanded}
       >
-        <Trigger isActive={isExpanded} isFocused={isFocused} />
+        <Trigger
+          isActive={isExpanded}
+          isFocused={isFocused}
+          {...(triggerExtraProps as TriggerExtraProps)}
+        />
       </div>
 
       <div

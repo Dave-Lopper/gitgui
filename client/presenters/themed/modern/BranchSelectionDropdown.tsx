@@ -1,14 +1,18 @@
 import {
   SelectDropdown as HeadlessSelectDropdown,
-  useSelectedRepository,
+  useRepositorySelection,
 } from "../../headless";
 import { DropdownTriggerProps } from "../../headless/SelectDropdown";
 import ModernDropdownTrigger from "./DropdownTrigger";
 
-function BranchDropdownTrigger({ isActive, isFocused }: DropdownTriggerProps) {
+function BranchDropdownTrigger({
+  isActive,
+  isFocused,
+  checkedOutBranchName,
+}: DropdownTriggerProps & { checkedOutBranchName: string }) {
   return (
     <ModernDropdownTrigger
-      copy="Select branch"
+      copy={checkedOutBranchName}
       isActive={isActive}
       isFocused={isFocused}
     />
@@ -18,9 +22,9 @@ function BranchDropdownTrigger({ isActive, isFocused }: DropdownTriggerProps) {
 const options = ["branch1", "branch2", "branch3"];
 
 export default function RetroBranchDropdown() {
-  const { selectedRepository } = useSelectedRepository();
+  const { repositorySelection } = useRepositorySelection();
 
-  if (!selectedRepository) {
+  if (!repositorySelection) {
     return (
       <div className="border-b-modern-dark-border bg-modern-dark-pri h-24 border-b-1 border-solid"></div>
     );
@@ -41,6 +45,7 @@ export default function RetroBranchDropdown() {
       className="w-full"
       tabIndex={2}
       trigger={BranchDropdownTrigger}
+      checkedOutBranchName={repositorySelection.repository.checkedOutBranch}
     ></HeadlessSelectDropdown>
   );
 }

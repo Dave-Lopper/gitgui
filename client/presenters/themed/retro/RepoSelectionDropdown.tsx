@@ -1,6 +1,9 @@
 import { ReactNode, useEffect, useRef } from "react";
 
-import { Dropdown as HeadlessDropdown } from "../../headless";
+import {
+  Dropdown as HeadlessDropdown,
+  useRepositorySelection,
+} from "../../headless";
 import RetroButton from "./Button";
 import { DropdownTriggerProps } from "../../headless/SelectDropdown";
 
@@ -8,6 +11,8 @@ function RetroRepositoryDropdownTrigger({
   isActive,
   isFocused,
 }: DropdownTriggerProps) {
+  const { repositorySelection } = useRepositorySelection();
+
   const buttonRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     if (!buttonRef.current) {
@@ -26,7 +31,9 @@ function RetroRepositoryDropdownTrigger({
       ref={buttonRef}
       className="h-12 w-full px-8 py-2 font-bold"
     >
-      Select repository
+      {repositorySelection
+        ? repositorySelection.repository.name
+        : "Select repository"}
     </RetroButton>
   );
 }

@@ -82,7 +82,7 @@ export default function ModernRepositorySelectionMenu() {
         sound
         onClick={async () => await useCases.selectRepositoryFromDisk.execute()}
       >
-        <span className="mr-4">Select from disk</span>{" "}
+        <span className="mr-2">Select from disk</span>{" "}
         <FolderIcon size={22} color="white" />
       </ModernButton>
 

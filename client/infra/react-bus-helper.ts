@@ -6,7 +6,7 @@ import { eventBus } from "../bootstrap";
 export function useEventSubscription(
   event: EventType | EventType[],
   subscriber: Subscriber,
-  dependencies: any[],
+  dependencies: any[] | undefined,
 ) {
   useEffect(() => {
     if (Array.isArray(event)) {
