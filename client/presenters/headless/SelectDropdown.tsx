@@ -40,6 +40,8 @@ export default function SelectDropdown<TriggerExtraProps = {}>({
   const handleTriggerKeyDown = (e: KeyboardEvent<HTMLElement>) =>
     handleSelect(handleKeyDown(e, children.length));
 
+  console.log({ animate });
+
   return (
     <div
       ref={dropdownRef}

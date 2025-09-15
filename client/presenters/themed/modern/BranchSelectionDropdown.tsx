@@ -12,7 +12,16 @@ function BranchDropdownTrigger({
 }: DropdownTriggerProps & { checkedOutBranchName: string }) {
   return (
     <ModernDropdownTrigger
-      copy={checkedOutBranchName}
+      copy={
+        <div className="flex flex-col justify-center mr-4">
+          <span className="text-left text-sm text-neutral-500">
+            Current branch
+          </span>
+          <span className="text-md text-left text-white">
+            {checkedOutBranchName}
+          </span>
+        </div>
+      }
       isActive={isActive}
       isFocused={isFocused}
     />
@@ -32,17 +41,20 @@ export default function RetroBranchDropdown() {
 
   return (
     <HeadlessSelectDropdown
-      animate={false}
+      animate
       handleSelect={(val) => console.log(val, "selected")}
-      children={options.map((option) => (isSelected: boolean) => (
-        <div
-          key={option}
-          className={`bg-modern-sec cursor-pointer text-white hover:underline`}
-        >
-          {option}
-        </div>
-      ))}
+      children={repositorySelection.branches.map(
+        (branch) => (isSelected: boolean) => (
+          <div
+            key={branch.name}
+            className={`${isSelected || branch.name === repositorySelection.repository.checkedOutBranch ? "bg-modern-dark-qua" : "bg-modern-dark-ter hover:bg-modern-dark-qua"} cursor-pointer py-2 text-white transition-colors`}
+          >
+            {branch.name}
+          </div>
+        ),
+      )}
       className="w-full"
+      selectClassName="modern-scrollbar bg-modern-dark-ter"
       tabIndex={2}
       trigger={BranchDropdownTrigger}
       checkedOutBranchName={repositorySelection.repository.checkedOutBranch}

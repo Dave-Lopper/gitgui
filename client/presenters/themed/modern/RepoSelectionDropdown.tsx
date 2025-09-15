@@ -14,9 +14,18 @@ function ModernRepositoryDropdownTrigger({
   return (
     <ModernDropdownTrigger
       copy={
-        repositorySelection
-          ? repositorySelection.repository.name
-          : "Select repository"
+        repositorySelection ? (
+          <div className="flex flex-col justify-center">
+            <span className="text-left text-sm text-neutral-500">
+              Current repository
+            </span>
+            <span className="text-md text-left text-white">
+              {repositorySelection.repository.name}
+            </span>
+          </div>
+        ) : (
+          "Select repository"
+        )
       }
       isActive={isActive}
       isFocused={isFocused}
