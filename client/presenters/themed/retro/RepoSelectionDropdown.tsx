@@ -55,7 +55,7 @@ export default function RetroRepositoryDropdown({
   return (
     <HeadlessDropdown
       animate={false}
-      className="w-full"
+      className="w-full max-h-13 h-13"
       closeEvent="RepositorySelected"
       tabIndex={0}
       trigger={RetroRepositoryDropdownTrigger}

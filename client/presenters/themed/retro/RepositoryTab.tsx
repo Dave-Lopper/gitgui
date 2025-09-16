@@ -7,7 +7,7 @@ export default function RetroRepositoryTab({
   onClick,
 }: RepoTabProps) {
   return (
-    <RetroButton className="w-1/2" isActive={active} onClick={onClick}>
+    <RetroButton className="w-1/2 z-0" isActive={active} onClick={onClick}>
       {copy}
     </RetroButton>
   );

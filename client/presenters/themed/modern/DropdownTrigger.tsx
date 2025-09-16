@@ -11,7 +11,7 @@ export default function ModernDropdownTrigger({
   return (
     <div
       role="button"
-      className={`font-modern px-12 bg-modern-dark-pri border-modern-dark-border flex h-24 w-full cursor-pointer items-center justify-between border-1 border-b-1 font-bold text-white focus:outline-none ${isFocused ? "outline-2 outline-offset-0 outline-sky-500 outline-solid" : ""}`}
+      className={`font-modern bg-modern-dark-pri border-modern-dark-border flex h-24 max-h-24 w-full cursor-pointer items-center justify-between border-1 border-b-1 px-12 font-bold text-white focus:outline-none ${isFocused ? "outline-2 outline-offset-0 outline-sky-500 outline-solid" : ""}`}
     >
       {copy}
       <span

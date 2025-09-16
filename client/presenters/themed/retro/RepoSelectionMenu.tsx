@@ -59,7 +59,7 @@ export default function RetroRepoSelectionMenu() {
         borderRight: "2px solid #404040",
         borderTop: "2px solid white",
       }}
-      className="font-retro flex min-h-full w-full flex-col items-center justify-evenly border-1 border-black py-8 text-black"
+      className="bg-retro font-retro flex min-h-full w-full flex-col items-center justify-evenly border-1 border-black py-8 text-black"
     >
       <SavedRepositories
         label={<p className="font-retro mb-4 text-black">Saved repositories</p>}

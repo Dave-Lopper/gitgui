@@ -6,8 +6,10 @@ import { Header, SplitPane, useRepositorySelection } from "./headless";
 import {
   ModernRepositoryDropdown,
   ModernRepositorySelectionMenu,
+  ModernRepositoryTab,
   ModernBranchDropdown,
   ModernSettingsMenu,
+  ModernDivider,
 } from "./themed/modern";
 import {
   RetroRepositoryDropdown,
@@ -18,7 +20,7 @@ import {
 } from "./themed/retro";
 import { RepoTabsContextProvider } from "./contexts/repo-tabs";
 import RepositoryTabs from "./headless/RepositoryTabs";
-import RetroRepositoryTab from "./themed/retro/RetroRepositoryTab";
+import RetroRepositoryTab from "./themed/retro/RepositoryTab";
 
 export default function AppLayout() {
   const { theme } = useContext(UiSettingsContext);
@@ -38,6 +40,11 @@ export default function AppLayout() {
     [theme],
   );
 
+  const divider = useMemo(
+    () => (theme === "MODERN" ? <ModernDivider /> : <RetroDivider />),
+    [theme],
+  );
+
   const repositoryDropdown = useMemo(
     () =>
       theme === "MODERN" ? (
@@ -52,6 +59,11 @@ export default function AppLayout() {
     [theme],
   );
 
+  const repositoryTab = useMemo(
+    () => (theme === "MODERN" ? ModernRepositoryTab : RetroRepositoryTab),
+    [theme],
+  );
+
   const settingsMenu = useMemo(
     () => (theme === "MODERN" ? <ModernSettingsMenu /> : <RetroSettingsMenu />),
     [theme],
@@ -60,7 +72,7 @@ export default function AppLayout() {
   return (
     <div className="bg-retro flex h-full max-h-full w-full max-w-full flex-col items-center justify-start">
       <Header
-        className={theme === "RETRO" ? "max-h-13" : ""}
+        className={theme === "RETRO" ? "max-h-13" : "max-h-24"}
         branchDropdown={branchDropdown}
         repositoryDropdown={repositoryDropdown}
         uiSettings={settingsMenu}
@@ -71,11 +83,11 @@ export default function AppLayout() {
           <SplitPane
             leftPane={
               <div className="flex flex-col">
-                <RepositoryTabs tab={RetroRepositoryTab} />
+                <RepositoryTabs tab={repositoryTab} />
               </div>
             }
             rightPane={<>Some right pane</>}
-            divider={<RetroDivider />}
+            divider={divider}
           />
         </RepoTabsContextProvider>
       )}

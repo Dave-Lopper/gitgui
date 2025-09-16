@@ -15,7 +15,7 @@ export default function RepositoryTabs({
   const { currentTab, setCurrentTab } = useContext(RepoTabsContext);
 
   return (
-    <div className="flex w-full items-center justify-start">
+    <div className="flex w-full items-center justify-start z-0">
       <Tab
         active={currentTab === "DIFF"}
         copy="Diff"

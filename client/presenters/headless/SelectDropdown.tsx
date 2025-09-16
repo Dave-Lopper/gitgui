@@ -45,7 +45,7 @@ export default function SelectDropdown<TriggerExtraProps = {}>({
   return (
     <div
       ref={dropdownRef}
-      className={`relative inline-block max-h-full w-full ${className ? className : ""}`}
+      className={`relative max-h-full w-full ${className ? className : ""}`}
     >
       <div
         ref={triggerRef}
@@ -71,6 +71,8 @@ export default function SelectDropdown<TriggerExtraProps = {}>({
           transformOrigin: "top",
           height: `calc(100vh - ${triggerRef.current?.offsetHeight}px)`,
           maxHeight: `calc(100vh - ${triggerRef.current?.offsetHeight}px)`,
+          position: "relative",
+          zIndex: "999",
           overflow: "auto",
         }}
         role="menu"

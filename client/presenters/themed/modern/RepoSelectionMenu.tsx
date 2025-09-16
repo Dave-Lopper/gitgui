@@ -67,7 +67,7 @@ function RepositoryOption({
 
 export default function ModernRepositorySelectionMenu() {
   return (
-    <div className="font-modern bg-modern-dark-sec flex h-full w-full flex-col items-center justify-between text-white">
+    <div className="font-modern bg-modern-dark-sec flex h-full min-h-full w-full flex-col items-center justify-between text-white">
       <SavedRepositories
         className="modern-scrollbar max-h-48 overflow-auto flex flex-col p-4"
         label={

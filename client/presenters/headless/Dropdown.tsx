@@ -38,10 +38,7 @@ export default function Dropdown({
   }
 
   return (
-    <div
-      ref={dropdownRef}
-      className={`relative inline-block ${className} focus:outline-none`}
-    >
+    <div ref={dropdownRef} className={`${className} focus:outline-none`}>
       <div
         ref={triggerRef}
         onClick={toggle}
@@ -57,13 +54,14 @@ export default function Dropdown({
         <Trigger isActive={isExpanded} isFocused={isFocused} />
       </div>
       <div
-        className="absolute flex w-full flex-col"
+        className="flex w-full flex-col"
         style={{
           transition: animate ? "transform 0.5s ease-in-out" : "unset",
           transform: `scaleY(${isExpanded ? 1 : 0})`,
           transformOrigin: "top",
-          top: `${triggerRef.current?.offsetHeight}px`,
+          position: "relative",
           height: `calc(100vh - ${triggerRef.current?.offsetHeight}px)`,
+          zIndex: "99",
         }}
         role="menu"
       >
