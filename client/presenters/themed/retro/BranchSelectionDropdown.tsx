@@ -67,7 +67,6 @@ export default function RetroBranchDropdown() {
           </div>
         );
       })}
-      className="w-full"
       selectClassName="retro-scrollbar bg-white"
       tabIndex={2}
       trigger={RetroBranchDropdownTrigger}

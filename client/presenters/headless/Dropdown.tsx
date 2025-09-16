@@ -40,7 +40,7 @@ export default function Dropdown({
   return (
     <div
       ref={dropdownRef}
-      className={`relative inline-block h-screen ${className} focus:outline-none`}
+      className={`relative inline-block ${className} focus:outline-none`}
     >
       <div
         ref={triggerRef}

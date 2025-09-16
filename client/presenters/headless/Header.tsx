@@ -4,12 +4,14 @@ import { useEventSubscription } from "../../infra/react-bus-helper";
 
 type HeaderProps = {
   branchDropdown: ReactNode;
+  className?: string;
   repositoryDropdown: ReactNode;
   uiSettings: ReactNode;
 };
 
 export default function Header({
   branchDropdown,
+  className,
   repositoryDropdown,
   uiSettings,
 }: HeaderProps) {
@@ -23,10 +25,10 @@ export default function Header({
   );
 
   return (
-    <header className="flex w-full">
-      <div className="w-1/3">{repositoryDropdown}</div>
-      <div className="w-1/3">{branchDropdown}</div>
-      <div className="w-1/3">{uiSettings}</div>
+    <header className={`flex w-full ${className ? className : ""}`}>
+      <div className="max-h-full w-1/3">{repositoryDropdown}</div>
+      <div className="max-h-full w-1/3">{branchDropdown}</div>
+      <div className="max-h-full w-1/3">{uiSettings}</div>
     </header>
   );
 }

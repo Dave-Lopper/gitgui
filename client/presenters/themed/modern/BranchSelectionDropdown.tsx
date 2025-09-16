@@ -53,7 +53,6 @@ export default function RetroBranchDropdown() {
           </div>
         ),
       )}
-      className="w-full"
       selectClassName="modern-scrollbar bg-modern-dark-ter"
       tabIndex={2}
       trigger={BranchDropdownTrigger}
