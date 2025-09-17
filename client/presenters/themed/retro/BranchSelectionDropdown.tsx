@@ -61,13 +61,13 @@ export default function RetroBranchDropdown() {
         return (isSelected: boolean) => (
           <div
             key={branch.name}
-            className={`${isSelected || branch.name === repositorySelection.repository.checkedOutBranch ? "bg-retro-active text-white" : "bg-white text-black"} hover:bg-retro-pressed cursor-pointer`}
+            className={`${isSelected || branch.name === repositorySelection.repository.checkedOutBranch ? "bg-retro-active text-white" : "bg-white text-black"} hover:bg-retro-pressed cursor-pointer border-r border-l border-black border-solid`}
           >
             {branch.name}
           </div>
         );
       })}
-      selectClassName="retro-scrollbar bg-white"
+      selectClassName="retro-scrollbar bg-white border-2 border-retro border-solid outline-1 outline-black outline-t-0 border-t-0"
       tabIndex={2}
       trigger={RetroBranchDropdownTrigger}
       checkedOutBranchName={repositorySelection.repository.checkedOutBranch}

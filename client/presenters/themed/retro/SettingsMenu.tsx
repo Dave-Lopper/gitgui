@@ -25,7 +25,7 @@ function ThemeDropdownTrigger({ isActive, isFocused }: DropdownTriggerProps) {
     <RetroButton
       isActive={isActive}
       ref={buttonRef}
-      className="w-full px-6 h-13"
+      className="h-13 w-full px-6"
       tabIndex={2}
     >
       Theme ({theme.toLowerCase()})
@@ -57,12 +57,13 @@ export default function RetroSettingsMenu() {
         children={THEMES.map((option) => (isSelected: boolean) => (
           <div
             key={option}
-            className={`${isSelected || theme === option ? "bg-retro-active text-white" : "bg-white"} hover:bg-retro-pressed flex h-8 cursor-pointer items-center justify-center text-black`}
+            className={`${isSelected || theme === option ? "bg-retro-active text-white" : "bg-white"} hover:bg-retro-pressed flex h-8 cursor-pointer items-center justify-center border-r border-l border-solid border-black text-black`}
           >
             {option.charAt(0) + option.slice(1).toLowerCase()}
           </div>
         ))}
         className="w-full"
+        selectClassName="border-2 border-retro border-solid outline-1 outline-black outline-t-0 border-t-0"
         trigger={ThemeDropdownTrigger}
       ></HeadlessSelectDropdown>
       <RetroButton

@@ -40,8 +40,6 @@ export default function SelectDropdown<TriggerExtraProps = {}>({
   const handleTriggerKeyDown = (e: KeyboardEvent<HTMLElement>) =>
     handleSelect(handleKeyDown(e, children.length));
 
-  console.log({ animate });
-
   return (
     <div
       ref={dropdownRef}
@@ -69,7 +67,6 @@ export default function SelectDropdown<TriggerExtraProps = {}>({
           transition: animate ? "transform 0.5s ease-in-out" : "unset",
           transform: `scaleY(${isExpanded ? 1 : 0})`,
           transformOrigin: "top",
-          height: `calc(100vh - ${triggerRef.current?.offsetHeight}px)`,
           maxHeight: `calc(100vh - ${triggerRef.current?.offsetHeight}px)`,
           position: "relative",
           zIndex: "999",

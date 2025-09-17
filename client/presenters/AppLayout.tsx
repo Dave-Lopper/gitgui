@@ -2,11 +2,17 @@ import { useCallback, useContext, useEffect, useMemo } from "react";
 
 import { useCases } from "../bootstrap";
 import { UiSettingsContext } from "./contexts/ui-settings/context";
-import { Header, SplitPane, useRepositorySelection } from "./headless";
+import {
+  Header,
+  SplitPane,
+  useRepositorySelection,
+  ModifiedFilesCounter,
+} from "./headless";
 import {
   ModernRepositoryDropdown,
   ModernRepositorySelectionMenu,
   ModernRepositoryTab,
+  ModernModifiedFilesCounter,
   ModernBranchDropdown,
   ModernSettingsMenu,
   ModernDivider,
@@ -15,15 +21,17 @@ import {
   RetroRepositoryDropdown,
   RetroDivider,
   RetroBranchDropdown,
+  RetroModifiedFilesCounter,
   RetroSettingsMenu,
   RetroRepositorySelectionMenu,
 } from "./themed/retro";
-import { RepoTabsContextProvider } from "./contexts/repo-tabs";
+import { RepoTabsContext } from "./contexts/repo-tabs";
 import RepositoryTabs from "./headless/RepositoryTabs";
 import RetroRepositoryTab from "./themed/retro/RepositoryTab";
 
 export default function AppLayout() {
   const { theme } = useContext(UiSettingsContext);
+  const { currentTab } = useContext(RepoTabsContext);
   const { repositorySelection } = useRepositorySelection();
 
   const startupCallback = useCallback(async () => {
@@ -42,6 +50,14 @@ export default function AppLayout() {
 
   const divider = useMemo(
     () => (theme === "MODERN" ? <ModernDivider /> : <RetroDivider />),
+    [theme],
+  );
+
+  const modifiedFilesCounter = useMemo(
+    () =>
+      theme === "MODERN"
+        ? ModernModifiedFilesCounter
+        : RetroModifiedFilesCounter,
     [theme],
   );
 
@@ -79,17 +95,22 @@ export default function AppLayout() {
       />
 
       {repositorySelection && (
-        <RepoTabsContextProvider>
-          <SplitPane
-            leftPane={
-              <div className="flex flex-col">
-                <RepositoryTabs tab={repositoryTab} />
-              </div>
-            }
-            rightPane={<>Some right pane</>}
-            divider={divider}
-          />
-        </RepoTabsContextProvider>
+        <SplitPane
+          leftPane={
+            <div className="flex flex-col">
+              <RepositoryTabs tab={repositoryTab} />
+              {currentTab === "DIFF" ? (
+                <div className="flex flex-col">
+                  <ModifiedFilesCounter counter={modifiedFilesCounter} />
+                </div>
+              ) : (
+                <>HISTORY</>
+              )}
+            </div>
+          }
+          rightPane={<>Some right pane</>}
+          divider={divider}
+        />
       )}
     </div>
   );

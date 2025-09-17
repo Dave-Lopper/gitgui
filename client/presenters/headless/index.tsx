@@ -1,6 +1,7 @@
 export { default as CloneRepositoryForm } from "./CloneRepositoryForm";
 export { default as Dropdown } from "./Dropdown";
 export type { DropdownProps } from "./Dropdown";
+export { default as ModifiedFilesCounter } from "./ModifiedFilesCounter";
 export { default as Header } from "./Header";
 export { default as SavedRepositories } from "./SavedRepositories";
 export { default as SelectDropdown } from "./SelectDropdown";
