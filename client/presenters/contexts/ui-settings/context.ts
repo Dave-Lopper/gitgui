@@ -11,7 +11,7 @@ export type UiSettings = {
 };
 
 export const defaultSettings = {
-  theme: "RETRO",
+  theme: "MODERN",
   isSoundEnabled: true,
 } as const;
 

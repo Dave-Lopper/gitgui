@@ -7,6 +7,7 @@ import {
   SplitPane,
   useRepositorySelection,
   ModifiedFilesCounter,
+  ModifiedFilesList,
 } from "./headless";
 import {
   ModernRepositoryDropdown,
@@ -16,9 +17,11 @@ import {
   ModernBranchDropdown,
   ModernSettingsMenu,
   ModernDivider,
+  ModernDiffFile,
 } from "./themed/modern";
 import {
   RetroRepositoryDropdown,
+  RetroDiffFile,
   RetroDivider,
   RetroBranchDropdown,
   RetroModifiedFilesCounter,
@@ -48,6 +51,11 @@ export default function AppLayout() {
     [theme],
   );
 
+  const diffFile = useMemo(
+    () => (theme === "MODERN" ? ModernDiffFile : RetroDiffFile),
+    [theme, repositorySelection],
+  );
+
   const divider = useMemo(
     () => (theme === "MODERN" ? <ModernDivider /> : <RetroDivider />),
     [theme],
@@ -58,7 +66,7 @@ export default function AppLayout() {
       theme === "MODERN"
         ? ModernModifiedFilesCounter
         : RetroModifiedFilesCounter,
-    [theme],
+    [theme, repositorySelection],
   );
 
   const repositoryDropdown = useMemo(
@@ -97,17 +105,21 @@ export default function AppLayout() {
       {repositorySelection && (
         <SplitPane
           leftPane={
-            <div className="flex flex-col">
+            <div
+              className={`${theme === "MODERN" ? "bg-modern-dark-ter" : "bg-retro-desktop"} flex h-full flex-col`}
+            >
               <RepositoryTabs tab={repositoryTab} />
               {currentTab === "DIFF" ? (
                 <div className="flex flex-col">
                   <ModifiedFilesCounter counter={modifiedFilesCounter} />
+                  <ModifiedFilesList diffFile={diffFile} />
                 </div>
               ) : (
                 <>HISTORY</>
               )}
             </div>
           }
+          leftPaneClassName="bg-red h-full"
           rightPane={<>Some right pane</>}
           divider={divider}
         />

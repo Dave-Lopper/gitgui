@@ -2,7 +2,7 @@ import { ComponentType, useState } from "react";
 
 import { useEventSubscription } from "../../infra/react-bus-helper";
 
-export default function RetroModifiedFilesCounter({
+export default function ModifiedFilesCounter({
   counter: Counter,
 }: {
   counter: ComponentType<{ count: number }>;
@@ -11,7 +11,10 @@ export default function RetroModifiedFilesCounter({
 
   useEventSubscription(
     "RepositorySelected",
-    (event) => setFileCount(event.payload.diff.length || 0),
+    (event) => {
+      console.log({ event });
+      setFileCount(event.payload.diff.length || 0);
+    },
     [],
   );
 

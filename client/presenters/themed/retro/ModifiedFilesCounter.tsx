@@ -3,5 +3,9 @@ export default function RetroModifiedFilesCounter({
 }: {
   count: number;
 }) {
-  return <div className="font-retro text-white bg-retro-active py-1 text-left pl-2">{count} Files modified</div>;
+  return (
+    <div className="font-retro bg-retro border-b-2 border-b-[#404040] py-1 pl-2 text-left text-black">
+      {count} Files modified
+    </div>
+  );
 }

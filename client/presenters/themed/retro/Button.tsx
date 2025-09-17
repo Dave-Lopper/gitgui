@@ -28,7 +28,7 @@ export default forwardRef<
 
     return (
       <button
-        className={`font-retro retro-button ${disabled ? "bg-retro-pressed cursor-not-allowed text-neutral-500" : "bg-retro-menu cursor-pointer text-black"} border-2 ${className ? className : ""} ${isPressed || isActive ? "pressed" : ""}`}
+        className={`font-retro retro-button ${disabled ? "bg-retro-pressed cursor-not-allowed text-neutral-500" : "bg-retro cursor-pointer text-black"} border-2 ${className ? className : ""} ${isPressed || isActive ? "pressed" : ""}`}
         onKeyDown={handleKeyDown}
         onKeyUp={handleKeyUp}
         onMouseDown={handleMouseDown}
