@@ -1,5 +1,6 @@
 import { IGitService } from "../application/i-git-service";
 import { Commit } from "../domain/commit";
+import { CurrentDiffFile, DiffFileStatus } from "../domain/diff";
 import { RepositorySelectionDto } from "../dto/repo-selection";
 
 export class GitService implements IGitService {
@@ -35,6 +36,10 @@ export class GitService implements IGitService {
     return await window.electronAPI.getHistory(page, pageSize, repositoryPath);
   }
 
+  async refreshRepoDiff(repositoryPath: string): Promise<CurrentDiffFile[]> {
+    return await window.electronAPI.refreshRepoDiff(repositoryPath);
+  }
+
   async selectRepoFromDisk(): Promise<RepositorySelectionDto> {
     const result = await window.electronAPI.selectRepositoryFromDisk();
     if (!result.success) {
@@ -52,5 +57,12 @@ export class GitService implements IGitService {
       throw new Error(result.message);
     }
     return result.data;
+  }
+
+  async toggleFileStaged(
+    repositoryPath: string,
+    filePath: string,
+  ): Promise<void> {
+    await window.electronAPI.toggleFileStaged(repositoryPath, filePath);
   }
 }

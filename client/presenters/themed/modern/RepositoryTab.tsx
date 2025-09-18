@@ -8,7 +8,7 @@ export default function ModernRepositoryTabs({
 }: RepoTabProps) {
   return (
     <div
-      className={`${active ? "bg-modern-dark-qua" : "bg-modern-dark-ter hover:bg-modern-dark-qua cursor-pointer transition-colors"} font-modern w-full ${isLast ? "" : "border-r"} border-b border-neutral-400 py-4 text-white`}
+      className={`${active ? "bg-modern-dark-tri" : "bg-modern-dark-sec hover:bg-modern-dark-tri cursor-pointer transition-colors"} font-modern w-full ${isLast ? "" : "border-r"} border-b border-modern-dark-border py-4 text-white`}
       onClick={onClick}
     >
       {copy}

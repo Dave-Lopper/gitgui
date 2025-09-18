@@ -4,10 +4,12 @@ import { fileURLToPath } from "url";
 import { app, BrowserWindow, ipcMain } from "electron";
 
 import { bootstrap as commitBootstrap } from "../../modules/commit/bootstrap.js";
+import { bootstrap as diffBootstrap } from "../../modules/diff/bootstrap.js";
 import { bootstrap as repositoryBootstrap } from "../../modules/repository/bootstrap.js";
 
 let window: Electron.BrowserWindow;
 let commitUseCases: ReturnType<typeof commitBootstrap>;
+let diffUseCases: ReturnType<typeof diffBootstrap>;
 let repositoryUseCases: Awaited<ReturnType<typeof repositoryBootstrap>>;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,6 +35,7 @@ async function createWindow() {
 
   repositoryUseCases = await repositoryBootstrap();
   commitUseCases = commitBootstrap();
+  diffUseCases = diffBootstrap();
 
   ipcMain.handle("repositories:clone", async (event, message) => {
     const res = await repositoryUseCases.cloneRepository.execute(
@@ -74,15 +77,31 @@ async function createWindow() {
 
   ipcMain.handle("commits:getHistory", async (event, message) => {
     const parsedMessage = JSON.parse(message);
-    await commitUseCases.getHistory.execute(
+    const results = await commitUseCases.getHistory.execute(
       parsedMessage.page,
       parsedMessage.pageSize,
       parsedMessage.repositoryPath,
       window,
     );
+    return results;
+  });
+
+  ipcMain.handle(
+    "diff:refresh",
+    async (event, message) =>
+      await diffUseCases.refreshRepoDiff.execute(message, window),
+  );
+
+  ipcMain.handle("diff:toggleFileStaged", async (event, message) => {
+    const parsedMessage = JSON.parse(message);
+    await diffUseCases.toggleFileStaged.execute(
+      parsedMessage.repositoryPath,
+      parsedMessage.filePath,
+      window,
+    );
   });
 }
-// app.commandLine.appendSwitch("no-sandbox");
+
 app.commandLine.appendSwitch("disable-features", "AudioServiceOutOfProcess");
 app.commandLine.appendSwitch("autoplay-policy", "no-user-gesture-required");
 app.whenReady().then(createWindow);

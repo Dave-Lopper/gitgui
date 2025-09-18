@@ -27,4 +27,28 @@ export class DiffCliGitRunner extends GitCliRunner implements DiffGitRunner {
     });
     return lines;
   }
+
+  async getStagedFileByName(
+    repositoryPath: string,
+    filePath: string,
+  ): Promise<string[]> {
+    const lines = await this.safeRun(
+      "git",
+      ["--no-pager", "diff", "--cached", "--name-only", "--", filePath],
+      { trimOutput: false, cwd: repositoryPath },
+    );
+    return lines;
+  }
+
+  async stageFile(repositoryPath: string, filePath: string): Promise<void> {
+    await this.safeRun("git", ["add", filePath], {
+      cwd: repositoryPath,
+    });
+  }
+
+  async unstageFile(repositoryPath: string, filePath: string): Promise<void> {
+    await this.safeRun("git", ["restore", "--cached", filePath], {
+      cwd: repositoryPath,
+    });
+  }
 }

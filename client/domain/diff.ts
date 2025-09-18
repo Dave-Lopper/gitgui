@@ -31,6 +31,23 @@ export type CurrentDiffFile = {
   status: DiffFileStatus;
   displayPaths: string[];
   hunks: DiffHunk[];
+  staged: boolean;
 };
+
+export function getFilePath(file: CurrentDiffFile): string {
+  if (["ADDED", "MODIFIED", "MOVED"].includes(file.status)) {
+    if (!file.newPath) {
+      throw new Error(
+        "Unexepctedly missing newPath on an ADDED/MODIFIED/MOVED file",
+      );
+    }
+    return file.newPath;
+  } else {
+    if (!file.newPath) {
+      throw new Error("Unexepctedly missing oldPath on an REMOVED file");
+    }
+    return file.oldPath!;
+  }
+}
 
 export type PastDiffFile = CurrentDiffFile & { staged: boolean };

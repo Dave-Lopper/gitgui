@@ -1,7 +1,8 @@
 import { IpcRendererEvent } from "electron";
 
-import { Branch, FileDiff, Repository } from "./types";
 import { Commit } from "./domain/commit";
+import { CurrentDiffFile } from "./domain/diff";
+import { Repository, Branch } from "./domain/repository";
 import { ActionResponse } from "./dto/action";
 import { RepositorySelectionDto } from "./dto/repo-selection";
 
@@ -24,19 +25,23 @@ declare global {
       getBranchesForRepository: (
         path: string,
       ) => Promise<ActionResponse<Branch[]>>;
-      getDiff: (path: string) => Promise<ActionResponse<FileDiff[]>>;
       getHistory: (
         page: number,
         pageSize: number,
         repositoryPath: string,
       ) => Promise<Commit[]>;
       getSavedRepositories: () => Promise<ActionResponse<Repository[]>>;
+      refreshRepoDiff: (repositoryPath: string) => Promise<CurrentDiffFile[]>;
       selectRepositoryFromDisk: () => Promise<
         ActionResponse<RepositorySelectionDto>
       >;
       selectRepositoryFromSaved: (
         path: string,
       ) => Promise<ActionResponse<RepositorySelectionDto>>;
+      toggleFileStaged: (
+        repositoryPath: string,
+        filePath: string,
+      ) => Promise<void>;
 
       onGitError: (
         callback: (

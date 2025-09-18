@@ -1,3 +1,4 @@
+import { CurrentDiffFile } from "../../../../client/domain/diff.js";
 import {
   DiffFile,
   DiffLine,
@@ -251,4 +252,18 @@ export function parseDiff(diffLines: string[]): DiffFile[] {
 
   flushFile();
   return files;
+}
+
+export function getDiffFilePath(file: CurrentDiffFile): string {
+  if (["ADDED", "MOVED", "MODIFIED"].includes(file.status)) {
+    if (!file.newPath) {
+      throw new Error("newPath unexpectedly null on ADDED/MOVED/MODIFIED file");
+    }
+    return file.newPath;
+  } else {
+    if (!file.oldPath) {
+      throw new Error("oldPath unexpectedly null on REMOVED file");
+    }
+    return file.oldPath;
+  }
 }

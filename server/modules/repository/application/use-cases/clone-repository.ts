@@ -9,7 +9,6 @@ import { Repository } from "../../domain/entities.js";
 import { RepositorySelectionDto } from "../../dto/repository-selection.js";
 import { ActionResponse } from "../../../../commons/dto/action.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
-
 import {
   dedupRefs,
   getRepositoryNameFromRemoteUrl,
