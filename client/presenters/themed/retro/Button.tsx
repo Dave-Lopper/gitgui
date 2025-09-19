@@ -3,7 +3,7 @@ import { forwardRef } from "react";
 import { useButton } from "../../headless";
 import type { ButtonProps } from "../../headless";
 
-import "./styles/Button.css";
+import "./styles/RetroButton.css";
 
 export default forwardRef<
   HTMLButtonElement,

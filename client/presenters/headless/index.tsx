@@ -1,4 +1,5 @@
 export { default as CloneRepositoryForm } from "./CloneRepositoryForm";
+export { default as DiffFileOption } from "./DiffFileOption";
 export { default as Dropdown } from "./Dropdown";
 export type { DropdownProps } from "./Dropdown";
 export { default as ModifiedFilesCounter } from "./ModifiedFilesCounter";

@@ -92,11 +92,11 @@ async function createWindow() {
       await diffUseCases.refreshRepoDiff.execute(message, window),
   );
 
-  ipcMain.handle("diff:toggleFileStaged", async (event, message) => {
+  ipcMain.handle("diff:toggleFilesStaged", async (event, message) => {
     const parsedMessage = JSON.parse(message);
     await diffUseCases.toggleFileStaged.execute(
       parsedMessage.repositoryPath,
-      parsedMessage.filePath,
+      parsedMessage.filePaths,
       window,
     );
   });

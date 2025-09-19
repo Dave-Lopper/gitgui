@@ -1,30 +1,36 @@
 import { ComponentType, useContext } from "react";
 
-import { CurrentDiffFile } from "../../domain/diff";
+import { DiffFile } from "../../domain/diff";
 import { RepoTabsContext } from "../contexts/repo-tabs";
+import { CheckboxProps } from "./types";
 
-type DiffFileOptionProps = {
-  checkbox: ComponentType<{ isChecked: boolean; onClick: () => void }>;
+export type DiffFileOptionProps = {
+  checkbox: ComponentType<CheckboxProps>;
+  checboxClassname?: string;
   containerClassName?: string;
-  file: CurrentDiffFile;
-  fileOption: ComponentType<{ file: CurrentDiffFile }>;
+  file: DiffFile;
+  fileOption: ComponentType<{ file: DiffFile; isSelected: boolean }>;
 };
 
 export default function DiffFileOption({
-  containerClassName,
   checkbox: Checkbox,
+  checboxClassname,
+  containerClassName,
   file,
   fileOption: FileOption,
 }: DiffFileOptionProps) {
-  const { toggleFileSelection } = useContext(RepoTabsContext);
+  const { toggleFileSelection, selectedFiles } = useContext(RepoTabsContext);
 
-  <div
-    className={`flex items-center ${containerClassName ? containerClassName : ""}`}
-  >
-    <Checkbox
-      isChecked={file.staged}
-      onClick={() => toggleFileSelection(file)}
-    />
-    <FileOption file={file} />
-  </div>;
+  return (
+    <div
+      className={`flex items-center ${containerClassName ? containerClassName : ""}`}
+    >
+      <Checkbox
+        className={checboxClassname}
+        isChecked={selectedFiles.has(file)}
+        onClick={() => toggleFileSelection(file)}
+      />
+      <FileOption file={file} isSelected={selectedFiles.has(file)} />
+    </div>
+  );
 }

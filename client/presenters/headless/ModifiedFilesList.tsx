@@ -1,37 +1,35 @@
-import { ComponentType, useContext } from "react";
+import { ComponentType } from "react";
 
-import { CurrentDiffFile } from "../../domain/diff";
-import { RepoTabsContext } from "../contexts/repo-tabs";
 import { useRepositorySelection } from "./hooks/repository-selection";
-
-export type DiffFileProps = {
-  isSelected: boolean;
-  file: CurrentDiffFile;
-  onClick: () => void;
-};
+import DiffFileOption from "./DiffFileOption";
+import { CheckboxProps } from "./types";
+import { DiffFile } from "../../domain/diff";
 
 type ModifiedFilesListProps = {
+  checkbox: ComponentType<CheckboxProps>;
+  checkboxClassname?: string;
   containerClassName?: string;
-  diffFile: ComponentType<DiffFileProps>;
+  diffFile: ComponentType<{ file: DiffFile; isSelected: boolean }>;
 };
 
 export default function ModifiedFilesList({
+  checkbox: Checkbox,
+  checkboxClassname,
   containerClassName,
   diffFile: DiffFile,
 }: ModifiedFilesListProps) {
   const { repositorySelection } = useRepositorySelection();
-  const { currentFile, setCurrentFile } = useContext(RepoTabsContext);
 
   return (
     <div
       className={`flex flex-col ${containerClassName ? containerClassName : ""}`}
     >
       {repositorySelection?.diff.map((file) => (
-        <DiffFile
+        <DiffFileOption
           key={file.displayPaths.join("+")}
-          isSelected={currentFile === file}
           file={file}
-          onClick={() => setCurrentFile(file)}
+          fileOption={DiffFile}
+          checkbox={Checkbox}
         />
       ))}
     </div>

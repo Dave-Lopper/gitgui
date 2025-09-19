@@ -1,6 +1,6 @@
 import { IGitService } from "../application/i-git-service";
 import { Commit } from "../domain/commit";
-import { CurrentDiffFile, DiffFileStatus } from "../domain/diff";
+import { DiffFile, DiffFileStatus } from "../domain/diff";
 import { RepositorySelectionDto } from "../dto/repo-selection";
 
 export class GitService implements IGitService {
@@ -36,7 +36,7 @@ export class GitService implements IGitService {
     return await window.electronAPI.getHistory(page, pageSize, repositoryPath);
   }
 
-  async refreshRepoDiff(repositoryPath: string): Promise<CurrentDiffFile[]> {
+  async refreshRepoDiff(repositoryPath: string): Promise<DiffFile[]> {
     return await window.electronAPI.refreshRepoDiff(repositoryPath);
   }
 
@@ -59,10 +59,10 @@ export class GitService implements IGitService {
     return result.data;
   }
 
-  async toggleFileStaged(
+  async toggleFilesStaged(
     repositoryPath: string,
-    filePath: string,
+    filePaths: string[],
   ): Promise<void> {
-    await window.electronAPI.toggleFileStaged(repositoryPath, filePath);
+    await window.electronAPI.toggleFilesStaged(repositoryPath, filePaths);
   }
 }

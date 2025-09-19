@@ -1,17 +1,14 @@
 import { ReactNode, useCallback, useState } from "react";
 
 import { defaultTab, RepoTabsContext, RepoTab } from "./context";
-import { CurrentDiffFile } from "../../../domain/diff";
+import { DiffFile } from "../../../domain/diff";
 
 export function RepoTabsContextProvider({ children }: { children: ReactNode }) {
   const [currentTab, setCurrentTab] = useState<RepoTab>(defaultTab);
-  const [currentFile, setCurrentFile] = useState<CurrentDiffFile>();
-  const [selectedFiles, setSelectedFiles] = useState<Set<CurrentDiffFile>>(
-    new Set(),
-  );
+  const [selectedFiles, setSelectedFiles] = useState<Set<DiffFile>>(new Set());
 
   const deselectFile = useCallback(
-    (file: CurrentDiffFile) =>
+    (file: DiffFile) =>
       setSelectedFiles((files) => {
         const newFiles = new Set(files);
         newFiles.delete(file);
@@ -23,7 +20,7 @@ export function RepoTabsContextProvider({ children }: { children: ReactNode }) {
   const emptyFileSelection = useCallback(() => setSelectedFiles(new Set()), []);
 
   const selectFile = useCallback(
-    (file: CurrentDiffFile) =>
+    (file: DiffFile) =>
       setSelectedFiles((files) => {
         const newFiles = new Set(files);
         newFiles.add(file);
@@ -33,7 +30,7 @@ export function RepoTabsContextProvider({ children }: { children: ReactNode }) {
   );
 
   const selectFiles = useCallback(
-    (files: Set<CurrentDiffFile>) =>
+    (files: Set<DiffFile>) =>
       setSelectedFiles((currentFiles) => {
         const newFiles = new Set(currentFiles);
         files.forEach((file) => newFiles.add(file));
@@ -43,7 +40,7 @@ export function RepoTabsContextProvider({ children }: { children: ReactNode }) {
   );
 
   const toggleFileSelection = useCallback(
-    (file: CurrentDiffFile) =>
+    (file: DiffFile) =>
       setSelectedFiles((files) => {
         const newFiles = new Set(files);
         if (newFiles.has(file)) {
@@ -59,14 +56,12 @@ export function RepoTabsContextProvider({ children }: { children: ReactNode }) {
   return (
     <RepoTabsContext.Provider
       value={{
-        currentFile,
         currentTab,
         deselectFile,
         emptyFileSelection,
         selectedFiles,
         selectFile,
         selectFiles,
-        setCurrentFile,
         setCurrentTab,
         toggleFileSelection,
       }}

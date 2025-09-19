@@ -25,7 +25,7 @@ export type DiffHunk = {
   afterDiff: DiffLine[];
 };
 
-export type CurrentDiffFile = {
+export type DiffFile = {
   oldPath: string | null;
   newPath: string | null;
   status: DiffFileStatus;
@@ -34,7 +34,7 @@ export type CurrentDiffFile = {
   staged: boolean;
 };
 
-export function getFilePath(file: CurrentDiffFile): string {
+export function getFilePath(file: DiffFile): string {
   if (["ADDED", "MODIFIED", "MOVED"].includes(file.status)) {
     if (!file.newPath) {
       throw new Error(
@@ -50,4 +50,4 @@ export function getFilePath(file: CurrentDiffFile): string {
   }
 }
 
-export type PastDiffFile = CurrentDiffFile & { staged: boolean };
+export type PastDiffFile = DiffFile & { staged: boolean };

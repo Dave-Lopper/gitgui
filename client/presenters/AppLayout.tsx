@@ -3,11 +3,11 @@ import { useCallback, useContext, useEffect, useMemo } from "react";
 import { useCases } from "../bootstrap";
 import { UiSettingsContext } from "./contexts/ui-settings/context";
 import {
+  DiffFileOption,
   Header,
   SplitPane,
   useRepositorySelection,
   ModifiedFilesCounter,
-  ModifiedFilesList,
 } from "./headless";
 import {
   ModernRepositoryDropdown,
@@ -17,20 +17,38 @@ import {
   ModernBranchDropdown,
   ModernSettingsMenu,
   ModernDivider,
-  ModernDiffFile,
+  // ModernDiffFile,
 } from "./themed/modern";
 import {
   RetroRepositoryDropdown,
-  RetroDiffFile,
+  // RetroDiffFile,
   RetroDivider,
   RetroBranchDropdown,
   RetroModifiedFilesCounter,
   RetroSettingsMenu,
   RetroRepositorySelectionMenu,
+  RetroCheckbox,
 } from "./themed/retro";
 import { RepoTabsContext } from "./contexts/repo-tabs";
 import RepositoryTabs from "./headless/RepositoryTabs";
 import RetroRepositoryTab from "./themed/retro/RepositoryTab";
+import { DiffFile } from "../domain/diff";
+
+function RetroDiffFileOption({
+  file,
+  isSelected,
+}: {
+  file: DiffFile;
+  isSelected: boolean;
+}) {
+  return (
+    <div
+      className={`${isSelected ? "bg-retro-active text-white" : "bg-white text-black"} font-retro w-full py-[4px] text-left`}
+    >
+      {file.displayPaths.join("+")}
+    </div>
+  );
+}
 
 export default function AppLayout() {
   const { theme } = useContext(UiSettingsContext);
@@ -51,10 +69,10 @@ export default function AppLayout() {
     [theme],
   );
 
-  const diffFile = useMemo(
-    () => (theme === "MODERN" ? ModernDiffFile : RetroDiffFile),
-    [theme, repositorySelection],
-  );
+  // const diffFile = useMemo(
+  //   () => (theme === "MODERN" ? ModernDiffFile : RetroDiffFile),
+  //   [theme, repositorySelection],
+  // );
 
   const divider = useMemo(
     () => (theme === "MODERN" ? <ModernDivider /> : <RetroDivider />),
@@ -112,7 +130,17 @@ export default function AppLayout() {
               {currentTab === "DIFF" ? (
                 <div className="flex flex-col">
                   <ModifiedFilesCounter counter={modifiedFilesCounter} />
-                  <ModifiedFilesList diffFile={diffFile} />
+                  <div className="flex flex-col bg-white">
+                    {repositorySelection?.diff.map((file) => (
+                      <DiffFileOption
+                        key={file.displayPaths.join("+")}
+                        file={file}
+                        fileOption={RetroDiffFileOption}
+                        checkbox={RetroCheckbox}
+                        checboxClassname="mx-2"
+                      />
+                    ))}
+                  </div>
                 </div>
               ) : (
                 <>HISTORY</>

@@ -1,5 +1,5 @@
 import { Commit } from "../domain/commit";
-import { CurrentDiffFile, DiffFileStatus } from "../domain/diff";
+import { DiffFile, DiffFileStatus } from "../domain/diff";
 import { RepositorySelectionDto } from "../dto/repo-selection";
 
 export interface IGitService {
@@ -17,11 +17,11 @@ export interface IGitService {
     repositoryPath: string,
   ): Promise<Commit[]>;
 
-  refreshRepoDiff(repositoryPath: string): Promise<CurrentDiffFile[]>;
+  refreshRepoDiff(repositoryPath: string): Promise<DiffFile[]>;
 
   selectRepoFromDisk(): Promise<RepositorySelectionDto>;
 
   selectRepoFromSaved(repositoryPath: string): Promise<RepositorySelectionDto>;
 
-  toggleFileStaged(repositoryPath: string, filePath: string): Promise<void>;
+  toggleFilesStaged(repositoryPath: string, filePaths: string[]): Promise<void>;
 }
