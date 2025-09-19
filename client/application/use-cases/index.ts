@@ -5,3 +5,4 @@ export { GetCommitHistory } from "./get-history";
 export { GetSavedRepositories } from "./get-saved-repositories";
 export { SelectRepositoryFromSaved } from "./select-repository-from-saved";
 export { SelectRepositoryFromDisk } from "./select-repository-from-disk";
+export { ToggleFilesStaged } from "./toggle-files-staged";

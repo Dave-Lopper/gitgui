@@ -2,35 +2,38 @@ import { ComponentType, useContext } from "react";
 
 import { DiffFile } from "../../domain/diff";
 import { RepoTabsContext } from "../contexts/repo-tabs";
-import { CheckboxProps } from "./types";
+import { useCases } from "../../bootstrap";
+import { RepositorySelectionDto } from "../../dto/repo-selection";
 
 export type DiffFileOptionProps = {
-  checkbox: ComponentType<CheckboxProps>;
-  checboxClassname?: string;
-  containerClassName?: string;
+  repositorySelection: RepositorySelectionDto;
+  themedFileOption: ComponentType<{
+    isSelected: boolean;
+    toggleSelection: () => void;
+    toggleStaging: () => Promise<void>;
+    file: DiffFile;
+  }>;
   file: DiffFile;
-  fileOption: ComponentType<{ file: DiffFile; isSelected: boolean }>;
 };
 
 export default function DiffFileOption({
-  checkbox: Checkbox,
-  checboxClassname,
-  containerClassName,
   file,
-  fileOption: FileOption,
+  repositorySelection,
+  themedFileOption: ThemedFileOption,
 }: DiffFileOptionProps) {
   const { toggleFileSelection, selectedFiles } = useContext(RepoTabsContext);
 
   return (
-    <div
-      className={`flex items-center ${containerClassName ? containerClassName : ""}`}
-    >
-      <Checkbox
-        className={checboxClassname}
-        isChecked={selectedFiles.has(file)}
-        onClick={() => toggleFileSelection(file)}
-      />
-      <FileOption file={file} isSelected={selectedFiles.has(file)} />
-    </div>
+    <ThemedFileOption
+      toggleSelection={() => toggleFileSelection(file)}
+      toggleStaging={async () =>
+        await useCases.toggleFilesStaged.execute(
+          repositorySelection?.repository.localPath!,
+          [file],
+        )
+      }
+      file={file}
+      isSelected={selectedFiles.has(file)}
+    />
   );
 }

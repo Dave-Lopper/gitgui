@@ -47,7 +47,7 @@ export class DiffCliGitRunner extends GitCliRunner implements DiffGitRunner {
   }
 
   async unstageFile(repositoryPath: string, filePath: string): Promise<void> {
-    await this.safeRun("git", ["restore", "--cached", filePath], {
+    await this.safeRun("git", ["restore", "--staged", filePath], {
       cwd: repositoryPath,
     });
   }

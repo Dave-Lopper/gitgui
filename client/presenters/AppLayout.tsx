@@ -7,7 +7,6 @@ import {
   Header,
   SplitPane,
   useRepositorySelection,
-  ModifiedFilesCounter,
 } from "./headless";
 import {
   ModernRepositoryDropdown,
@@ -21,7 +20,7 @@ import {
 } from "./themed/modern";
 import {
   RetroRepositoryDropdown,
-  // RetroDiffFile,
+  RetroDiffFileOption,
   RetroDivider,
   RetroBranchDropdown,
   RetroModifiedFilesCounter,
@@ -32,23 +31,6 @@ import {
 import { RepoTabsContext } from "./contexts/repo-tabs";
 import RepositoryTabs from "./headless/RepositoryTabs";
 import RetroRepositoryTab from "./themed/retro/RepositoryTab";
-import { DiffFile } from "../domain/diff";
-
-function RetroDiffFileOption({
-  file,
-  isSelected,
-}: {
-  file: DiffFile;
-  isSelected: boolean;
-}) {
-  return (
-    <div
-      className={`${isSelected ? "bg-retro-active text-white" : "bg-white text-black"} font-retro w-full py-[4px] text-left`}
-    >
-      {file.displayPaths.join("+")}
-    </div>
-  );
-}
 
 export default function AppLayout() {
   const { theme } = useContext(UiSettingsContext);
@@ -79,7 +61,7 @@ export default function AppLayout() {
     [theme],
   );
 
-  const modifiedFilesCounter = useMemo(
+  const ModifiedFilesCounter = useMemo(
     () =>
       theme === "MODERN"
         ? ModernModifiedFilesCounter
@@ -129,15 +111,16 @@ export default function AppLayout() {
               <RepositoryTabs tab={repositoryTab} />
               {currentTab === "DIFF" ? (
                 <div className="flex flex-col">
-                  <ModifiedFilesCounter counter={modifiedFilesCounter} />
+                  <ModifiedFilesCounter
+                    count={repositorySelection.diff.length}
+                  />
                   <div className="flex flex-col bg-white">
                     {repositorySelection?.diff.map((file) => (
                       <DiffFileOption
                         key={file.displayPaths.join("+")}
                         file={file}
-                        fileOption={RetroDiffFileOption}
-                        checkbox={RetroCheckbox}
-                        checboxClassname="mx-2"
+                        repositorySelection={repositorySelection}
+                        themedFileOption={RetroDiffFileOption}
                       />
                     ))}
                   </div>

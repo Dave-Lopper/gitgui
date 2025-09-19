@@ -45,7 +45,6 @@ const options = ["branch1", "branch2", "branch3"];
 
 export default function RetroBranchDropdown() {
   const { repositorySelection } = useRepositorySelection();
-  console.log({ repositorySelection });
 
   if (!repositorySelection) {
     return (
@@ -61,7 +60,7 @@ export default function RetroBranchDropdown() {
         return (isSelected: boolean) => (
           <div
             key={branch.name}
-            className={`${isSelected || branch.name === repositorySelection.repository.checkedOutBranch ? "bg-retro-active text-white" : "bg-white text-black"} hover:bg-retro-pressed cursor-pointer border-r border-l border-black border-solid`}
+            className={`${isSelected || branch.name === repositorySelection.repository.checkedOutBranch ? "bg-retro-active text-white" : "bg-white text-black"} hover:bg-retro-pressed cursor-pointer border-r border-l border-solid border-black`}
           >
             {branch.name}
           </div>

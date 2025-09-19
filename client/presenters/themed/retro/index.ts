@@ -1,6 +1,6 @@
 export { default as RetroBranchDropdown } from "./BranchSelectionDropdown";
 export { default as RetroCheckbox } from "./Checkbox";
-// export { default as RetroDiffFile } from "./DiffFile";
+export { default as RetroDiffFileOption } from "./DiffFileOption";
 export { default as RetroDivider } from "./Divider";
 export { default as RetroModifiedFilesCounter } from "./ModifiedFilesCounter";
 export { default as RetroRepositoryDropdown } from "./RepoSelectionDropdown";

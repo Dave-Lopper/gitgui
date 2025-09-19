@@ -1,5 +1,5 @@
 import { CheckboxProps } from "../../headless/types";
-import "./styles/RetroButton.css";
+import "./styles/RetroCheckbox.css";
 
 export default function RetroCheckbox({
   className,

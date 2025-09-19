@@ -24,13 +24,14 @@ export class GetRepoDiff {
       this.gitRunner.getRepoDiff(repositoryPath, true),
       window,
     );
-    console.log({ stagedDiffLines });
     const stagedChangedFiles = parseDiff(stagedDiffLines);
 
     const changedFiles = [...stagedChangedFiles, ...unstagedChangedFiles].map(
       (file) => ({ ...file, staged: stagedChangedFiles.includes(file) }),
     );
 
-    return changedFiles;
+    return changedFiles.sort((a, b) =>
+      a.displayPaths[0].localeCompare(b.displayPaths[0]),
+    );
   }
 }

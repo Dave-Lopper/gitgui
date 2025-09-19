@@ -6,6 +6,7 @@ import {
   GetSavedRepositories,
   SelectRepositoryFromDisk,
   SelectRepositoryFromSaved,
+  ToggleFilesStaged,
 } from "./application/use-cases";
 import { EventBus } from "./infra/event-bus";
 import { GitService } from "./infra/git-service";
@@ -26,4 +27,5 @@ export const useCases = {
     gitService,
     eventBus,
   ),
+  toggleFilesStaged: new ToggleFilesStaged(gitService, eventBus),
 };
