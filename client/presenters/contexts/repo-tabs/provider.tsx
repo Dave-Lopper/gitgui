@@ -6,7 +6,7 @@ import {
   RepoTabsContext,
   RepoTab,
 } from "./context";
-import { DiffFile } from "../../../domain/diff";
+import { DiffFile, getFilePath } from "../../../domain/diff";
 
 export function RepoTabsContextProvider({ children }: { children: ReactNode }) {
   const [currentTab, setCurrentTab] = useState<RepoTab>(defaultTab);
@@ -56,15 +56,19 @@ export function RepoTabsContextProvider({ children }: { children: ReactNode }) {
 
   const toggleFileSelection = useCallback((file: DiffFileWithIndex) => {
     setSelectedFiles((files) => {
-      const newFiles = new Set(files);
-      if (newFiles.has(file)) {
-        newFiles.delete(file);
+      let newFiles;
+      if (isFileSelected(file)) {
+        newFiles = new Set(
+          Array.from(files).filter((f) => getFilePath(f) !== getFilePath(file)),
+        );
       } else {
-        newFiles.add(file);
+        const newFilesArray = Array.from(files);
+        newFilesArray.push(file);
+        newFiles = new Set(newFilesArray);
       }
       return newFiles;
     });
-  }, []);
+  }, [selectedFiles]);
 
   return (
     <RepoTabsContext.Provider
