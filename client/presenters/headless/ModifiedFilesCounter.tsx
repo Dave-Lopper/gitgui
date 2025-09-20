@@ -11,10 +11,7 @@ export default function ModifiedFilesCounter({
 
   useEventSubscription(
     "RepositorySelected",
-    (event) => {
-      console.log({ event });
-      setFileCount(event.payload.diff.length || 0);
-    },
+    (event) => setFileCount(event.payload.diff.length || 0),
     [],
   );
 

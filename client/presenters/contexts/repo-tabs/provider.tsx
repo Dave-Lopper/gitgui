@@ -1,14 +1,21 @@
 import { ReactNode, useCallback, useState } from "react";
 
-import { defaultTab, RepoTabsContext, RepoTab } from "./context";
+import {
+  defaultTab,
+  DiffFileWithIndex,
+  RepoTabsContext,
+  RepoTab,
+} from "./context";
 import { DiffFile } from "../../../domain/diff";
 
 export function RepoTabsContextProvider({ children }: { children: ReactNode }) {
   const [currentTab, setCurrentTab] = useState<RepoTab>(defaultTab);
-  const [selectedFiles, setSelectedFiles] = useState<Set<DiffFile>>(new Set());
+  const [selectedFiles, setSelectedFiles] = useState<Set<DiffFileWithIndex>>(
+    new Set(),
+  );
 
   const deselectFile = useCallback(
-    (file: DiffFile) =>
+    (file: DiffFileWithIndex) =>
       setSelectedFiles((files) => {
         const newFiles = new Set(files);
         newFiles.delete(file);
@@ -20,7 +27,7 @@ export function RepoTabsContextProvider({ children }: { children: ReactNode }) {
   const emptyFileSelection = useCallback(() => setSelectedFiles(new Set()), []);
 
   const selectFile = useCallback(
-    (file: DiffFile) =>
+    (file: DiffFileWithIndex) =>
       setSelectedFiles((files) => {
         const newFiles = new Set(files);
         newFiles.add(file);
@@ -29,29 +36,35 @@ export function RepoTabsContextProvider({ children }: { children: ReactNode }) {
     [],
   );
 
-  const selectFiles = useCallback(
-    (files: Set<DiffFile>) =>
-      setSelectedFiles((currentFiles) => {
-        const newFiles = new Set(currentFiles);
-        files.forEach((file) => newFiles.add(file));
-        return newFiles;
-      }),
-    [],
+  const isFileSelected = useCallback(
+    (file: DiffFile) => {
+      const selectedFileNames = Array.from(selectedFiles, (file) =>
+        file.displayPaths.join(","),
+      );
+      return selectedFileNames.includes(file.displayPaths.join(","));
+    },
+    [selectedFiles],
   );
 
-  const toggleFileSelection = useCallback(
-    (file: DiffFile) =>
-      setSelectedFiles((files) => {
-        const newFiles = new Set(files);
-        if (newFiles.has(file)) {
-          newFiles.delete(file);
-        } else {
-          newFiles.add(file);
-        }
-        return newFiles;
-      }),
-    [],
-  );
+  const selectFiles = useCallback((files: DiffFileWithIndex[]) => {
+    setSelectedFiles((currentFiles) => {
+      const newFiles = new Set(currentFiles);
+      files.forEach((file) => newFiles.add(file));
+      return newFiles;
+    });
+  }, []);
+
+  const toggleFileSelection = useCallback((file: DiffFileWithIndex) => {
+    setSelectedFiles((files) => {
+      const newFiles = new Set(files);
+      if (newFiles.has(file)) {
+        newFiles.delete(file);
+      } else {
+        newFiles.add(file);
+      }
+      return newFiles;
+    });
+  }, []);
 
   return (
     <RepoTabsContext.Provider
@@ -59,6 +72,7 @@ export function RepoTabsContextProvider({ children }: { children: ReactNode }) {
         currentTab,
         deselectFile,
         emptyFileSelection,
+        isFileSelected,
         selectedFiles,
         selectFile,
         selectFiles,

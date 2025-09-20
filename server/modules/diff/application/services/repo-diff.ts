@@ -1,4 +1,3 @@
-import * as fs from "fs";
 import { BrowserWindow } from "electron";
 
 import { DiffGitRunner } from "../git-runner.js";
@@ -16,7 +15,6 @@ export class GetRepoDiff {
       this.gitRunner.getRepoDiff(repositoryPath, false),
       window,
     );
-    fs.writeFileSync("diff.log", unstagedDiffLines.join("\n"));
 
     const unstagedChangedFiles = parseDiff(unstagedDiffLines);
 
@@ -24,7 +22,15 @@ export class GetRepoDiff {
       this.gitRunner.getRepoDiff(repositoryPath, true),
       window,
     );
-    const stagedChangedFiles = parseDiff(stagedDiffLines);
+    let stagedChangedFiles = parseDiff(stagedDiffLines);
+    const unstagedFileNames = unstagedChangedFiles.map((file) =>
+      file.displayPaths.join(","),
+    );
+
+    stagedChangedFiles = stagedChangedFiles.filter((file) => {
+      const fileName = file.displayPaths.join(",");
+      return !unstagedFileNames.includes(fileName);
+    });
 
     const changedFiles = [...stagedChangedFiles, ...unstagedChangedFiles].map(
       (file) => ({ ...file, staged: stagedChangedFiles.includes(file) }),

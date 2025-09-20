@@ -14,18 +14,20 @@ export type DiffFileOptionProps = {
     file: DiffFile;
   }>;
   file: DiffFile;
+  fileIndex: number;
 };
 
 export default function DiffFileOption({
   file,
+  fileIndex,
   repositorySelection,
   themedFileOption: ThemedFileOption,
 }: DiffFileOptionProps) {
-  const { toggleFileSelection, selectedFiles } = useContext(RepoTabsContext);
+  const { isFileSelected, toggleFileSelection } = useContext(RepoTabsContext);
 
   return (
     <ThemedFileOption
-      toggleSelection={() => toggleFileSelection(file)}
+      toggleSelection={() => toggleFileSelection({ ...file, index: fileIndex })}
       toggleStaging={async () =>
         await useCases.toggleFilesStaged.execute(
           repositorySelection?.repository.localPath!,
@@ -33,7 +35,7 @@ export default function DiffFileOption({
         )
       }
       file={file}
-      isSelected={selectedFiles.has(file)}
+      isSelected={isFileSelected(file)}
     />
   );
 }

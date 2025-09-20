@@ -9,7 +9,6 @@ export class ToggleFilesStaged {
   ) {}
 
   async execute(repositoryPath: string, files: DiffFile[]): Promise<void> {
-    console.log("USECASE", { repositoryPath });
     await this.gitService.toggleFilesStaged(
       repositoryPath,
       files.map((file) => getFilePath(file)),
