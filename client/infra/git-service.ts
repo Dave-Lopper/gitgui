@@ -36,10 +36,6 @@ export class GitService implements IGitService {
     return await window.electronAPI.getHistory(page, pageSize, repositoryPath);
   }
 
-  async refreshRepoDiff(repositoryPath: string): Promise<DiffFile[]> {
-    return await window.electronAPI.refreshRepoDiff(repositoryPath);
-  }
-
   async selectRepoFromDisk(): Promise<RepositorySelectionDto> {
     const result = await window.electronAPI.selectRepositoryFromDisk();
     if (!result.success) {

@@ -31,7 +31,6 @@ declare global {
         repositoryPath: string,
       ) => Promise<Commit[]>;
       getSavedRepositories: () => Promise<ActionResponse<Repository[]>>;
-      refreshRepoDiff: (repositoryPath: string) => Promise<DiffFile[]>;
       selectRepositoryFromDisk: () => Promise<
         ActionResponse<RepositorySelectionDto>
       >;

@@ -1,6 +1,14 @@
 const electron = require("electron");
 
 electron.contextBridge.exposeInMainWorld("electronAPI", {
+  batchDiscardFileModifications: (
+    repositoryPath: string,
+    filePaths: string[],
+  ) =>
+    electron.ipcRenderer.invoke(
+      "diff:batchDiscardFileModifications",
+      JSON.stringify({ repositoryPath, filePaths }),
+    ),
   cloneRepository: (url: string) =>
     electron.ipcRenderer.invoke("repositories:clone", url),
   getBranchesForRepository: (path: string) =>
@@ -12,8 +20,6 @@ electron.contextBridge.exposeInMainWorld("electronAPI", {
     ),
   getSavedRepositories: () =>
     electron.ipcRenderer.invoke("repositories:getSaved"),
-  refreshRepoDiff: (repositoryPath: string) =>
-    electron.ipcRenderer.invoke("diff:refresh", repositoryPath),
   selectRepositoryFromDisk: () =>
     electron.ipcRenderer.invoke("repositories:selectFromDisk"),
   selectRepositoryFromSaved: (path: string) =>

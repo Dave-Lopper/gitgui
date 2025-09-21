@@ -2,6 +2,17 @@ import { GitCliRunner } from "../../../commons/infra/git-cli-runner.js";
 import { DiffGitRunner } from "../application/git-runner.js";
 
 export class DiffCliGitRunner extends GitCliRunner implements DiffGitRunner {
+  async discardFileChanges(
+    repositoryPath: string,
+    filePath: string,
+  ): Promise<void> {
+    await this.safeRun(
+      "git",
+      ["--no-pager", "restore", "--staged", "--worktree", "--", filePath],
+      { cwd: repositoryPath },
+    );
+  }
+
   async getCommitDiff(
     repositoryPath: string,
     commitHash: string,

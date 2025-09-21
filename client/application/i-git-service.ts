@@ -17,8 +17,6 @@ export interface IGitService {
     repositoryPath: string,
   ): Promise<Commit[]>;
 
-  refreshRepoDiff(repositoryPath: string): Promise<DiffFile[]>;
-
   selectRepoFromDisk(): Promise<RepositorySelectionDto>;
 
   selectRepoFromSaved(repositoryPath: string): Promise<RepositorySelectionDto>;

@@ -87,9 +87,15 @@ async function createWindow() {
   });
 
   ipcMain.handle(
-    "diff:refresh",
-    async (event, message) =>
-      await diffUseCases.refreshRepoDiff.execute(message, window),
+    "diff:batchDiscardFileModifications",
+    async (event, message) => {
+      const parsedMessage = JSON.parse(message);
+      await diffUseCases.batchDiscardFileModifications.execute(
+        parsedMessage.repositoryPath,
+        parsedMessage.filePaths,
+        window,
+      );
+    },
   );
 
   ipcMain.handle("diff:toggleFilesStaged", async (event, message) => {

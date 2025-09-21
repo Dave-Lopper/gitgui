@@ -54,21 +54,27 @@ export function RepoTabsContextProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const toggleFileSelection = useCallback((file: DiffFileWithIndex) => {
-    setSelectedFiles((files) => {
-      let newFiles;
-      if (isFileSelected(file)) {
-        newFiles = new Set(
-          Array.from(files).filter((f) => getFilePath(f) !== getFilePath(file)),
-        );
-      } else {
-        const newFilesArray = Array.from(files);
-        newFilesArray.push(file);
-        newFiles = new Set(newFilesArray);
-      }
-      return newFiles;
-    });
-  }, [selectedFiles]);
+  const toggleFileSelection = useCallback(
+    (file: DiffFileWithIndex) => {
+      setSelectedFiles((files) => {
+        let newFiles;
+        console.log(isFileSelected(file));
+        if (isFileSelected(file)) {
+          newFiles = new Set(
+            Array.from(files).filter(
+              (f) => getFilePath(f) !== getFilePath(file),
+            ),
+          );
+        } else {
+          const newFilesArray = Array.from(files);
+          newFilesArray.push(file);
+          newFiles = new Set(newFilesArray);
+        }
+        return newFiles;
+      });
+    },
+    [selectedFiles],
+  );
 
   return (
     <RepoTabsContext.Provider

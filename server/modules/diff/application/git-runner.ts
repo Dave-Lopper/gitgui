@@ -1,4 +1,6 @@
 export interface DiffGitRunner {
+  discardFileChanges(repositoryPath: string, filePath: string): Promise<void>;
+
   getCommitDiff(repositoryPath: string, commitHash: string): Promise<string[]>;
 
   getRepoDiff(repositoryPath: string, staged: boolean): Promise<string[]>;
