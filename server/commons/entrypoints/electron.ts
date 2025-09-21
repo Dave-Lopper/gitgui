@@ -86,6 +86,14 @@ async function createWindow() {
     return results;
   });
 
+  ipcMain.handle("diff:addToGitignore", async (event, message) => {
+    const parseMessage = JSON.parse(message);
+    await diffUseCases.addToGitignore.execute(
+      parseMessage.repositoryPath,
+      parseMessage.filePaths,
+    );
+  });
+
   ipcMain.handle(
     "diff:batchDiscardFileModifications",
     async (event, message) => {

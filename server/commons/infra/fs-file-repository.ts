@@ -3,6 +3,10 @@ import fs from "node:fs/promises";
 import { FilesRepository } from "../application/files-repository.js";
 
 export class FsFilesRepository implements FilesRepository {
+  async appendToFile(path: string, content: string): Promise<void> {
+    await fs.appendFile(path, content);
+  }
+
   async copyFolder(path: string, destination: string): Promise<void> {
     await fs.cp(path, destination, {
       recursive: true,
@@ -13,6 +17,31 @@ export class FsFilesRepository implements FilesRepository {
     });
   }
 
+  async endsWithNewLine(path: string): Promise<boolean> {
+    try {
+      const stats = await fs.stat(path);
+      if (stats.size === 0) {
+        return false;
+      }
+
+      const fileHandle = await fs.open(path, "r");
+      const buffer = Buffer.alloc(1);
+      await fileHandle.read(buffer, 0, 1, stats.size - 1);
+      await fileHandle.close();
+
+      if (buffer[0] !== 10) {
+        return false;
+      }
+    } catch (err) {
+      if ((err as any)?.code === "ENOENT") {
+        // file doesn’t exist yet, nothing to check
+        return false;
+      }
+      throw err;
+    }
+    return true;
+  }
+
   async pathExists(path: string): Promise<boolean> {
     try {
       await fs.access(path);
@@ -20,6 +49,10 @@ export class FsFilesRepository implements FilesRepository {
     } catch {
       return false;
     }
+  }
+
+  async putFile(content: string, path: string): Promise<void> {
+    await fs.writeFile(path, content);
   }
 
   async getLastModifiedTime(filePath: string): Promise<Date> {
