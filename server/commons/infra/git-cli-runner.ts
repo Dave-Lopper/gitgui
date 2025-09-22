@@ -12,12 +12,13 @@ export class GitCliRunner implements GitRunner {
     command: string,
     args: string[],
     options?: CommandOptions,
+    expectedCodes: number[] = [0],
   ): Promise<string[]> {
     const res = await this.cmdRunner.run(command, args, {
       cwd: options?.cwd || process.cwd(),
     });
 
-    if (res.exitCode !== 0) {
+    if (!expectedCodes.includes(res.exitCode)) {
       throw new GitError(res.stderr.join("\n"), res.command);
     }
 

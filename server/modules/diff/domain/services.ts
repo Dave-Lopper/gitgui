@@ -266,3 +266,40 @@ export function getDiffFilePath(file: DiffFile): string {
     return file.oldPath;
   }
 }
+
+export function parseStatus(statusLines: string[]): string[] {
+  const addedFiles = [];
+
+  for (let i = 0; i < statusLines.length; i++) {
+    if (statusLines[i].startsWith("??")) {
+      addedFiles.push(statusLines[i].split(" ").slice(1).join(" "));
+    }
+  }
+
+  return addedFiles;
+}
+
+export function parseNewFileDiff(diffLines: string[]): DiffFile {
+  const plusLine = diffLines.find((line) => line.startsWith("+++"));
+  const minusLine = diffLines.find((line) => line.startsWith("---"));
+
+  if (!plusLine || minusLine) {
+    const partialFile: PartialFile = {
+      status: "ADDED",
+      displayPaths: [],
+      hunks: [],
+    };
+    const diffLine = diffLines.find((line) => line.startsWith("diff --git a/"));
+    if (!diffLine) {
+      throw new Error("Neither +++/--- lines not diff line in added file diff");
+    }
+    const fileName = diffLine.split("b/").slice(1).join("b/");
+    partialFile.oldPath = null;
+    partialFile.newPath = fileName;
+    partialFile.displayPaths = [fileName];
+    partialFile.hunks = [];
+    return finalizeFile(partialFile);
+  }
+
+  return parseDiff(diffLines)[0];
+}

@@ -1,4 +1,6 @@
 import {
+  AddToGitignore,
+  BatchDiscardFileModifications,
   CloneRepository,
   ConsultCommitDiff,
   ConsultFileDiff,
@@ -17,6 +19,11 @@ const gitService = new GitService();
 const repositoryStore = new RepositoryStore();
 
 export const useCases = {
+  addToGitignore: new AddToGitignore(gitService, eventBus),
+  batchDiscardFileModifications: new BatchDiscardFileModifications(
+    gitService,
+    eventBus,
+  ),
   cloneRepository: new CloneRepository(gitService, eventBus),
   consultCommitDiff: new ConsultCommitDiff(eventBus),
   consultFileDiff: new ConsultFileDiff(eventBus),

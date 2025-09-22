@@ -13,6 +13,26 @@ export class DiffCliGitRunner extends GitCliRunner implements DiffGitRunner {
     );
   }
 
+  async getAddedFileDiff(
+    repositoryPath: string,
+    filePath: string,
+  ): Promise<string[]> {
+    return await this.safeRun(
+      "git",
+      [
+        "--no-pager",
+        "diff",
+        "--no-index",
+        "--word-diff=porcelain",
+        "--no-color",
+        "/dev/null",
+        filePath,
+      ],
+      { cwd: repositoryPath },
+      [0, 1],
+    );
+  }
+
   async getCommitDiff(
     repositoryPath: string,
     commitHash: string,
@@ -37,6 +57,12 @@ export class DiffCliGitRunner extends GitCliRunner implements DiffGitRunner {
       cwd: repositoryPath,
     });
     return lines;
+  }
+
+  async getRepoStatus(repositoryPath: string): Promise<string[]> {
+    return await this.safeRun("git", ["--no-pager", "status", "--porcelain"], {
+      cwd: repositoryPath,
+    });
   }
 
   async getStagedFileByName(

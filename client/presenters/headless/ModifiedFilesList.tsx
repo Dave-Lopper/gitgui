@@ -8,7 +8,7 @@ import {
 } from "react";
 
 import { useCases } from "../../bootstrap";
-import { DiffFile } from "../../domain/diff";
+import { DiffFile, getFilePath } from "../../domain/diff";
 import { RepositorySelectionDto } from "../../dto/repo-selection";
 import { RepoTabsContext } from "../contexts/repo-tabs";
 
@@ -164,10 +164,26 @@ export default function ModifiedFilesList({
           {selectedFiles.size > 1 && (
             <span>{selectedFiles.size} selected files</span>
           )}
-          <span className="hover:bg-retro-active w-full cursor-pointer py-[2px] pl-2 text-left hover:text-white">
+          <span
+            className="hover:bg-retro-active w-full cursor-pointer py-[2px] pl-2 text-left hover:text-white"
+            onClick={async () =>
+              useCases.batchDiscardFileModifications.execute(
+                repositorySelection.repository.localPath,
+                Array.from(selectedFiles).map((file) => getFilePath(file)),
+              )
+            }
+          >
             Discard changes
           </span>
-          <span className="hover:bg-retro-active w-full cursor-pointer py-[2px] pl-2 text-left hover:text-white">
+          <span
+            className="hover:bg-retro-active w-full cursor-pointer py-[2px] pl-2 text-left hover:text-white"
+            onClick={async () =>
+              useCases.addToGitignore.execute(
+                repositorySelection.repository.localPath,
+                Array.from(selectedFiles).map((file) => getFilePath(file)),
+              )
+            }
+          >
             Add to gitignore
           </span>
         </div>

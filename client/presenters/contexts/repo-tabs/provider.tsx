@@ -58,7 +58,6 @@ export function RepoTabsContextProvider({ children }: { children: ReactNode }) {
     (file: DiffFileWithIndex) => {
       setSelectedFiles((files) => {
         let newFiles;
-        console.log(isFileSelected(file));
         if (isFileSelected(file)) {
           newFiles = new Set(
             Array.from(files).filter(
