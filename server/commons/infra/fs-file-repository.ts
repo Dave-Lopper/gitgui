@@ -18,27 +18,20 @@ export class FsFilesRepository implements FilesRepository {
   }
 
   async endsWithNewLine(path: string): Promise<boolean> {
-    try {
-      const stats = await fs.stat(path);
-      if (stats.size === 0) {
-        return false;
-      }
-
-      const fileHandle = await fs.open(path, "r");
-      const buffer = Buffer.alloc(1);
-      await fileHandle.read(buffer, 0, 1, stats.size - 1);
-      await fileHandle.close();
-
-      if (buffer[0] !== 10) {
-        return false;
-      }
-    } catch (err) {
-      if ((err as any)?.code === "ENOENT") {
-        // file doesn’t exist yet, nothing to check
-        return false;
-      }
-      throw err;
+    const stats = await fs.stat(path);
+    if (stats.size === 0) {
+      return true;
     }
+
+    const fileHandle = await fs.open(path, "r");
+    const buffer = Buffer.alloc(1);
+    await fileHandle.read(buffer, 0, 1, stats.size - 1);
+    await fileHandle.close();
+
+    if (buffer[0] !== 10) {
+      return false;
+    }
+
     return true;
   }
 

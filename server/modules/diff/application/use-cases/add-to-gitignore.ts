@@ -7,16 +7,38 @@ export class AddToGitignore {
 
   async execute(repositoryPath: string, filePaths: string[]): Promise<void> {
     const gitignorePath = path.join(repositoryPath, ".gitignore");
-    if (!this.filesRepository.pathExists(gitignorePath)) {
-      this.filesRepository.putFile("", gitignorePath);
+    const gitignoreExists =
+      await this.filesRepository.pathExists(gitignorePath);
+
+    if (!gitignoreExists) {
+      await this.filesRepository.putFile("", gitignorePath);
     }
 
-    if (!this.filesRepository.endsWithNewLine(gitignorePath)) {
+    const gitignoreContents =
+      await this.filesRepository.readFile(gitignorePath);
+    const gitignoreLines = gitignoreContents
+      .split("\n")
+      .map((line) => line.trim());
+
+    if (
+      filePaths.filter((filePath) => !gitignoreLines.includes(filePath))
+        .length === 0
+    ) {
+      return;
+    }
+
+    const endsWithNewLine =
+      await this.filesRepository.endsWithNewLine(gitignorePath);
+    if (!endsWithNewLine) {
       await this.filesRepository.appendToFile(gitignorePath, "\n");
     }
 
-    filePaths.forEach(async (filePath) => {
-      await this.filesRepository.appendToFile(gitignorePath, `${filePath}\n`);
-    });
+    for (let i = 0; i < filePaths.length; i++) {
+      const path = filePaths[i].trim();
+      if (gitignoreLines.includes(path)) {
+        continue;
+      }
+      await this.filesRepository.appendToFile(gitignorePath, `${path}\n`);
+    }
   }
 }

@@ -8,5 +8,5 @@ export type Subscriber = (event: Event) => void;
 export interface IEventBus {
   subscribe(eventType: EventType, subscriber: Subscriber): void;
   unsubscribe(eventType: EventType, subscriber: Subscriber): void;
-  emit(event: Event): void;
+  emit(event: Event | Event[]): void;
 }

@@ -8,13 +8,25 @@ import {
 export class EventBus implements IEventBus {
   private events: Map<EventType, Subscriber[]> = new Map();
 
-  emit(event: Event): void {
-    const subs = this.events.get(event.type);
-    if (subs === undefined) {
-      return;
-    }
-    for (let i = 0; i < subs.length; i++) {
-      subs[i](event);
+  emit(event: Event | Event[]): void {
+    if (Array.isArray(event)) {
+      for (let i = 0; i < event.length; i++) {
+        const subs = this.events.get(event[i].type);
+        if (subs === undefined) {
+          return;
+        }
+        for (let i = 0; i < subs.length; i++) {
+          subs[i](event[i]);
+        }
+      }
+    } else {
+      const subs = this.events.get(event.type);
+      if (subs === undefined) {
+        return;
+      }
+      for (let i = 0; i < subs.length; i++) {
+        subs[i](event);
+      }
     }
   }
 

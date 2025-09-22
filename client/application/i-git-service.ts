@@ -1,8 +1,14 @@
 import { Commit } from "../domain/commit";
-import { DiffFile, DiffFileStatus } from "../domain/diff";
 import { RepositorySelectionDto } from "../dto/repo-selection";
 
 export interface IGitService {
+  addToGitignore(repositoryPath: string, filePaths: string[]): Promise<void>;
+
+  batchDiscardFileModifications(
+    repositoryPath: string,
+    filePaths: string[],
+  ): Promise<void>;
+
   commit(
     message: string,
     description: string,

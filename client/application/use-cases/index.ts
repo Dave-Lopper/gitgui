@@ -1,3 +1,5 @@
+export { AddToGitignore } from "./add-to-gitignore";
+export { BatchDiscardFileModifications } from "./batch-discard-file-modifications";
 export { CloneRepository } from "./clone-repository";
 export { ConsultCommitDiff } from "./consult-commit-diff";
 export { ConsultFileDiff } from "./consult-file-diff";

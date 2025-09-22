@@ -1,9 +1,25 @@
 import { IGitService } from "../application/i-git-service";
 import { Commit } from "../domain/commit";
-import { DiffFile, DiffFileStatus } from "../domain/diff";
 import { RepositorySelectionDto } from "../dto/repo-selection";
 
 export class GitService implements IGitService {
+  async addToGitignore(
+    repositoryPath: string,
+    filePaths: string[],
+  ): Promise<void> {
+    await window.electronAPI.addToGitignore(repositoryPath, filePaths);
+  }
+
+  async batchDiscardFileModifications(
+    repositoryPath: string,
+    filePaths: string[],
+  ): Promise<void> {
+    await window.electronAPI.batchDiscardFileModifications(
+      repositoryPath,
+      filePaths,
+    );
+  }
+
   async clone(url: string): Promise<RepositorySelectionDto> {
     const results = await window.electronAPI.cloneRepository(url);
     if (!results.success) {

@@ -14,6 +14,14 @@ declare global {
     electronAPI: {
       sendMessage: (msg: string) => void;
       onReply: (cb: (event: any, msg: string) => void) => void;
+      addToGitignore: (
+        repositoryPath: string,
+        filePaths: string[],
+      ) => Promise<void>;
+      batchDiscardFileModifications: (
+        repositoryPath: string,
+        filePaths: string[],
+      ) => Promise<void>;
       cloneRepository: (
         url: string,
       ) => Promise<ActionResponse<RepositorySelectionDto>>;
