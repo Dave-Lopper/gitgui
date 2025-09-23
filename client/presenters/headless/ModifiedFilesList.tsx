@@ -165,9 +165,10 @@ export default function ModifiedFilesList({
             <span>{selectedFiles.size} selected files</span>
           )}
           <span
+            role="button"
             className="hover:bg-retro-active w-full cursor-pointer py-[2px] pl-2 text-left hover:text-white"
             onClick={async () =>
-              useCases.batchDiscardFileModifications.execute(
+              await useCases.batchDiscardFileModifications.execute(
                 repositorySelection.repository.localPath,
                 Array.from(selectedFiles).map((file) => getFilePath(file)),
               )
@@ -178,7 +179,7 @@ export default function ModifiedFilesList({
           <span
             className="hover:bg-retro-active w-full cursor-pointer py-[2px] pl-2 text-left hover:text-white"
             onClick={async () =>
-              useCases.addToGitignore.execute(
+              await useCases.addToGitignore.execute(
                 repositorySelection.repository.localPath,
                 Array.from(selectedFiles).map((file) => getFilePath(file)),
               )
@@ -190,6 +191,7 @@ export default function ModifiedFilesList({
       )}
       {repositorySelection?.diff.map((file, idx) => (
         <ThemedFileOption
+          key={file.displayPaths.join(",")}
           onClick={(e: MouseEvent<HTMLDivElement>) =>
             clickHandler(e, file, idx)
           }

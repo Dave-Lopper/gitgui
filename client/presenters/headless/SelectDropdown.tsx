@@ -76,6 +76,7 @@ export default function SelectDropdown<TriggerExtraProps = {}>({
       >
         {children.map((child, index) => (
           <span
+            key={`${index}`}
             onClick={() => {
               setSelectedIndex(index);
               handleSelect(index);

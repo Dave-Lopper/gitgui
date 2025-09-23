@@ -13,7 +13,7 @@ function BranchDropdownTrigger({
   return (
     <ModernDropdownTrigger
       copy={
-        <div className="flex flex-col justify-center mr-4">
+        <div className="mr-4 flex flex-col justify-center">
           <span className="text-left text-sm text-neutral-500">
             Current branch
           </span>
@@ -27,8 +27,6 @@ function BranchDropdownTrigger({
     />
   );
 }
-
-const options = ["branch1", "branch2", "branch3"];
 
 export default function RetroBranchDropdown() {
   const { repositorySelection } = useRepositorySelection();

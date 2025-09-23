@@ -72,7 +72,7 @@ export default function RetroSettingsMenu() {
         className="px-2"
         tabIndex={3}
       >
-        <SounOffRetroIcon />
+        <SounOffRetroIcon size={24} />
       </RetroButton>
     </div>
   );

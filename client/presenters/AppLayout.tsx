@@ -41,14 +41,13 @@ export default function AppLayout() {
 
   useEffect(() => {
     startupCallback();
-  }, [startupCallback, theme]);
+  }, [startupCallback]);
 
   const branchDropdown = useMemo(
     () =>
       theme === "MODERN" ? <ModernBranchDropdown /> : <RetroBranchDropdown />,
-    [theme],
+    [theme, repositorySelection],
   );
-
 
   const divider = useMemo(
     () => (theme === "MODERN" ? <ModernDivider /> : <RetroDivider />),
@@ -74,12 +73,12 @@ export default function AppLayout() {
           repoSelectionMenu={<RetroRepositorySelectionMenu />}
         />
       ),
-    [theme],
+    [repositorySelection, theme],
   );
 
   const repositoryTab = useMemo(
     () => (theme === "MODERN" ? ModernRepositoryTab : RetroRepositoryTab),
-    [theme],
+    [repositorySelection, theme],
   );
 
   const settingsMenu = useMemo(

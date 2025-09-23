@@ -41,7 +41,7 @@ export default function ModernRepositoryDropdown({
   return (
     <HeadlessDropdown
       animate
-      className="w-full max-h-24 h-24"
+      className="h-24 max-h-24 w-full"
       closeEvent="RepositorySelected"
       tabIndex={1}
       trigger={ModernRepositoryDropdownTrigger}

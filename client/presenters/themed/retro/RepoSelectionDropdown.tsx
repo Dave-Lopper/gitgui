@@ -33,10 +33,13 @@ function RetroRepositoryDropdownTrigger({
     >
       {repositorySelection ? (
         <>
-          <span className="w-full text-left text-sm" style={{ lineHeight: "1" }}>
+          <span
+            className="w-full text-left text-sm"
+            style={{ lineHeight: "1" }}
+          >
             Current repository
           </span>
-          <span className="w-full text-left text-md/1 font-bold">
+          <span className="text-md/1 w-full text-left font-bold">
             {repositorySelection.repository.name}
           </span>
         </>
@@ -55,7 +58,7 @@ export default function RetroRepositoryDropdown({
   return (
     <HeadlessDropdown
       animate={false}
-      className="w-full max-h-13 h-13"
+      className="h-13 max-h-13 w-full"
       closeEvent="RepositorySelected"
       tabIndex={0}
       trigger={RetroRepositoryDropdownTrigger}

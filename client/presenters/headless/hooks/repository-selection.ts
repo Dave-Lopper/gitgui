@@ -1,16 +1,18 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
-import { useEventSubscription } from "../../../infra/react-bus-helper";
+import { Event } from "../../../application/i-event-bus";
 import { RepositorySelectionDto } from "../../../dto/repo-selection";
+import { useEventSubscription } from "../../../infra/react-bus-helper";
 
 export function useRepositorySelection() {
   const [repositorySelection, setRepositorySelection] =
     useState<RepositorySelectionDto | null>(null);
 
-  useEventSubscription(
-    "RepositorySelected",
-    (event) => setRepositorySelection(event.payload),
+  const handler = useCallback(
+    (event: Event) => setRepositorySelection(event.payload),
     [],
   );
+
+  useEventSubscription("RepositorySelected", handler, [handler]);
   return { repositorySelection };
 }
