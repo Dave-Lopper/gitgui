@@ -151,6 +151,8 @@ export default function ModifiedFilesList({
     };
   }, [keyDownHandler, discardRightClickMenu]);
 
+  console.log({ selectedfilesSize: selectedFiles.size });
+
   return (
     <>
       {rightClickMenuPosition && (
@@ -178,16 +180,29 @@ export default function ModifiedFilesList({
           </span>
           <span
             className="hover:bg-retro-active w-full cursor-pointer py-[2px] pl-2 text-left hover:text-white"
-            onClick={async () => {
-              console.log(repositorySelection.repository.localPath);
+            onClick={async () =>
               await useCases.addToGitignore.execute(
                 repositorySelection.repository.localPath,
                 Array.from(selectedFiles).map((file) => getFilePath(file)),
-              );
-            }}
+              )
+            }
           >
             Add to gitignore
           </span>
+          {selectedFiles.size === 1 && (
+            <span
+              className="hover:bg-retro-active w-full cursor-pointer py-[2px] pl-2 text-left hover:text-white"
+              onClick={async () => {
+                const [selectedFile] = selectedFiles;
+                await useCases.addFileTypeToGitignore.execute(
+                  repositorySelection.repository.localPath,
+                  selectedFile,
+                );
+              }}
+            >
+              Add all 
+            </span>
+          )}
         </div>
       )}
       {repositorySelection?.diff.map((file, idx) => (

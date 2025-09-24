@@ -18,6 +18,10 @@ declare global {
         repositoryPath: string,
         filePaths: string[],
       ) => Promise<void>;
+      batchAddToGitignore: (
+        repositoryPath: string,
+        extension: string,
+      ) => Promise<void>;
       batchDiscardFileModifications: (
         repositoryPath: string,
         filePaths: string[],

@@ -1,3 +1,4 @@
+export { AddFileTypeToGitignore } from "./add-file-type-to-gitignore";
 export { AddToGitignore } from "./add-to-gitignore";
 export { BatchDiscardFileModifications } from "./batch-discard-file-modifications";
 export { CloneRepository } from "./clone-repository";

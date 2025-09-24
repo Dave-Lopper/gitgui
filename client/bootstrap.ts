@@ -1,4 +1,5 @@
 import {
+  AddFileTypeToGitignore,
   AddToGitignore,
   BatchDiscardFileModifications,
   CloneRepository,
@@ -19,6 +20,7 @@ const gitService = new GitService();
 const repositoryStore = new RepositoryStore();
 
 export const useCases = {
+  addFileTypeToGitignore: new AddFileTypeToGitignore(gitService, eventBus),
   addToGitignore: new AddToGitignore(gitService, eventBus),
   batchDiscardFileModifications: new BatchDiscardFileModifications(
     gitService,

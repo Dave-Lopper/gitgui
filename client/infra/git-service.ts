@@ -10,6 +10,13 @@ export class GitService implements IGitService {
     await window.electronAPI.addToGitignore(repositoryPath, filePaths);
   }
 
+  async batchAddToGitignore(
+    repositoryPath: string,
+    extension: string,
+  ): Promise<void> {
+    await window.electronAPI.batchAddToGitignore(repositoryPath, extension);
+  }
+
   async batchDiscardFileModifications(
     repositoryPath: string,
     filePaths: string[],
