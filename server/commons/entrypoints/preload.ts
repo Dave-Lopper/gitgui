@@ -6,6 +6,11 @@ electron.contextBridge.exposeInMainWorld("electronAPI", {
       "diff:addToGitignore",
       JSON.stringify({ repositoryPath, filePaths }),
     ),
+  batchAddToGitignore: (repositoryPath: string, extension: string) =>
+    electron.ipcRenderer.invoke(
+      "diff:batchAddToGitignore",
+      JSON.stringify({ repositoryPath, extension }),
+    ),
   batchDiscardFileModifications: (
     repositoryPath: string,
     filePaths: string[],
