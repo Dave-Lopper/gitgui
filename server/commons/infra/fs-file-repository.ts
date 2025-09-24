@@ -63,6 +63,10 @@ export class FsFilesRepository implements FilesRepository {
     return await fs.readFile(path, "utf8");
   }
 
+  async removeFile(path: string): Promise<void> {
+    await fs.rm(path);
+  }
+
   async deleteFolder(path: string): Promise<void> {
     await fs.rm(path, { recursive: true, force: true });
   }

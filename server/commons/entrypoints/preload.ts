@@ -1,10 +1,10 @@
 const electron = require("electron");
 
 electron.contextBridge.exposeInMainWorld("electronAPI", {
-  addToGitignore: (repotisoryPath: string, filePaths: string) =>
+  addToGitignore: (repositoryPath: string, filePaths: string) =>
     electron.ipcRenderer.invoke(
       "diff:addToGitignore",
-      JSON.stringify({ repotisoryPath, filePaths }),
+      JSON.stringify({ repositoryPath, filePaths }),
     ),
   batchDiscardFileModifications: (
     repositoryPath: string,

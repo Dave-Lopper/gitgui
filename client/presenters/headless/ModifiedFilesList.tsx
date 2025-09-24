@@ -178,12 +178,13 @@ export default function ModifiedFilesList({
           </span>
           <span
             className="hover:bg-retro-active w-full cursor-pointer py-[2px] pl-2 text-left hover:text-white"
-            onClick={async () =>
+            onClick={async () => {
+              console.log(repositorySelection.repository.localPath);
               await useCases.addToGitignore.execute(
                 repositorySelection.repository.localPath,
                 Array.from(selectedFiles).map((file) => getFilePath(file)),
-              )
-            }
+              );
+            }}
           >
             Add to gitignore
           </span>

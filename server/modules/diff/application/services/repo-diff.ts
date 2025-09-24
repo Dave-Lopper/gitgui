@@ -43,7 +43,6 @@ export class GetRepoDiff {
         repositoryPath,
         addedFiles[i],
       );
-      console.log({ addedFile: addedFiles[i], addedFileDiffLines });
       addedFileDiffs.push(parseNewFileDiff(addedFileDiffLines));
     }
 

@@ -15,5 +15,7 @@ export interface FilesRepository {
 
   readFile(path: string): Promise<string>;
 
+  removeFile(path: string): Promise<void>;
+
   deleteFolder(path: string): Promise<void>;
 }

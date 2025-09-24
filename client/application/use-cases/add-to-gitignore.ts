@@ -10,15 +10,9 @@ export class AddToGitignore {
   async execute(repositoryPath: string, filePaths: string[]): Promise<void> {
     await this.gitService.addToGitignore(repositoryPath, filePaths);
     const dto = await this.gitService.selectRepoFromSaved(repositoryPath);
-    this.eventBus.emit([
-      {
-        type: "AddedToGitignore",
-        payload: filePaths,
-      },
-      {
-        type: "RepositorySelected",
-        payload: dto,
-      },
-    ]);
+    this.eventBus.emit({
+      type: "RepositorySelected",
+      payload: dto,
+    });
   }
 }

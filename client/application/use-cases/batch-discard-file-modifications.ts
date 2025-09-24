@@ -13,15 +13,9 @@ export class BatchDiscardFileModifications {
       filePaths,
     );
     const dto = await this.gitService.selectRepoFromSaved(repositoryPath);
-    this.eventBus.emit([
-      {
-        type: "DiscardedFilesModifications",
-        payload: filePaths,
-      },
-      {
-        type: "RepositorySelected",
-        payload: dto,
-      },
-    ]);
+    this.eventBus.emit({
+      type: "RepositorySelected",
+      payload: dto,
+    });
   }
 }

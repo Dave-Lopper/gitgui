@@ -62,6 +62,11 @@ export default function AppLayout() {
     [theme, repositorySelection],
   );
 
+  const ModifiedFileOption = useMemo(
+    () => RetroDiffFileOption,
+    [repositorySelection],
+  );
+
   const repositoryDropdown = useMemo(
     () =>
       theme === "MODERN" ? (
@@ -110,7 +115,7 @@ export default function AppLayout() {
                   <div className="flex flex-col bg-white">
                     <ModifiedFilesList
                       repositorySelection={repositorySelection}
-                      themedFileOption={RetroDiffFileOption}
+                      themedFileOption={ModifiedFileOption}
                     />
                   </div>
                 </div>

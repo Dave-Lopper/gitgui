@@ -88,6 +88,7 @@ async function createWindow() {
 
   ipcMain.handle("diff:addToGitignore", async (event, message) => {
     const parseMessage = JSON.parse(message);
+    console.log({ parseMessage });
     await diffUseCases.addToGitignore.execute(
       parseMessage.repositoryPath,
       parseMessage.filePaths,

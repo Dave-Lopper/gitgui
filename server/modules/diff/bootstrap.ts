@@ -14,7 +14,10 @@ export function bootstrap() {
   return {
     addToGitignore: new AddToGitignore(filesRepo),
     repoDiff: diffService,
-    batchDiscardFileModifications: new BatchDiscardFileModifications(gitRunner),
+    batchDiscardFileModifications: new BatchDiscardFileModifications(
+      filesRepo,
+      gitRunner,
+    ),
     toggleFileStaged: new ToggleFileStaged(gitRunner),
   };
 }
