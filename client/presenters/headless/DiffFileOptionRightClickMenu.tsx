@@ -5,19 +5,26 @@ import { getFilePath } from "../../domain/diff";
 import { RepoTabsContext } from "../contexts/repo-tabs";
 import { useRepositorySelection } from "./hooks/repository-selection";
 
+export type RightClickMenuOptionProps = {
+  text: string;
+  onClick: () => Promise<void>;
+};
+
+export type SelectedFilesCounterProps = {
+  count: number;
+};
+
 type DiffFileOptionRightClickMenuProps = {
   containerClassname?: string;
-  menuOption: ComponentType<{ text: string; onClick: () => Promise<void> }>;
-  selectedFilesCounter: ComponentType<{ count: number }>;
-  posLeft: number;
-  posTop: number;
+  menuOption: ComponentType<RightClickMenuOptionProps>;
+  selectedFilesCounter: ComponentType<SelectedFilesCounterProps>;
+  position: number[] | null;
 };
 
 export default function DiffFileOptionRightClickMenu({
   containerClassname,
   menuOption: MenuOption,
-  posLeft,
-  posTop,
+  position,
   selectedFilesCounter: SelectedFilesCounter,
 }: DiffFileOptionRightClickMenuProps) {
   const { repositorySelection } = useRepositorySelection();
@@ -71,7 +78,11 @@ export default function DiffFileOptionRightClickMenu({
   return (
     <div
       className={`absolute flex flex-col ${containerClassname ? containerClassname : ""}`}
-      style={{ top: `${posTop}px`, left: `${posLeft}px` }}
+      style={
+        position
+          ? { top: `${position[1]}px`, left: `${position[0]}px` }
+          : { display: "none" }
+      }
     >
       <SelectedFilesCounter count={selectedFiles.size} />
       <MenuOption text="Discard changes" onClick={discardChanges} />

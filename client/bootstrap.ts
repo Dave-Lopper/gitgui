@@ -11,11 +11,11 @@ import {
   SelectRepositoryFromSaved,
   ToggleFilesStaged,
 } from "./application/use-cases";
-import { EventBus } from "./infra/event-bus";
+import { ObservableEventBus } from "./infra/event-bus";
 import { GitService } from "./infra/git-service";
 import { RepositoryStore } from "./infra/repository-store";
 
-export const eventBus = new EventBus();
+export const eventBus = new ObservableEventBus();
 const gitService = new GitService();
 const repositoryStore = new RepositoryStore();
 

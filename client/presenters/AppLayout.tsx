@@ -25,10 +25,12 @@ import {
   RetroModifiedFilesCounter,
   RetroSettingsMenu,
   RetroRepositorySelectionMenu,
+  RetroDiffFileOptionRightClickFilesCounter,
 } from "./themed/retro";
 import { RepoTabsContext } from "./contexts/repo-tabs";
 import RepositoryTabs from "./headless/RepositoryTabs";
 import RetroRepositoryTab from "./themed/retro/RepositoryTab";
+import RetroDiffFileListRightClickMenuOption from "./themed/retro/DiffFileListRightClickMenuOption";
 
 export default function AppLayout() {
   const { theme } = useContext(UiSettingsContext);
@@ -116,6 +118,13 @@ export default function AppLayout() {
                     <ModifiedFilesList
                       repositorySelection={repositorySelection}
                       themedFileOption={ModifiedFileOption}
+                      rightClickMenuClassname="bg-retro font-retro retro-borders absolute w-[300px] border-[2px] text-black"
+                      rightClickMenuOption={
+                        RetroDiffFileListRightClickMenuOption
+                      }
+                      rightClickMenuFilesCounter={
+                        RetroDiffFileOptionRightClickFilesCounter
+                      }
                     />
                   </div>
                 </div>

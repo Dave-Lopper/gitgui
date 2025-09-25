@@ -5,22 +5,27 @@ import {
   Subscriber,
 } from "../application/i-event-bus";
 
-export class EventBus implements IEventBus {
-  private events: Map<EventType, Subscriber[]> = new Map();
+export class ObservableEventBus implements IEventBus {
+  private subscriptions: Map<EventType, Subscriber[]> = new Map();
+  private lastEvents: Map<EventType, Event> = new Map();
 
   emit(event: Event | Event[]): void {
     if (Array.isArray(event)) {
       for (let i = 0; i < event.length; i++) {
-        const subs = this.events.get(event[i].type);
+        this.lastEvents.set(event[i].type, event[i]);
+
+        const subs = this.subscriptions.get(event[i].type);
         if (subs === undefined) {
-          return;
+          continue;
         }
-        for (let i = 0; i < subs.length; i++) {
-          subs[i](event[i]);
+        for (let j = 0; j < subs.length; j++) {
+          subs[j](event[i]);
         }
       }
     } else {
-      const subs = this.events.get(event.type);
+      this.lastEvents.set(event.type, event);
+
+      const subs = this.subscriptions.get(event.type);
       if (subs === undefined) {
         return;
       }
@@ -31,20 +36,25 @@ export class EventBus implements IEventBus {
   }
 
   subscribe(eventType: EventType, subscriber: Subscriber): void {
-    const currentSubs = this.events.get(eventType);
+    const currentSubs = this.subscriptions.get(eventType);
     if (currentSubs === undefined) {
-      this.events.set(eventType, [subscriber]);
+      this.subscriptions.set(eventType, [subscriber]);
     } else {
-      this.events.set(eventType, [...currentSubs, subscriber]);
+      this.subscriptions.set(eventType, [...currentSubs, subscriber]);
+    }
+
+    const lastEvent = this.lastEvents.get(eventType);
+    if (lastEvent) {
+      subscriber(lastEvent);
     }
   }
 
   unsubscribe(eventType: EventType, subscriber: Subscriber): void {
-    const currentSubs = this.events.get(eventType);
+    const currentSubs = this.subscriptions.get(eventType);
     if (currentSubs === undefined) {
       return;
     }
-    this.events.set(
+    this.subscriptions.set(
       eventType,
       currentSubs.filter((sub) => sub !== subscriber),
     );

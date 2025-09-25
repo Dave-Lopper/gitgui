@@ -11,6 +11,11 @@ import { useCases } from "../../bootstrap";
 import { DiffFile, getFilePath } from "../../domain/diff";
 import { RepositorySelectionDto } from "../../dto/repo-selection";
 import { RepoTabsContext } from "../contexts/repo-tabs";
+import {
+  default as RightClickMenu,
+  RightClickMenuOptionProps,
+  SelectedFilesCounterProps,
+} from "./DiffFileOptionRightClickMenu";
 
 export type ThemedFileOptionProps = {
   isSelected: boolean;
@@ -22,10 +27,16 @@ export type ThemedFileOptionProps = {
 
 export default function ModifiedFilesList({
   repositorySelection,
+  rightClickMenuClassname,
+  rightClickMenuFilesCounter: RightClickMenuFilesCounter,
+  rightClickMenuOption: RightClickMenuOption,
   themedFileOption: ThemedFileOption,
 }: {
   repositorySelection: RepositorySelectionDto;
   themedFileOption: ComponentType<ThemedFileOptionProps>;
+  rightClickMenuClassname?: string;
+  rightClickMenuOption: ComponentType<RightClickMenuOptionProps>;
+  rightClickMenuFilesCounter: ComponentType<SelectedFilesCounterProps>;
 }) {
   const {
     emptyFileSelection,
@@ -151,60 +162,14 @@ export default function ModifiedFilesList({
     };
   }, [keyDownHandler, discardRightClickMenu]);
 
-  console.log({ selectedfilesSize: selectedFiles.size });
-
   return (
     <>
-      {rightClickMenuPosition && (
-        <div
-          className="bg-retro font-retro retro-borders absolute flex w-[300px] flex-col border-[2px] text-black"
-          style={{
-            left: rightClickMenuPosition[0],
-            top: rightClickMenuPosition[1],
-          }}
-        >
-          {selectedFiles.size > 1 && (
-            <span>{selectedFiles.size} selected files</span>
-          )}
-          <span
-            role="button"
-            className="hover:bg-retro-active w-full cursor-pointer py-[2px] pl-2 text-left hover:text-white"
-            onClick={async () =>
-              await useCases.batchDiscardFileModifications.execute(
-                repositorySelection.repository.localPath,
-                Array.from(selectedFiles).map((file) => getFilePath(file)),
-              )
-            }
-          >
-            Discard changes
-          </span>
-          <span
-            className="hover:bg-retro-active w-full cursor-pointer py-[2px] pl-2 text-left hover:text-white"
-            onClick={async () =>
-              await useCases.addToGitignore.execute(
-                repositorySelection.repository.localPath,
-                Array.from(selectedFiles).map((file) => getFilePath(file)),
-              )
-            }
-          >
-            Add to gitignore
-          </span>
-          {selectedFiles.size === 1 && (
-            <span
-              className="hover:bg-retro-active w-full cursor-pointer py-[2px] pl-2 text-left hover:text-white"
-              onClick={async () => {
-                const [selectedFile] = selectedFiles;
-                await useCases.addFileTypeToGitignore.execute(
-                  repositorySelection.repository.localPath,
-                  selectedFile,
-                );
-              }}
-            >
-              Add all 
-            </span>
-          )}
-        </div>
-      )}
+      <RightClickMenu
+        containerClassname={rightClickMenuClassname}
+        menuOption={RightClickMenuOption}
+        position={rightClickMenuPosition}
+        selectedFilesCounter={RightClickMenuFilesCounter}
+      />
       {repositorySelection?.diff.map((file, idx) => (
         <ThemedFileOption
           key={file.displayPaths.join(",")}
