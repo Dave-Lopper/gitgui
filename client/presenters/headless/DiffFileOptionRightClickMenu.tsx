@@ -64,6 +64,30 @@ export default function DiffFileOptionRightClickMenu({
     );
   }, [repositorySelection, selectedFiles]);
 
+  const copyAbsoluteFilePath = useCallback(async () => {
+    if (!repositorySelection) {
+      return;
+    }
+
+    const [selectedFile] = selectedFiles;
+    await useCases.copyAbsoluteFilePath.execute(
+      repositorySelection?.repository.localPath,
+      getFilePath(selectedFile),
+    );
+  }, [repositorySelection, selectedFiles]);
+
+  const copyRelativeFilePath = useCallback(async () => {
+    if (!repositorySelection) {
+      return;
+    }
+
+    const [selectedFile] = selectedFiles;
+    await useCases.copyRelativeFilePath.execute(
+      repositorySelection?.repository.localPath,
+      getFilePath(selectedFile),
+    );
+  }, [repositorySelection, selectedFiles]);
+
   const discardChanges = useCallback(async () => {
     if (!repositorySelection) {
       return;
@@ -88,10 +112,20 @@ export default function DiffFileOptionRightClickMenu({
       <MenuOption text="Discard changes" onClick={discardChanges} />
       <MenuOption text="Add to gitignore" onClick={addToGitignore} />
       {selectedFiles.size === 1 && (
-        <MenuOption
-          text={`Add all ${selectedFileExtension} files to gitignore`}
-          onClick={addFileTypeToGitignore}
-        />
+        <>
+          <MenuOption
+            text={`Add all ${selectedFileExtension} files to gitignore`}
+            onClick={addFileTypeToGitignore}
+          />
+          <MenuOption
+            text="Copy absolute path"
+            onClick={copyAbsoluteFilePath}
+          />
+          <MenuOption
+            text="Copy relative path"
+            onClick={copyRelativeFilePath}
+          />
+        </>
       )}
     </div>
   );

@@ -4,6 +4,8 @@ export { BatchDiscardFileModifications } from "./batch-discard-file-modification
 export { CloneRepository } from "./clone-repository";
 export { ConsultCommitDiff } from "./consult-commit-diff";
 export { ConsultFileDiff } from "./consult-file-diff";
+export { CopyAbsoluteFilePath } from "./copy-absolute-file-path";
+export { CopyRelativeFilePath } from "./copy-relative-file-path";
 export { GetCommitHistory } from "./get-history";
 export { GetSavedRepositories } from "./get-saved-repositories";
 export { SelectRepositoryFromSaved } from "./select-repository-from-saved";
