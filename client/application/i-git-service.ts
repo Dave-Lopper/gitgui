@@ -12,9 +12,9 @@ export interface IGitService {
   ): Promise<void>;
 
   commit(
-    message: string,
-    description: string,
     repositoryPath: string,
+    message: string,
+    description?: string,
   ): Promise<Commit>;
 
   clone(url: string): Promise<RepositorySelectionDto>;

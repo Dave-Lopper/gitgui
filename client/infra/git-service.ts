@@ -36,14 +36,14 @@ export class GitService implements IGitService {
   }
 
   async commit(
-    message: string,
-    description: string,
     repositoryPath: string,
+    message: string,
+    description?: string,
   ): Promise<Commit> {
     const result = await window.electronAPI.commit(
+      repositoryPath,
       message,
       description,
-      repositoryPath,
     );
     if (!result.success) {
       throw new Error(result.message);

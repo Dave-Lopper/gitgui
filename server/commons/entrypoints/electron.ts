@@ -6,6 +6,7 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import { bootstrap as commitBootstrap } from "../../modules/commit/bootstrap.js";
 import { bootstrap as diffBootstrap } from "../../modules/diff/bootstrap.js";
 import { bootstrap as repositoryBootstrap } from "../../modules/repository/bootstrap.js";
+import { eventNames } from "process";
 
 let window: Electron.BrowserWindow;
 let commitUseCases: ReturnType<typeof commitBootstrap>;
@@ -75,15 +76,24 @@ async function createWindow() {
       ),
   );
 
+  ipcMain.handle("commits:commit", async (event, message) => {
+    const parsedMessage = JSON.parse(message);
+    return await commitUseCases.commit.execute(
+      parsedMessage.repositoryPath,
+      parsedMessage.message,
+      window,
+      parsedMessage.description,
+    );
+  });
+
   ipcMain.handle("commits:getHistory", async (event, message) => {
     const parsedMessage = JSON.parse(message);
-    const results = await commitUseCases.getHistory.execute(
+    return await commitUseCases.getHistory.execute(
       parsedMessage.page,
       parsedMessage.pageSize,
       parsedMessage.repositoryPath,
       window,
     );
-    return results;
   });
 
   ipcMain.handle("diff:addToGitignore", async (event, message) => {

@@ -21,6 +21,11 @@ electron.contextBridge.exposeInMainWorld("electronAPI", {
     ),
   cloneRepository: (url: string) =>
     electron.ipcRenderer.invoke("repositories:clone", url),
+  commit: (repositoryPath: string, message: string, description?: string) =>
+    electron.ipcRenderer.invoke(
+      "commits:commit",
+      JSON.stringify({ repositoryPath, message, description }),
+    ),
   getBranchesForRepository: (path: string) =>
     electron.ipcRenderer.invoke("repositories:getBranchesForRepository", path),
   getCommitHistory: (page: number, pageSize: number, repositoryPath: string) =>

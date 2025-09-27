@@ -30,9 +30,9 @@ declare global {
         url: string,
       ) => Promise<ActionResponse<RepositorySelectionDto>>;
       commit: (
-        message: string,
-        description: string,
         repositoryPath: string,
+        message: string,
+        description?: string,
       ) => Promise<ActionResponse<Commit>>;
       getBranchesForRepository: (
         path: string,
