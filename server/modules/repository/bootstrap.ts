@@ -2,8 +2,10 @@ import { FsFilesRepository } from "../../commons/infra/fs-file-repository.js";
 import { ShellRunner } from "../../commons/infra/shell-command-runner.js";
 import { GetRepoDiff } from "../diff/application/services/repo-diff.js";
 import { DiffCliGitRunner } from "../diff/infra/diff-git-cli-runner.js";
+import { Fetch } from "./application/use-cases/fetch.js";
 import { GetBranchesForRepository } from "./application/use-cases/get-branches.js";
 import { GetSavedRepositories } from "./application/use-cases/get-saved-repositories.js";
+import { Pull } from "./application/use-cases/pull.js";
 import { SelectRepositoryFromDisk } from "./application/use-cases/select-repository-from-disk.js";
 import { SelectRepositoryFromSaved } from "./application/use-cases/select-repository-from-saved.js";
 import { CloneRepository } from "./application/use-cases/clone-repository.js";
@@ -31,6 +33,8 @@ export const bootstrap = async () => {
     ),
     getBranchesForRepository: new GetBranchesForRepository(repoGitRunner),
     getSavedRepositories: new GetSavedRepositories(repoGitRunner, repoStore),
+    fetch: new Fetch(repoGitRunner),
+    pull: new Pull(repoGitRunner),
     selectRepositoryFromDisk: new SelectRepositoryFromDisk(
       commitStatusService,
       repoGitRunner,

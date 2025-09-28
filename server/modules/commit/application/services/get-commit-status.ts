@@ -2,7 +2,7 @@ import { BrowserWindow } from "electron";
 
 import { safeGit } from "../../../../commons/application/safe-git.js";
 import { parseCommitStatus } from "../../domain/services.js";
-import { CommitStatus } from "../../dto/commit-status.js";
+import { CommitStatusDto } from "../../dto/commit-status.js";
 import { CommitGitRunner } from "../git-runner.js";
 
 export class GetCommitStatus {
@@ -10,7 +10,7 @@ export class GetCommitStatus {
   async execute(
     repositoryPath: string,
     window: BrowserWindow,
-  ): Promise<CommitStatus> {
+  ): Promise<CommitStatusDto> {
     const commitStatusLines = await safeGit(
       this.gitRunner.getCommitStatus(repositoryPath),
       window,

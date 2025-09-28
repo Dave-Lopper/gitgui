@@ -1,4 +1,4 @@
-export type CommitStatus = {
+export type CommitStatusDto = {
   branchName: string;
   localUnpushed: number;
   remoteName: string;

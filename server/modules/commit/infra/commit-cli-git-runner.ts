@@ -1,6 +1,6 @@
 import { GitCliRunner } from "../../../commons/infra/git-cli-runner.js";
-import { HeadHashesDto } from "../../dto/head-hashes.js";
 import { CommitGitRunner } from "../application/git-runner.js";
+import { HeadHashesDto } from "../dto/head-hashes.js";
 
 export class CommitGitCliRunner
   extends GitCliRunner

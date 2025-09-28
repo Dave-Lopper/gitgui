@@ -47,6 +47,12 @@ async function createWindow() {
   });
 
   ipcMain.handle(
+    "repositories:fetch",
+    async (event, message) =>
+      await repositoryUseCases.fetch.execute(message, window),
+  );
+
+  ipcMain.handle(
     "repositories:getBranchesForRepository",
     async (event, message) =>
       await repositoryUseCases.getBranchesForRepository.execute(
@@ -59,6 +65,12 @@ async function createWindow() {
     "repositories:getSaved",
     async (event, message) =>
       await repositoryUseCases.getSavedRepositories.execute(window),
+  );
+
+  ipcMain.handle(
+    "repositories:pull",
+    async (event, message) =>
+      await repositoryUseCases.pull.execute(message, window),
   );
 
   ipcMain.handle(

@@ -1,4 +1,4 @@
-import { CommitStatus } from "../dto/commit-status.js";
+import { CommitStatusDto } from "../dto/commit-status.js";
 import { Commit } from "./entities.js";
 
 export function parseHistory(lines: string[]): Commit[] {
@@ -20,7 +20,7 @@ export function parseHistory(lines: string[]): Commit[] {
   return commits;
 }
 
-export function parseCommitStatus(lines: string[]): CommitStatus {
+export function parseCommitStatus(lines: string[]): CommitStatusDto {
   const line = lines[0];
   const relevantPart = line.split("...")[1];
 

@@ -39,6 +39,10 @@ export class RepositoryGitCliRunner
     return tempFolder;
   }
 
+  async fetch(path: string): Promise<void> {
+    await this.safeRun("git", ["fetch"], { cwd: path });
+  }
+
   async getCurrentBranch(path: string): Promise<string> {
     const res = await this.safeRun(
       "git",
@@ -254,5 +258,9 @@ export class RepositoryGitCliRunner
     }
 
     return Array.from(branchesMap.values());
+  }
+
+  async pull(path: string): Promise<void> {
+    await this.safeRun("git", ["pull"], { cwd: path });
   }
 }

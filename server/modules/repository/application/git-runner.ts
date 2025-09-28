@@ -5,6 +5,8 @@ import { Remote } from "../dto/remote.js";
 export interface RepositoryGitRunner {
   cloneRepository(url: string, path: string): Promise<string>;
 
+  fetch(path: string): Promise<void>;
+
   getCurrentRemote(path: string): Promise<Remote>;
 
   getCurrentBranch(path: string): Promise<string>;
@@ -16,4 +18,6 @@ export interface RepositoryGitRunner {
   listBranches(path: string, currentBranchName: string): Promise<Branch[]>;
 
   listRefs(path: string): Promise<RepositoryReferences>;
+
+  pull(path: string): Promise<void>;
 }

@@ -34,6 +34,8 @@ declare global {
         message: string,
         description?: string,
       ) => Promise<ActionResponse<Commit>>;
+      fetch: (repositoryPath: string) => Promise<void>;
+      pull: (repositoryPath: string) => Promise<void>;
       getBranchesForRepository: (
         path: string,
       ) => Promise<ActionResponse<Branch[]>>;

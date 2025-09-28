@@ -1,4 +1,4 @@
-import { HeadHashesDto } from "../../dto";
+import { HeadHashesDto } from "../dto/head-hashes.js";
 
 export interface CommitGitRunner {
   commit(repositoryPath: string, message: string): Promise<void>;
