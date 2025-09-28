@@ -9,6 +9,7 @@ import { Repository } from "../../domain/entities.js";
 import { dedupRefs } from "../../domain/services.js";
 import { RepositorySelectionDto } from "../../dto/repository-selection.js";
 import { RepositoryGitRunner } from "../git-runner.js";
+import { CommitStatusService } from "../../../commit/application/commit-status-service.js";
 
 export const SelectRepositoryFromSavedStatusValues = [
   "invalidRepo",
@@ -19,6 +20,7 @@ export type SelectRepositoryFromSavedStatus =
 
 export class SelectRepositoryFromSaved {
   constructor(
+    private readonly commitStatusService: CommitStatusService,
     private readonly gitRunner: RepositoryGitRunner,
     private readonly repoDiffService: RepoDiffService,
   ) {}
@@ -50,12 +52,16 @@ export class SelectRepositoryFromSaved {
     const refs = await safeGit(this.gitRunner.listRefs(repositoryPath), window);
     const branches = dedupRefs(branch, refs);
     const diff = await this.repoDiffService.execute(repositoryPath, window);
+    const commitStatus = await this.commitStatusService.execute(
+      repositoryPath,
+      window,
+    );
 
     return {
       success: true,
       status: "success",
       action: "selectRepositoryFromSaved",
-      data: { repository, branches, diff },
+      data: { commitStatus, repository, branches, diff },
     };
   }
 }

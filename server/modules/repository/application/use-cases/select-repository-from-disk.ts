@@ -11,6 +11,7 @@ import { RepositoryGitRunner } from "../git-runner.js";
 import { RepositoryStore } from "../store.js";
 import { dedupRefs } from "../../domain/services.js";
 import { RepoDiffService } from "../../../diff/application/repo-diff-service.js";
+import { CommitStatusService } from "../../../commit/application/commit-status-service.js";
 
 export type SelectRepositoryFromDiskStatus =
   | "canceled"
@@ -19,6 +20,7 @@ export type SelectRepositoryFromDiskStatus =
 
 export class SelectRepositoryFromDisk {
   constructor(
+    private readonly commitStatusService: CommitStatusService,
     private readonly gitRunner: RepositoryGitRunner,
     private readonly repoDiffService: RepoDiffService,
     private readonly store: RepositoryStore,
@@ -69,16 +71,21 @@ export class SelectRepositoryFromDisk {
     const refs = await safeGit(this.gitRunner.listRefs(repositoryPath), window);
     const branches = dedupRefs(branchName, refs);
     const diff = await this.repoDiffService.execute(repositoryPath, window);
+    const commitStatus = await this.commitStatusService.execute(
+      repositoryPath,
+      window,
+    );
 
     const repositoryExists = await this.store.exists(repository);
     if (!repositoryExists) {
       await this.store.save(repository);
     }
+
     return {
       action: "selectRepositoryFromDisk",
       status: "success",
       success: true,
-      data: { repository, branches, diff },
+      data: { commitStatus, repository, branches, diff },
     };
   }
 }

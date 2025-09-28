@@ -9,10 +9,15 @@ import { SelectRepositoryFromSaved } from "./application/use-cases/select-reposi
 import { CloneRepository } from "./application/use-cases/clone-repository.js";
 import { SqliteRepositoryStore } from "./infra/sqlite-repository-store.js";
 import { RepositoryGitCliRunner } from "./infra/repo-git-cli-runner.js";
+import { GetCommitStatus } from "../commit/application/services/get-commit-status.js";
+import { CommitGitCliRunner } from "../commit/infra/commit-cli-git-runner.js";
 
 export const bootstrap = async () => {
   const repoStore = await SqliteRepositoryStore.create();
   const commandRunner = new ShellRunner();
+  const commitStatusService = new GetCommitStatus(
+    new CommitGitCliRunner(commandRunner),
+  );
   const repoGitRunner = new RepositoryGitCliRunner(commandRunner);
   const repoDiffService = new GetRepoDiff(new DiffCliGitRunner(commandRunner));
   const filesRepository = new FsFilesRepository();
@@ -27,11 +32,13 @@ export const bootstrap = async () => {
     getBranchesForRepository: new GetBranchesForRepository(repoGitRunner),
     getSavedRepositories: new GetSavedRepositories(repoGitRunner, repoStore),
     selectRepositoryFromDisk: new SelectRepositoryFromDisk(
+      commitStatusService,
       repoGitRunner,
       repoDiffService,
       repoStore,
     ),
     selectRepositoryFromSaved: new SelectRepositoryFromSaved(
+      commitStatusService,
       repoGitRunner,
       repoDiffService,
     ),
