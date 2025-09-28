@@ -1,6 +1,6 @@
 import { IpcRendererEvent } from "electron";
 
-import { Commit } from "./domain/commit";
+import { Commit, CommitStatus } from "./domain/commit";
 import { DiffFile } from "./domain/diff";
 import { Repository, Branch } from "./domain/repository";
 import { ActionResponse } from "./dto/action";
@@ -56,6 +56,9 @@ declare global {
         filePaths: string[],
       ) => Promise<void>;
 
+      onRepoFetched: (
+        callback: (event: IpcRendererEvent, data: CommitStatus) => void,
+      ) => void;
       onGitError: (
         callback: (
           event: IpcRendererEvent,

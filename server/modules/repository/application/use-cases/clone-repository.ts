@@ -82,17 +82,11 @@ export class CloneRepository {
       await this.store.save(repository);
     }
     const diff = await this.repoDiffService.execute(repositoryPath, window);
-    const commitStatus = {
-      branchName: currentBranch,
-      remoteName: remote.name,
-      remoteUnpulled: 0,
-      localUnpushed: 0,
-    };
 
     return {
       action: "cloneRepository",
       success: true,
-      data: { commitStatus, repository, branches, diff },
+      data: { repository, branches, diff },
     };
   }
 }

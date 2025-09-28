@@ -1,3 +1,5 @@
+import { CommitStatusDto } from "../../modules/commit/dto";
+
 const electron = require("electron");
 
 electron.contextBridge.exposeInMainWorld("electronAPI", {
@@ -49,6 +51,9 @@ electron.contextBridge.exposeInMainWorld("electronAPI", {
       JSON.stringify({ repositoryPath, filePaths }),
     ),
 
+  onRepositoryFetched: (
+    cb: (event: Electron.IpcRendererEvent, data: CommitStatusDto) => void,
+  ) => electron.ipcRenderer.on("repository:fetched", cb),
   onGitError: (
     cb: (
       event: Electron.IpcRendererEvent,

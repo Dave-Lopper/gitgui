@@ -2,6 +2,7 @@ import path from "path";
 
 import { BrowserWindow } from "electron";
 
+import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
 import { ActionResponse } from "../../../../commons/dto/action.js";
 import { RepoDiffService } from "../../../diff/application/repo-diff-service.js";
@@ -21,6 +22,7 @@ export type SelectRepositoryFromSavedStatus =
 export class SelectRepositoryFromSaved {
   constructor(
     private readonly commitStatusService: CommitStatusService,
+    private readonly eventEmitter: IEventEmitter,
     private readonly gitRunner: RepositoryGitRunner,
     private readonly repoDiffService: RepoDiffService,
   ) {}
@@ -52,17 +54,25 @@ export class SelectRepositoryFromSaved {
     const refs = await safeGit(this.gitRunner.listRefs(repositoryPath), window);
     const branches = dedupRefs(branch, refs);
     const diff = await this.repoDiffService.execute(repositoryPath, window);
-    await this.gitRunner.fetch(repositoryPath);
-    const commitStatus = await this.commitStatusService.execute(
-      repositoryPath,
-      window,
-    );
+
+    void (async () => {
+      try {
+        await this.gitRunner.fetch(repositoryPath);
+        const commitStatus = await this.commitStatusService.execute(
+          repositoryPath,
+          window,
+        );
+        this.eventEmitter.send("repository:fetched", commitStatus);
+      } catch (err) {
+        console.error(`Error while fetching and getting commit status: ${err}`);
+      }
+    })();
 
     return {
       success: true,
       status: "success",
       action: "selectRepositoryFromSaved",
-      data: { commitStatus, repository, branches, diff },
+      data: { repository, branches, diff },
     };
   }
 }

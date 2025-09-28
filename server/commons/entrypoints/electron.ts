@@ -34,7 +34,7 @@ async function createWindow() {
     window.loadFile(path.join(__dirname, "../dist/index.html"));
   }
 
-  repositoryUseCases = await repositoryBootstrap();
+  repositoryUseCases = await repositoryBootstrap(window);
   commitUseCases = commitBootstrap();
   diffUseCases = diffBootstrap();
 

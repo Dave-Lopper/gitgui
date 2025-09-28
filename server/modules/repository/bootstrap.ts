@@ -1,3 +1,4 @@
+import { ElectronEventEmitter } from "../../commons/infra/event-emitter.js";
 import { FsFilesRepository } from "../../commons/infra/fs-file-repository.js";
 import { ShellRunner } from "../../commons/infra/shell-command-runner.js";
 import { GetRepoDiff } from "../diff/application/services/repo-diff.js";
@@ -13,8 +14,10 @@ import { SqliteRepositoryStore } from "./infra/sqlite-repository-store.js";
 import { RepositoryGitCliRunner } from "./infra/repo-git-cli-runner.js";
 import { GetCommitStatus } from "../commit/application/services/get-commit-status.js";
 import { CommitGitCliRunner } from "../commit/infra/commit-cli-git-runner.js";
+import { BrowserWindow } from "electron";
 
-export const bootstrap = async () => {
+export const bootstrap = async (window: BrowserWindow) => {
+  const eventEmitter = new ElectronEventEmitter(window);
   const repoStore = await SqliteRepositoryStore.create();
   const commandRunner = new ShellRunner();
   const commitStatusService = new GetCommitStatus(

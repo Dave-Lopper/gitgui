@@ -4,6 +4,7 @@ import path from "path";
 import { BrowserWindow, dialog } from "electron";
 
 import { ActionResponse } from "../../../../commons/dto/action.js";
+import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
 import { Repository } from "../../domain/entities.js";
 import { RepositorySelectionDto } from "../../dto/repository-selection.js";
@@ -21,6 +22,7 @@ export type SelectRepositoryFromDiskStatus =
 export class SelectRepositoryFromDisk {
   constructor(
     private readonly commitStatusService: CommitStatusService,
+    private readonly eventEmitter: IEventEmitter,
     private readonly gitRunner: RepositoryGitRunner,
     private readonly repoDiffService: RepoDiffService,
     private readonly store: RepositoryStore,
@@ -71,11 +73,19 @@ export class SelectRepositoryFromDisk {
     const refs = await safeGit(this.gitRunner.listRefs(repositoryPath), window);
     const branches = dedupRefs(branchName, refs);
     const diff = await this.repoDiffService.execute(repositoryPath, window);
-    await this.gitRunner.fetch(repositoryPath);
-    const commitStatus = await this.commitStatusService.execute(
-      repositoryPath,
-      window,
-    );
+
+    void (async () => {
+      try {
+        await this.gitRunner.fetch(repositoryPath);
+        const commitStatus = await this.commitStatusService.execute(
+          repositoryPath,
+          window,
+        );
+        this.eventEmitter.send("repository:fetched", commitStatus);
+      } catch (err) {
+        console.error(`Error while fetching and getting commit status: ${err}`);
+      }
+    })();
 
     const repositoryExists = await this.store.exists(repository);
     if (!repositoryExists) {
@@ -86,7 +96,7 @@ export class SelectRepositoryFromDisk {
       action: "selectRepositoryFromDisk",
       status: "success",
       success: true,
-      data: { commitStatus, repository, branches, diff },
+      data: { repository, branches, diff },
     };
   }
 }
