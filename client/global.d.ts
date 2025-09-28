@@ -56,7 +56,7 @@ declare global {
         filePaths: string[],
       ) => Promise<void>;
 
-      onRepoFetched: (
+      onRepositoryFetched: (
         callback: (event: IpcRendererEvent, data: CommitStatus) => void,
       ) => void;
       onGitError: (

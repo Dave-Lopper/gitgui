@@ -40,12 +40,14 @@ export const bootstrap = async (window: BrowserWindow) => {
     pull: new Pull(repoGitRunner),
     selectRepositoryFromDisk: new SelectRepositoryFromDisk(
       commitStatusService,
+      eventEmitter,
       repoGitRunner,
       repoDiffService,
       repoStore,
     ),
     selectRepositoryFromSaved: new SelectRepositoryFromSaved(
       commitStatusService,
+      eventEmitter,
       repoGitRunner,
       repoDiffService,
     ),

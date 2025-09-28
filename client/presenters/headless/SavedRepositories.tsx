@@ -1,4 +1,10 @@
-import { ComponentType, ReactNode, useCallback, useState } from "react";
+import {
+  ComponentType,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 import { useCases } from "../../bootstrap";
 import { Repository } from "../../domain/repository";
@@ -30,6 +36,12 @@ export default function SavedRepositories({
       await useCases.selectRepositoryFromSaved.execute(repo.localPath),
     [useCases],
   );
+
+  useEffect(() => {
+    window.electronAPI.onRepositoryFetched((event, data) =>
+      console.log("Repository fetched!", data, event),
+    );
+  }, []);
 
   if (repositories.length === 0) {
     return;
