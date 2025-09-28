@@ -35,6 +35,14 @@ export class CommitGitCliRunner
     );
   }
 
+  async getCommitStatus(repositoryPath: string): Promise<string[]> {
+    return await this.safeRun(
+      "git",
+      ["--no-pager", "status", "-sb", "--porcelain"],
+      { cwd: repositoryPath },
+    );
+  }
+
   async getHistory(
     repositoryPath: string,
     page: number,

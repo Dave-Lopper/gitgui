@@ -44,6 +44,8 @@ export class DiffCliGitRunner extends GitCliRunner implements DiffGitRunner {
     );
   }
 
+
+
   async getRepoDiff(
     repositoryPath: string,
     staged: boolean,

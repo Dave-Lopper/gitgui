@@ -3,6 +3,10 @@ import { HeadHashesDto } from "../../dto";
 export interface CommitGitRunner {
   commit(repositoryPath: string, message: string): Promise<void>;
 
+  getCommitDiff(repositoryPath: string, commitHash: string): Promise<string[]>;
+
+  getCommitStatus(repositoryPath: string): Promise<string[]>;
+
   getHeadHashes(repositoryPath: string): Promise<HeadHashesDto>;
 
   getHistory(
@@ -10,6 +14,4 @@ export interface CommitGitRunner {
     page: number,
     pageSize: number,
   ): Promise<string[]>;
-
-  getCommitDiff(repositoryPath: string, commitHash: string): Promise<string[]>;
 }
