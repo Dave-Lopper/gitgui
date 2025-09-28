@@ -10,3 +10,10 @@ export type Commit = {
 
   authorEmail?: string;
 };
+
+export type CommitStatus = {
+  branchName: string;
+  remoteName: string;
+  remoteUnpulled: number;
+  localUnpushed: number;
+};
