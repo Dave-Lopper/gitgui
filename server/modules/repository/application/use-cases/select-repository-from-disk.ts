@@ -71,6 +71,7 @@ export class SelectRepositoryFromDisk {
     const refs = await safeGit(this.gitRunner.listRefs(repositoryPath), window);
     const branches = dedupRefs(branchName, refs);
     const diff = await this.repoDiffService.execute(repositoryPath, window);
+    await this.gitRunner.fetch(repositoryPath);
     const commitStatus = await this.commitStatusService.execute(
       repositoryPath,
       window,

@@ -9,3 +9,5 @@ export { default as RetroRepositoryDropdown } from "./RepoSelectionDropdown";
 export { default as RetroRepositorySelectionMenu } from "./RepoSelectionMenu";
 export { default as RetroRepositoryTab } from "./RepositoryTab";
 export { default as RetroSettingsMenu } from "./SettingsMenu";
+export { default as RetroSubmitButton } from "./SubmitButton";
+export { default as RetroTextInput } from "./TextInput";

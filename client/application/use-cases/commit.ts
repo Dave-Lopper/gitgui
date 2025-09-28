@@ -3,8 +3,8 @@ import { IGitService } from "../i-git-service";
 
 export class Commit {
   constructor(
-    private readonly eventBus: IEventBus,
     private readonly gitService: IGitService,
+    private readonly eventBus: IEventBus,
   ) {}
 
   async execute(
@@ -18,5 +18,10 @@ export class Commit {
       commitDescription,
     );
     this.eventBus.emit({ type: "Commited", payload: commit });
+    const dto = await this.gitService.selectRepoFromSaved(repositoryPath);
+    this.eventBus.emit({
+      type: "RepositorySelected", 
+      payload: dto,
+    });
   }
 }

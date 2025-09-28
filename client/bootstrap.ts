@@ -13,6 +13,7 @@ import {
   SelectRepositoryFromSaved,
   ToggleFilesStaged,
 } from "./application/use-cases";
+import { Commit } from "./application/use-cases/commit";
 import { ObservableEventBus } from "./infra/event-bus";
 import { GitService } from "./infra/git-service";
 import { RepositoryStore } from "./infra/repository-store";
@@ -29,6 +30,7 @@ export const useCases = {
     eventBus,
   ),
   cloneRepository: new CloneRepository(gitService, eventBus),
+  commit: new Commit(gitService, eventBus),
   consultCommitDiff: new ConsultCommitDiff(eventBus),
   consultFileDiff: new ConsultFileDiff(eventBus),
   copyAbsoluteFilePath: new CopyAbsoluteFilePath(),

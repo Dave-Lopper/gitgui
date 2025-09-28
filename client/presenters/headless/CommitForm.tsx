@@ -30,6 +30,7 @@ export default function CommitForm({
   textInput: ComponentType<CommitFormInputProps>;
 }) {
   const { repositorySelection } = useRepositorySelection();
+
   const stagedFiles = useMemo(() => {
     return repositorySelection
       ? repositorySelection.diff.filter((file) => file.staged)
@@ -39,8 +40,24 @@ export default function CommitForm({
   const [commitMessage, setCommitMessage] = useState<string>();
   const [commitDescription, setCommitDescription] = useState<string>();
 
+  const isSubmitDisabled = useMemo(
+    () =>
+      repositorySelection !== null &&
+      stagedFiles.length > 0 &&
+      commitMessage !== undefined &&
+      commitMessage.length > 0,
+    [stagedFiles, commitMessage],
+  );
+
   const submit = useCallback(async () => {
-    // await useCases.
+    if (!repositorySelection || !commitMessage) {
+      return;
+    }
+    await useCases.commit.execute(
+      repositorySelection.repository.localPath,
+      commitMessage,
+      commitDescription,
+    );
   }, [repositorySelection]);
 
   return (
@@ -58,7 +75,11 @@ export default function CommitForm({
         onChange={(e) => setCommitDescription(e.target.value)}
       />
 
-      <SubmitButton text="Commit" onClick={() => {}} />
+      <SubmitButton
+        disabled={isSubmitDisabled}
+        text="Commit"
+        onClick={submit}
+      />
     </div>
   );
 }

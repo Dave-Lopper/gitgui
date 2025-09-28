@@ -24,6 +24,8 @@ import {
   RetroBranchDropdown,
   RetroModifiedFilesCounter,
   RetroSettingsMenu,
+  RetroSubmitButton,
+  RetroTextInput,
   RetroRepositorySelectionMenu,
   RetroDiffFileOptionRightClickFilesCounter,
 } from "./themed/retro";
@@ -31,6 +33,7 @@ import { RepoTabsContext } from "./contexts/repo-tabs";
 import RepositoryTabs from "./headless/RepositoryTabs";
 import RetroRepositoryTab from "./themed/retro/RepositoryTab";
 import RetroDiffFileListRightClickMenuOption from "./themed/retro/DiffFileListRightClickMenuOption";
+import CommitForm from "./headless/CommitForm";
 
 export default function AppLayout() {
   const { theme } = useContext(UiSettingsContext);
@@ -125,6 +128,10 @@ export default function AppLayout() {
                       rightClickMenuFilesCounter={
                         RetroDiffFileOptionRightClickFilesCounter
                       }
+                    />
+                    <CommitForm
+                      submitButton={RetroSubmitButton}
+                      textInput={RetroTextInput}
                     />
                   </div>
                 </div>

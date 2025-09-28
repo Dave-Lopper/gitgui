@@ -1,6 +1,7 @@
 import { ChangeEvent, ComponentType, useCallback, useState } from "react";
 
 import { useCases } from "../../bootstrap";
+import { SubmitButtonProps } from "./types";
 
 type CloneRepositoryFormProps = {
   className?: string;
@@ -9,7 +10,7 @@ type CloneRepositoryFormProps = {
     onChange: (e: ChangeEvent<HTMLInputElement>) => void;
     placeholder?: string;
   }>;
-  submitButton: ComponentType<{ onClick: () => void; disabled: boolean }>;
+  submitButton: ComponentType<SubmitButtonProps>;
 };
 
 export default function CloneRepositoryForm({
@@ -24,10 +25,12 @@ export default function CloneRepositoryForm({
     (e: ChangeEvent<HTMLInputElement>) => setRepoUrl(e.target.value),
     [],
   );
-  const cloneRepo = useCallback(
-    async () => repoUrl && (await useCases.cloneRepository.execute(repoUrl)),
-    [repoUrl, useCases],
-  );
+  const cloneRepo = useCallback(async () => {
+    if (!repoUrl) {
+      return;
+    }
+    await useCases.cloneRepository.execute(repoUrl);
+  }, [repoUrl, useCases]);
 
   return (
     <div className={`flex items-center ${className ? className : ""}`}>
@@ -35,6 +38,7 @@ export default function CloneRepositoryForm({
       <SubmitButton
         onClick={async () => await cloneRepo()}
         disabled={!repoUrl}
+        text="Clone repository"
       />
     </div>
   );

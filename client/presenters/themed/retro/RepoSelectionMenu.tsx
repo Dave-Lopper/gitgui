@@ -6,27 +6,8 @@ import {
   useFocusable,
 } from "../../headless";
 import RetroButton from "./Button";
+import SubmitButton from "./SubmitButton";
 import TextInput from "./TextInput";
-
-function SubmitButton({
-  disabled,
-  onClick,
-}: {
-  disabled: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <RetroButton
-      className="h-8 px-4"
-      disabled={disabled}
-      isActive={false}
-      sound
-      onClick={onClick}
-    >
-      Clone repository
-    </RetroButton>
-  );
-}
 
 function RepositoryOption({
   repository,
