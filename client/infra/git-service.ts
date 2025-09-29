@@ -1,5 +1,5 @@
 import { IGitService } from "../application/i-git-service";
-import { Commit } from "../domain/commit";
+import { Commit, CommitStatus } from "../domain/commit";
 import { RepositorySelectionDto } from "../dto/repo-selection";
 
 export class GitService implements IGitService {
@@ -51,12 +51,24 @@ export class GitService implements IGitService {
     return result.data;
   }
 
+  async fetch(repositoryPath: string): Promise<CommitStatus> {
+  return await window.electronAPI.fetch(repositoryPath);
+  }
+
   async getHistory(
     page: number,
     pageSize: number,
     repositoryPath: string,
   ): Promise<Commit[]> {
     return await window.electronAPI.getHistory(page, pageSize, repositoryPath);
+  }
+
+  async pull(repositoryPath: string): Promise<void> {
+    await window.electronAPI.pull(repositoryPath);
+  }
+
+  async push(repositoryPath: string): Promise<void> {
+    await window.electronAPI.push(repositoryPath);
   }
 
   async selectRepoFromDisk(): Promise<RepositorySelectionDto> {

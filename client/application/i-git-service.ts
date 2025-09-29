@@ -1,4 +1,4 @@
-import { Commit } from "../domain/commit";
+import { Commit, CommitStatus } from "../domain/commit";
 import { RepositorySelectionDto } from "../dto/repo-selection";
 
 export interface IGitService {
@@ -19,11 +19,17 @@ export interface IGitService {
 
   clone(url: string): Promise<RepositorySelectionDto>;
 
+  fetch(repositoryPath: string): Promise<CommitStatus>;
+
   getHistory(
     page: number,
     pageSize: number,
     repositoryPath: string,
   ): Promise<Commit[]>;
+
+  pull(repositoryPath: string): Promise<void>;
+
+  push(repositoryPath: string): Promise<void>;
 
   selectRepoFromDisk(): Promise<RepositorySelectionDto>;
 

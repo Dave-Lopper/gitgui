@@ -100,6 +100,7 @@ export default function AppLayout() {
     <div className="bg-retro flex h-full max-h-full w-full max-w-full flex-col items-center justify-start">
       <Header
         className={theme === "RETRO" ? "max-h-13" : "max-h-24"}
+        contextualMenu={<div className="w-full border-b-[2px] border-white h-full"></div>}
         branchDropdown={branchDropdown}
         repositoryDropdown={repositoryDropdown}
         uiSettings={settingsMenu}

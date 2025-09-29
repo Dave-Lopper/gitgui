@@ -39,7 +39,7 @@ export default function SavedRepositories({
 
   useEffect(() => {
     window.electronAPI.onRepositoryFetched((event, data) =>
-      console.log("Repository fetched!", data, event),
+      useCases.repositoryFetched.execute(data),
     );
   }, []);
 
