@@ -55,17 +55,20 @@ export default function ContextualMenu({ menu: Menu }: ContextualMenuProps) {
     } else if (contextualAction === "PUSH") {
       await useCases.push.execute(repositorySelection.repository.localPath);
     } else {
+      setIsFetchLoading(true);
       await useCases.fetch.execute(repositorySelection.repository.localPath);
     }
   }, [contextualAction, repositorySelection]);
 
   return (
-    <Menu
-      contextualAction={contextualAction}
-      isFetchLoading={isFetchLoading}
-      pullCount={commitStatus?.remoteUnpulled}
-      pushCount={commitStatus?.localUnpushed}
-      onActionClick={onActionClick}
-    />
+    repositorySelection && (
+      <Menu
+        contextualAction={contextualAction}
+        isFetchLoading={isFetchLoading}
+        pullCount={commitStatus?.remoteUnpulled}
+        pushCount={commitStatus?.localUnpushed}
+        onActionClick={onActionClick}
+      />
+    )
   );
 }

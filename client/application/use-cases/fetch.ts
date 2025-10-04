@@ -1,5 +1,6 @@
-import { IEventBus } from "../i-event-bus";
-import { IGitService } from "../i-git-service";
+import { safeGit } from "../../../server/commons/application/safe-git.js";
+import { IEventBus } from "../i-event-bus.js";
+import { IGitService } from "../i-git-service.js";
 
 export class Fetch {
   constructor(

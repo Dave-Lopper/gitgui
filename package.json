@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/electron": "^1.4.38",
     "@types/ini": "^4.1.1",
     "@types/nodegit": "^0.28.8",

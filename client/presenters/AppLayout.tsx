@@ -18,22 +18,24 @@ import {
   ModernDivider,
 } from "./themed/modern";
 import {
-  RetroRepositoryDropdown,
-  RetroDiffFileOption,
-  RetroDivider,
   RetroBranchDropdown,
+  RetroContextualMenu,
+  RetroDiffFileOption,
+  RetroDiffFileOptionRightClickFilesCounter,
+  RetroDivider,
   RetroModifiedFilesCounter,
+  RetroRepositoryDropdown,
+  RetroRepositorySelectionMenu,
   RetroSettingsMenu,
   RetroSubmitButton,
   RetroTextInput,
-  RetroRepositorySelectionMenu,
-  RetroDiffFileOptionRightClickFilesCounter,
 } from "./themed/retro";
 import { RepoTabsContext } from "./contexts/repo-tabs";
 import RepositoryTabs from "./headless/RepositoryTabs";
 import RetroRepositoryTab from "./themed/retro/RepositoryTab";
 import RetroDiffFileListRightClickMenuOption from "./themed/retro/DiffFileListRightClickMenuOption";
 import CommitForm from "./headless/CommitForm";
+import ContextualMenu from "./headless/ContextualMenu";
 
 export default function AppLayout() {
   const { theme } = useContext(UiSettingsContext);
@@ -100,7 +102,9 @@ export default function AppLayout() {
     <div className="bg-retro flex h-full max-h-full w-full max-w-full flex-col items-center justify-start">
       <Header
         className={theme === "RETRO" ? "max-h-13" : "max-h-24"}
-        contextualMenu={<div className="w-full border-b-[2px] border-white h-full"></div>}
+        contextualMenu={
+          <ContextualMenu menu={RetroContextualMenu}></ContextualMenu>
+        }
         branchDropdown={branchDropdown}
         repositoryDropdown={repositoryDropdown}
         uiSettings={settingsMenu}
