@@ -1,12 +1,11 @@
 import path from "path";
 import { fileURLToPath } from "url";
 
-import { app, BrowserWindow, ipcMain } from "electron";
+import { BrowserWindow, app, ipcMain } from "electron";
 
 import { bootstrap as commitBootstrap } from "../../modules/commit/bootstrap.js";
 import { bootstrap as diffBootstrap } from "../../modules/diff/bootstrap.js";
 import { bootstrap as repositoryBootstrap } from "../../modules/repository/bootstrap.js";
-import { eventNames } from "process";
 
 let window: Electron.BrowserWindow;
 let commitUseCases: ReturnType<typeof commitBootstrap>;
@@ -35,8 +34,8 @@ async function createWindow() {
   }
 
   repositoryUseCases = await repositoryBootstrap(window);
-  commitUseCases = commitBootstrap();
-  diffUseCases = diffBootstrap();
+  commitUseCases = commitBootstrap(window);
+  diffUseCases = diffBootstrap(window);
 
   ipcMain.handle("repositories:clone", async (event, message) => {
     const res = await repositoryUseCases.cloneRepository.execute(
@@ -48,29 +47,24 @@ async function createWindow() {
 
   ipcMain.handle(
     "repositories:fetch",
-    async (event, message) =>
-      await repositoryUseCases.fetch.execute(message, window),
+    async (event, message) => await repositoryUseCases.fetch.execute(message),
   );
 
   ipcMain.handle(
     "repositories:getBranchesForRepository",
     async (event, message) =>
-      await repositoryUseCases.getBranchesForRepository.execute(
-        message,
-        window,
-      ),
+      await repositoryUseCases.getBranchesForRepository.execute(message),
   );
 
   ipcMain.handle(
     "repositories:getSaved",
     async (event, message) =>
-      await repositoryUseCases.getSavedRepositories.execute(window),
+      await repositoryUseCases.getSavedRepositories.execute(),
   );
 
   ipcMain.handle(
     "repositories:pull",
-    async (event, message) =>
-      await repositoryUseCases.pull.execute(message, window),
+    async (event, message) => await repositoryUseCases.pull.execute(message),
   );
 
   ipcMain.handle(
@@ -82,10 +76,7 @@ async function createWindow() {
   ipcMain.handle(
     "repositories:selectFromSaved",
     async (event, message) =>
-      await repositoryUseCases.selectRepositoryFromSaved.execute(
-        message,
-        window,
-      ),
+      await repositoryUseCases.selectRepositoryFromSaved.execute(message),
   );
 
   ipcMain.handle("commits:commit", async (event, message) => {
@@ -93,7 +84,6 @@ async function createWindow() {
     return await commitUseCases.commit.execute(
       parsedMessage.repositoryPath,
       parsedMessage.message,
-      window,
       parsedMessage.description,
     );
   });
@@ -104,7 +94,6 @@ async function createWindow() {
       parsedMessage.page,
       parsedMessage.pageSize,
       parsedMessage.repositoryPath,
-      window,
     );
   });
 
@@ -131,7 +120,6 @@ async function createWindow() {
       await diffUseCases.batchDiscardFileModifications.execute(
         parsedMessage.repositoryPath,
         parsedMessage.filePaths,
-        window,
       );
     },
   );
@@ -141,7 +129,6 @@ async function createWindow() {
     await diffUseCases.toggleFileStaged.execute(
       parsedMessage.repositoryPath,
       parsedMessage.filePaths,
-      window,
     );
   });
 }

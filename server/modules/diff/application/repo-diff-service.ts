@@ -1,10 +1,5 @@
-import { BrowserWindow } from "electron";
-
 import { DiffFile } from "../domain/entities.js";
 
 export interface RepoDiffService {
-  execute(
-    repositoryPath: string,
-    window: BrowserWindow,
-  ): Promise<(DiffFile & { staged: boolean })[]>;
+  execute(repositoryPath: string): Promise<(DiffFile & { staged: boolean })[]>;
 }

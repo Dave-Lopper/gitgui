@@ -1,14 +1,13 @@
-import type { BrowserWindow } from "electron";
-
+import { IEventEmitter } from "./i-event-emitter.js";
 import { GitError } from "../errors.js";
 
 export async function safeGit<T>(
   promise: Promise<T>,
-  window: BrowserWindow,
+  eventEmitter: IEventEmitter,
 ): Promise<T> {
   return promise.catch((err) => {
     if (err instanceof GitError) {
-      window.webContents.send("git-error", {
+      eventEmitter.send("git-error", {
         message: err.message,
         command: err.command,
       });

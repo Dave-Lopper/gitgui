@@ -1,34 +1,32 @@
-import { BrowserWindow } from "electron";
-
+import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
 import { DiffCliGitRunner } from "../../infra/diff-git-cli-runner.js";
 
 export class ToggleFileStaged {
-  constructor(private readonly gitRunner: DiffCliGitRunner) {}
+  constructor(
+    private readonly eventEmitter: IEventEmitter,
+    private readonly gitRunner: DiffCliGitRunner,
+  ) {}
 
-  async execute(
-    repositoryPath: string,
-    filePaths: string[],
-    window: BrowserWindow,
-  ): Promise<void> {
+  async execute(repositoryPath: string, filePaths: string[]): Promise<void> {
     filePaths.forEach(async (filePath) => {
       const isStaged =
         (
           await safeGit(
             this.gitRunner.getStagedFileByName(repositoryPath, filePath),
-            window,
+            this.eventEmitter,
           )
         ).length > 0;
 
       if (isStaged) {
         await safeGit(
           this.gitRunner.unstageFile(repositoryPath, filePath),
-          window,
+          this.eventEmitter,
         );
       } else {
         await safeGit(
           this.gitRunner.stageFile(repositoryPath, filePath),
-          window,
+          this.eventEmitter,
         );
       }
     });

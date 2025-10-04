@@ -3,21 +3,23 @@ import { default as pathModule } from "path";
 
 import { BrowserWindow, dialog } from "electron";
 
-import { RepositoryGitRunner } from "../git-runner.js";
-import { RepositoryStore } from "../store.js";
-import { Repository } from "../../domain/entities.js";
-import { RepositorySelectionDto } from "../../dto/repository-selection.js";
-import { ActionResponse } from "../../../../commons/dto/action.js";
+import { FilesRepository } from "../../../../commons/application/files-repository.js";
+import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
+import { ActionResponse } from "../../../../commons/dto/action.js";
+import { RepoDiffService } from "../../../diff/application/repo-diff-service.js";
+import { Repository } from "../../domain/entities.js";
 import {
   dedupRefs,
   getRepositoryNameFromRemoteUrl,
 } from "../../domain/services.js";
-import { FilesRepository } from "../../../../commons/application/files-repository.js";
-import { RepoDiffService } from "../../../diff/application/repo-diff-service.js";
+import { RepositorySelectionDto } from "../../dto/repository-selection.js";
+import { RepositoryGitRunner } from "../git-runner.js";
+import { RepositoryStore } from "../store.js";
 
 export class CloneRepository {
   constructor(
+    private readonly eventEmitter: IEventEmitter,
     private readonly filesRepository: FilesRepository,
     private readonly gitRunner: RepositoryGitRunner,
     private readonly repoDiffService: RepoDiffService,
@@ -44,12 +46,12 @@ export class CloneRepository {
     const path = result.filePaths[0];
     const tmpFolder = await safeGit(
       this.gitRunner.cloneRepository(url, path),
-      window,
+      this.eventEmitter,
     );
 
     const remote = await safeGit(
       this.gitRunner.getCurrentRemote(tmpFolder),
-      window,
+      this.eventEmitter,
     );
     const repoName = getRepositoryNameFromRemoteUrl(remote.url);
     if (!repoName) {
@@ -59,7 +61,7 @@ export class CloneRepository {
 
     const currentBranch = await safeGit(
       this.gitRunner.getCurrentBranch(tmpFolder),
-      window,
+      this.eventEmitter,
     );
 
     const repositoryPath = pathModule.join(path, repoName);
@@ -81,7 +83,7 @@ export class CloneRepository {
     if (!reopositoryExists) {
       await this.store.save(repository);
     }
-    const diff = await this.repoDiffService.execute(repositoryPath, window);
+    const diff = await this.repoDiffService.execute(repositoryPath);
 
     return {
       action: "cloneRepository",

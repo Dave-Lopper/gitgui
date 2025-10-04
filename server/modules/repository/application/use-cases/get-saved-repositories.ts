@@ -1,20 +1,20 @@
 import path from "path";
 
-import { BrowserWindow } from "electron";
-
+import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
+import { safeGit } from "../../../../commons/application/safe-git.js";
 import { ActionResponse } from "../../../../commons/dto/action.js";
 import { Repository } from "../../domain/entities.js";
 import { RepositoryGitRunner } from "../git-runner.js";
 import { RepositoryStore } from "../store.js";
-import { safeGit } from "../../../../commons/application/safe-git.js";
 
 export class GetSavedRepositories {
   constructor(
+    private readonly eventEmitter: IEventEmitter,
     private readonly gitRunner: RepositoryGitRunner,
     private readonly store: RepositoryStore,
   ) {}
 
-  async execute(window: BrowserWindow): Promise<ActionResponse<Repository[]>> {
+  async execute(): Promise<ActionResponse<Repository[]>> {
     const repositoryPaths = await this.store.getSavedRepositories();
     const repositories: Repository[] = [];
 
@@ -31,11 +31,11 @@ export class GetSavedRepositories {
       const name = path.basename(repositoryPath);
       const branch = await safeGit(
         this.gitRunner.getCurrentBranch(repositoryPath),
-        window,
+        this.eventEmitter,
       );
       const remote = await safeGit(
         this.gitRunner.getCurrentRemote(repositoryPath),
-        window,
+        this.eventEmitter,
       );
       const repository: Repository = {
         localPath: repositoryPath,

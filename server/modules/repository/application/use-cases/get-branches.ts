@@ -1,23 +1,25 @@
-import { BrowserWindow } from "electron";
-
-import { ActionResponse } from "../../../../commons/dto/action.js";
+import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
-import { RepositoryGitRunner } from "../git-runner.js";
+import { ActionResponse } from "../../../../commons/dto/action.js";
 import { Branch } from "../../domain/entities.js";
 import { dedupRefs } from "../../domain/services.js";
+import { RepositoryGitRunner } from "../git-runner.js";
 
 export class GetBranchesForRepository {
-  constructor(private readonly gitRunner: RepositoryGitRunner) {}
+  constructor(
+    private readonly eventEmitter: IEventEmitter,
+    private readonly gitRunner: RepositoryGitRunner,
+  ) {}
 
-  async execute(
-    repositoryPath: string,
-    window: BrowserWindow,
-  ): Promise<ActionResponse<Branch[]>> {
+  async execute(repositoryPath: string): Promise<ActionResponse<Branch[]>> {
     const currentBranch = await safeGit(
       this.gitRunner.getCurrentBranch(repositoryPath),
-      window,
+      this.eventEmitter,
     );
-    const refs = await safeGit(this.gitRunner.listRefs(repositoryPath), window);
+    const refs = await safeGit(
+      this.gitRunner.listRefs(repositoryPath),
+      this.eventEmitter,
+    );
     const branches = dedupRefs(currentBranch, refs);
 
     return {

@@ -1,5 +1,4 @@
-import { BrowserWindow } from "electron";
-
+import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
 import { DiffFile } from "../../../diff/domain/entities.js";
 import { parseDiff } from "../../../diff/domain/services.js";
@@ -8,17 +7,19 @@ import { parseHistory } from "../../domain/services.js";
 import { CommitGitRunner } from "../git-runner.js";
 
 export class GetHistory {
-  constructor(private readonly gitRunner: CommitGitRunner) {}
+  constructor(
+    private readonly eventEmitter: IEventEmitter,
+    private readonly gitRunner: CommitGitRunner,
+  ) {}
 
   async execute(
     page: number,
     pageSize: number,
     repositoryPath: string,
-    window: BrowserWindow,
   ): Promise<(Commit & { diff: DiffFile[] })[]> {
     const logLines = await safeGit(
       this.gitRunner.getHistory(repositoryPath, page, pageSize),
-      window,
+      this.eventEmitter,
     );
     const history = parseHistory(logLines);
     const commitsWithDiff: (Commit & { diff: DiffFile[] })[] = [];

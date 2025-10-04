@@ -1,29 +1,30 @@
-import { BrowserWindow } from "electron";
-
-import { DiffGitRunner } from "../git-runner.js";
+import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
 import { DiffFile } from "../../domain/entities.js";
 import {
-  parseNewFileDiff,
   parseDiff,
+  parseNewFileDiff,
   parseStatus,
 } from "../../domain/services.js";
+import { DiffGitRunner } from "../git-runner.js";
 
 export class GetRepoDiff {
-  constructor(private readonly gitRunner: DiffGitRunner) {}
+  constructor(
+    private readonly eventEmitter: IEventEmitter,
+    private readonly gitRunner: DiffGitRunner,
+  ) {}
   async execute(
     repositoryPath: string,
-    window: BrowserWindow,
   ): Promise<(DiffFile & { staged: boolean })[]> {
     const unstagedDiffLines = await safeGit(
       this.gitRunner.getRepoDiff(repositoryPath, false),
-      window,
+      this.eventEmitter,
     );
     const unstagedChangedFiles = parseDiff(unstagedDiffLines);
 
     const stagedDiffLines = await safeGit(
       this.gitRunner.getRepoDiff(repositoryPath, true),
-      window,
+      this.eventEmitter,
     );
     let stagedChangedFiles = parseDiff(stagedDiffLines);
     const unstagedFileNames = unstagedChangedFiles.map((file) =>

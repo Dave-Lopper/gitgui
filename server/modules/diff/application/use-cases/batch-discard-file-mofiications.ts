@@ -1,23 +1,19 @@
 import * as path from "path";
 
-import { BrowserWindow } from "electron";
-
 import { FilesRepository } from "../../../../commons/application/files-repository.js";
+import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
-import { DiffCliGitRunner } from "../../infra/diff-git-cli-runner.js";
 import { parseStatus } from "../../domain/services.js";
+import { DiffCliGitRunner } from "../../infra/diff-git-cli-runner.js";
 
 export class BatchDiscardFileModifications {
   constructor(
+    private readonly eventEmitter: IEventEmitter,
     private readonly filesRepository: FilesRepository,
     private readonly gitRunner: DiffCliGitRunner,
   ) {}
 
-  async execute(
-    repositoryPath: string,
-    filePaths: string[],
-    window: BrowserWindow,
-  ): Promise<void> {
+  async execute(repositoryPath: string, filePaths: string[]): Promise<void> {
     const repoStatusLines = await this.gitRunner.getRepoStatus(repositoryPath);
     const addedUntrackedFiles = parseStatus(repoStatusLines);
 
@@ -29,7 +25,7 @@ export class BatchDiscardFileModifications {
       } else {
         await safeGit(
           this.gitRunner.discardFileChanges(repositoryPath, filePaths[i]),
-          window,
+          this.eventEmitter,
         );
       }
     }

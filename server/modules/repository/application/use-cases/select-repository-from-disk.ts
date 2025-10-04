@@ -3,16 +3,16 @@ import path from "path";
 
 import { BrowserWindow, dialog } from "electron";
 
-import { ActionResponse } from "../../../../commons/dto/action.js";
 import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
+import { ActionResponse } from "../../../../commons/dto/action.js";
+import { CommitStatusService } from "../../../commit/application/commit-status-service.js";
+import { RepoDiffService } from "../../../diff/application/repo-diff-service.js";
 import { Repository } from "../../domain/entities.js";
+import { dedupRefs } from "../../domain/services.js";
 import { RepositorySelectionDto } from "../../dto/repository-selection.js";
 import { RepositoryGitRunner } from "../git-runner.js";
 import { RepositoryStore } from "../store.js";
-import { dedupRefs } from "../../domain/services.js";
-import { RepoDiffService } from "../../../diff/application/repo-diff-service.js";
-import { CommitStatusService } from "../../../commit/application/commit-status-service.js";
 
 export type SelectRepositoryFromDiskStatus =
   | "canceled"
@@ -57,11 +57,11 @@ export class SelectRepositoryFromDisk {
     const repositoryName = path.basename(repositoryPath);
     const branchName = await safeGit(
       this.gitRunner.getCurrentBranch(repositoryPath),
-      window,
+      this.eventEmitter,
     );
     const remote = await safeGit(
       this.gitRunner.getCurrentRemote(repositoryPath),
-      window,
+      this.eventEmitter,
     );
     const repository: Repository = {
       checkedOutBranch: branchName,
@@ -70,16 +70,19 @@ export class SelectRepositoryFromDisk {
       remoteName: remote.name,
       url: remote.url,
     };
-    const refs = await safeGit(this.gitRunner.listRefs(repositoryPath), window);
+    const refs = await safeGit(
+      this.gitRunner.listRefs(repositoryPath),
+      this.eventEmitter,
+    );
     const branches = dedupRefs(branchName, refs);
-    const diff = await this.repoDiffService.execute(repositoryPath, window);
+    const diff = await this.repoDiffService.execute(repositoryPath);
 
     void (async () => {
       try {
-        await this.gitRunner.fetch(repositoryPath);
+        await safeGit(this.gitRunner.fetch(repositoryPath), this.eventEmitter);
         const commitStatus = await this.commitStatusService.execute(
           repositoryPath,
-          window,
+          this.eventEmitter,
         );
         this.eventEmitter.send("repository:fetched", commitStatus);
       } catch (err) {

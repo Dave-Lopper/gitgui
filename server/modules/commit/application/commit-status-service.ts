@@ -1,10 +1,9 @@
-import { BrowserWindow } from "electron";
-
+import { IEventEmitter } from "../../../commons/application/i-event-emitter.js";
 import { CommitStatusDto } from "../dto/commit-status.js";
 
 export interface CommitStatusService {
   execute(
     repositoryPath: string,
-    window: BrowserWindow,
+    eventEmitter: IEventEmitter,
   ): Promise<CommitStatusDto>;
 }

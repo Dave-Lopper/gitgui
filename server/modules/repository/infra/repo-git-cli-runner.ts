@@ -2,9 +2,9 @@ import { v4 as uuidv4 } from "uuid";
 
 import { GitCliRunner } from "../../../commons/infra/git-cli-runner.js";
 import { RepositoryGitRunner } from "../application/git-runner.js";
+import { Branch, ChangedFile, ModType } from "../domain/entities.js";
 import { RepositoryReferences } from "../dto/reference.js";
 import { Remote } from "../dto/remote.js";
-import { Branch, ChangedFile, ModType } from "../domain/entities.js";
 
 const validGitActions = ["M", "T", "A", "D", "R", "C", "U", "??"] as const;
 type GitFileAction = (typeof validGitActions)[number];
@@ -40,7 +40,9 @@ export class RepositoryGitCliRunner
   }
 
   async fetch(path: string): Promise<void> {
-    await this.safeRun("git", ["fetch"], { cwd: path });
+    await this.safeRun("git", ["fetch", "--porcelain"], {
+      cwd: path,
+    });
   }
 
   async getCurrentBranch(path: string): Promise<string> {

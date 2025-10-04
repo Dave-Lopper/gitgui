@@ -29,7 +29,6 @@ export function dedupRefs(
 
   for (let i = 0; i < refs.remote.length; i++) {
     const ref = refs.remote[i];
-
     branchesMap.set(ref.name, {
       isCurrent: ref.name === currentBranch,
       isLocal: false,
@@ -39,7 +38,7 @@ export function dedupRefs(
   }
 
   for (let j = 0; j < refs.local.length; j++) {
-    const ref = refs.remote[j];
+    const ref = refs.local[j];
 
     if (branchesMap.has(ref.name)) {
       const existingBranch = branchesMap.get(ref.name)!;

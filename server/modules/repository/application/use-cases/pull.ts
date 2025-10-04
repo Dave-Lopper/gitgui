@@ -1,12 +1,14 @@
-import { BrowserWindow } from "electron";
-
+import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
 import { RepositoryGitRunner } from "../git-runner.js";
 
 export class Pull {
-  constructor(private readonly gitRunner: RepositoryGitRunner) {}
+  constructor(
+    private readonly eventEmitter: IEventEmitter,
+    private readonly gitRunner: RepositoryGitRunner,
+  ) {}
 
-  async execute(repositoryPath: string, window: BrowserWindow): Promise<void> {
-    await safeGit(this.gitRunner.pull(repositoryPath), window);
+  async execute(repositoryPath: string): Promise<void> {
+    await safeGit(this.gitRunner.pull(repositoryPath), this.eventEmitter);
   }
 }
