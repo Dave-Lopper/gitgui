@@ -41,10 +41,7 @@ async function createWindow() {
   diffUseCases = diffBootstrap(window);
 
   ipcMain.handle("repositories:clone", async (event, message) => {
-    const res = await repositoryUseCases.cloneRepository.execute(
-      message,
-      window,
-    );
+    const res = await repositoryUseCases.cloneRepository.execute(message);
     return res;
   });
 
@@ -73,7 +70,7 @@ async function createWindow() {
   ipcMain.handle(
     "repositories:selectFromDisk",
     async (event, message) =>
-      await repositoryUseCases.selectRepositoryFromDisk.execute(window),
+      await repositoryUseCases.selectRepositoryFromDisk.execute(),
   );
 
   ipcMain.handle(

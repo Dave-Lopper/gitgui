@@ -1,9 +1,7 @@
-import os from "os";
 import path from "path";
 
-import { BrowserWindow, dialog } from "electron";
-
 import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
+import { ILocalFilePathSelector } from "../../../../commons/application/i-file-selector.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
 import { ActionResponse } from "../../../../commons/dto/action.js";
 import { CommitStatusService } from "../../../commit/application/commit-status-service.js";
@@ -24,18 +22,14 @@ export class SelectRepositoryFromDisk {
     private readonly commitStatusService: CommitStatusService,
     private readonly eventEmitter: IEventEmitter,
     private readonly gitRunner: RepositoryGitRunner,
+    private readonly localFilePathSelector: ILocalFilePathSelector,
     private readonly repoDiffService: RepoDiffService,
     private readonly store: RepositoryStore,
   ) {}
 
-  async execute(
-    window: BrowserWindow,
-  ): Promise<ActionResponse<RepositorySelectionDto>> {
-    const result: any = await dialog.showOpenDialog(window, {
-      properties: ["openDirectory"],
-      defaultPath: os.homedir(),
-    });
-    if (result.canceled) {
+  async execute(): Promise<ActionResponse<RepositorySelectionDto>> {
+    const result = await this.localFilePathSelector.selectPath();
+    if (result.status === "CANCELED") {
       return {
         status: "canceled",
         action: "selectRepositoryFromDisk",
@@ -44,7 +38,7 @@ export class SelectRepositoryFromDisk {
       };
     }
 
-    const repositoryPath = result.filePaths[0];
+    const repositoryPath = result.paths[0];
     const isRepoValid = await this.gitRunner.isValidRepository(repositoryPath);
     if (!isRepoValid) {
       return {

@@ -1,6 +1,7 @@
 import { BrowserWindow } from "electron";
 
-import { ElectronEventEmitter } from "../../commons/infra/event-emitter.js";
+import { ElectronEventEmitter } from "../../commons/infra/electron-event-emitter.js";
+import { ElectronLocalFilePathSelector } from "../../commons/infra/electron-local-file-selector.js";
 import { FsFilesRepository } from "../../commons/infra/fs-file-repository.js";
 import { GITENV } from "../../commons/infra/git-env.js";
 import { ShellRunner } from "../../commons/infra/shell-command-runner.js";
@@ -26,6 +27,7 @@ export const bootstrap = async (window: BrowserWindow) => {
     eventEmitter,
     new CommitGitCliRunner(commandRunner),
   );
+  const localFilePathSelector = new ElectronLocalFilePathSelector(window);
   const repoGitRunner = new RepositoryGitCliRunner(commandRunner);
   const repoDiffService = new GetRepoDiff(
     eventEmitter,
@@ -38,6 +40,7 @@ export const bootstrap = async (window: BrowserWindow) => {
       eventEmitter,
       filesRepository,
       repoGitRunner,
+      localFilePathSelector,
       repoDiffService,
       repoStore,
     ),
@@ -56,6 +59,7 @@ export const bootstrap = async (window: BrowserWindow) => {
       commitStatusService,
       eventEmitter,
       repoGitRunner,
+      localFilePathSelector,
       repoDiffService,
       repoStore,
     ),

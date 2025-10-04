@@ -1,6 +1,6 @@
 import { BrowserWindow } from "electron";
 
-import { ElectronEventEmitter } from "../../commons/infra/event-emitter.js";
+import { ElectronEventEmitter } from "../../commons/infra/electron-event-emitter.js";
 import { FsFilesRepository } from "../../commons/infra/fs-file-repository.js";
 import { GITENV } from "../../commons/infra/git-env.js";
 import { ShellRunner } from "../../commons/infra/shell-command-runner.js";

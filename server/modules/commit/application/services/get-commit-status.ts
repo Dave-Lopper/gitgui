@@ -1,5 +1,3 @@
-import { BrowserWindow } from "electron";
-
 import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
 import { parseCommitStatus } from "../../domain/services.js";

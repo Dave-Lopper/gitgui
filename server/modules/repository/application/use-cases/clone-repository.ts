@@ -1,10 +1,8 @@
-import os from "os";
 import { default as pathModule } from "path";
-
-import { BrowserWindow, dialog } from "electron";
 
 import { FilesRepository } from "../../../../commons/application/files-repository.js";
 import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
+import { ILocalFilePathSelector } from "../../../../commons/application/i-file-selector.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
 import { ActionResponse } from "../../../../commons/dto/action.js";
 import { RepoDiffService } from "../../../diff/application/repo-diff-service.js";
@@ -22,19 +20,14 @@ export class CloneRepository {
     private readonly eventEmitter: IEventEmitter,
     private readonly filesRepository: FilesRepository,
     private readonly gitRunner: RepositoryGitRunner,
+    private readonly localFilePathSelector: ILocalFilePathSelector,
     private readonly repoDiffService: RepoDiffService,
     private readonly store: RepositoryStore,
   ) {}
 
-  async execute(
-    url: string,
-    window: BrowserWindow,
-  ): Promise<ActionResponse<RepositorySelectionDto>> {
-    const result: any = await dialog.showOpenDialog(window, {
-      properties: ["openDirectory"],
-      defaultPath: os.homedir(),
-    });
-    if (result.canceled) {
+  async execute(url: string): Promise<ActionResponse<RepositorySelectionDto>> {
+    const result = await this.localFilePathSelector.selectPath();
+    if (result.status === "CANCELED") {
       return {
         status: "canceled",
         action: "cloneRepository",
@@ -43,7 +36,7 @@ export class CloneRepository {
       };
     }
 
-    const path = result.filePaths[0];
+    const path = result.paths[0];
     const tmpFolder = await safeGit(
       this.gitRunner.cloneRepository(url, path),
       this.eventEmitter,
