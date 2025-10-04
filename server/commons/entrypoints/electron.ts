@@ -1,7 +1,7 @@
 import path from "path";
 import { fileURLToPath } from "url";
 
-import { BrowserWindow, app, ipcMain } from "electron";
+import { BrowserWindow, app, ipcMain, screen } from "electron";
 
 import { bootstrap as commitBootstrap } from "../../modules/commit/bootstrap.js";
 import { bootstrap as diffBootstrap } from "../../modules/diff/bootstrap.js";
@@ -15,9 +15,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function createWindow() {
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   window = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width,
+    height,
+    x: 0,
+    y: 0,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
