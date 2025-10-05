@@ -2,7 +2,7 @@ import { IpcRendererEvent } from "electron";
 
 import { Commit, CommitStatus } from "./domain/commit";
 import { DiffFile } from "./domain/diff";
-import { Repository, Branch } from "./domain/repository";
+import { Branch, Repository } from "./domain/repository";
 import { ActionResponse } from "./dto/action";
 import { RepositorySelectionDto } from "./dto/repo-selection";
 
@@ -60,6 +60,7 @@ declare global {
       onRepositoryFetched: (
         callback: (event: IpcRendererEvent, data: CommitStatus) => void,
       ) => void;
+      onGitAuth: (callback: (event: IpcRendererEvent) => void) => void;
       onGitError: (
         callback: (
           event: IpcRendererEvent,

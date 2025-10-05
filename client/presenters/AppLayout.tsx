@@ -1,6 +1,7 @@
 import { useCallback, useContext, useEffect, useMemo } from "react";
 
 import { useCases } from "../bootstrap";
+import { RepoTabsContext } from "./contexts/repo-tabs";
 import { UiSettingsContext } from "./contexts/ui-settings/context";
 import {
   Header,
@@ -8,14 +9,17 @@ import {
   SplitPane,
   useRepositorySelection,
 } from "./headless";
+import CommitForm from "./headless/CommitForm";
+import ContextualMenu from "./headless/ContextualMenu";
+import RepositoryTabs from "./headless/RepositoryTabs";
 import {
+  ModernBranchDropdown,
+  ModernDivider,
+  ModernModifiedFilesCounter,
   ModernRepositoryDropdown,
   ModernRepositorySelectionMenu,
   ModernRepositoryTab,
-  ModernModifiedFilesCounter,
-  ModernBranchDropdown,
   ModernSettingsMenu,
-  ModernDivider,
 } from "./themed/modern";
 import {
   RetroBranchDropdown,
@@ -30,12 +34,8 @@ import {
   RetroSubmitButton,
   RetroTextInput,
 } from "./themed/retro";
-import { RepoTabsContext } from "./contexts/repo-tabs";
-import RepositoryTabs from "./headless/RepositoryTabs";
-import RetroRepositoryTab from "./themed/retro/RepositoryTab";
 import RetroDiffFileListRightClickMenuOption from "./themed/retro/DiffFileListRightClickMenuOption";
-import CommitForm from "./headless/CommitForm";
-import ContextualMenu from "./headless/ContextualMenu";
+import RetroRepositoryTab from "./themed/retro/RepositoryTab";
 
 export default function AppLayout() {
   const { theme } = useContext(UiSettingsContext);
@@ -44,6 +44,9 @@ export default function AppLayout() {
 
   const startupCallback = useCallback(async () => {
     await useCases.getSavedRepositories.execute();
+    window.electronAPI.onGitAuth(() => {
+      console.log("AUTH");
+    });
   }, []);
 
   useEffect(() => {

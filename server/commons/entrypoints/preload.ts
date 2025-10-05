@@ -52,7 +52,7 @@ electron.contextBridge.exposeInMainWorld("electronAPI", {
   onRepositoryFetched: (
     cb: (event: Electron.IpcRendererEvent, data: any) => void,
   ) => electron.ipcRenderer.on("repository:fetched", cb),
-  onGitAuth: (cb: (event: Electron.IpcRendererEvent, data: any) => void) =>
+  onGitAuth: (cb: (event: Electron.IpcRendererEvent) => void) =>
     electron.ipcRenderer.on("git:auth", cb),
   onGitError: (
     cb: (
