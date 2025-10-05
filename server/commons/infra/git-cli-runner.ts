@@ -19,7 +19,7 @@ export class GitCliRunner implements GitRunner {
     });
 
     if (!expectedCodes.includes(res.exitCode)) {
-      throw new GitError(res.stderr.join("\n"), res.command);
+      throw new GitError(res.exitCode, res.stderr.join("\n"), res.command);
     }
 
     return res.stdout;

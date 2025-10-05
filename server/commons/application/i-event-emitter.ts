@@ -1,3 +1,5 @@
+export type EventChannel = "git:error" | "git:auth" | "repository:fetched";
+
 export interface IEventEmitter {
-  send(channel: string, payload: unknown): void;
+  send(channel: EventChannel, payload?: unknown): void;
 }

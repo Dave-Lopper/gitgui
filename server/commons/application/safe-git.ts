@@ -1,5 +1,5 @@
-import { IEventEmitter } from "./i-event-emitter.js";
 import { GitError } from "../errors.js";
+import { IEventEmitter } from "./i-event-emitter.js";
 
 export async function safeGit<T>(
   promise: Promise<T>,
@@ -7,10 +7,18 @@ export async function safeGit<T>(
 ): Promise<T> {
   return promise.catch((err) => {
     if (err instanceof GitError) {
-      eventEmitter.send("git-error", {
-        message: err.message,
-        command: err.command,
-      });
+      if (
+        err.code === 128 &&
+        (err.message.toLowerCase().includes("authentication") ||
+          err.message.toLowerCase().includes("username"))
+      ) {
+        eventEmitter.send("git:auth");
+      } else {
+        eventEmitter.send("git:error", {
+          message: err.message,
+          command: err.command,
+        });
+      }
     }
     throw err;
   });
