@@ -1,3 +1,5 @@
+import { ChangeEvent } from "react";
+
 export type CheckboxProps = {
   className?: string;
   isChecked: boolean;
@@ -5,6 +7,15 @@ export type CheckboxProps = {
 };
 
 export type ContextualAction = "REFRESH" | "PULL" | "PUSH" | null;
+
+export type LabelProps = { text: string };
+
+export type TextInputProps = {
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  secret?: boolean;
+  placeholder?: string;
+  value?: string;
+};
 
 export type ThemedContextualMenuProps = {
   contextualAction: ContextualAction;

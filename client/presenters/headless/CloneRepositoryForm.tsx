@@ -1,15 +1,12 @@
 import { ChangeEvent, ComponentType, useCallback, useState } from "react";
 
 import { useCases } from "../../bootstrap";
-import { SubmitButtonProps } from "./types";
+import { SubmitButtonProps, TextInputProps } from "./types";
 
 type CloneRepositoryFormProps = {
   className?: string;
   inputPlaceholder?: string;
-  repoUrlInput: ComponentType<{
-    onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-    placeholder?: string;
-  }>;
+  repoUrlInput: ComponentType<TextInputProps>;
   submitButton: ComponentType<SubmitButtonProps>;
 };
 

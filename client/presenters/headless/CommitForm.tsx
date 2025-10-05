@@ -5,20 +5,10 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useRepositorySelection } from "./hooks/repository-selection";
+
 import { useCases } from "../../bootstrap";
-
-type CommitFormInputProps = {
-  value?: string;
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  placeholder?: string;
-};
-
-type CommitFormButtonProps = {
-  disabled: boolean;
-  text: string;
-  onClick: () => Promise<void>;
-};
+import { useRepositorySelection } from "./hooks/repository-selection";
+import { SubmitButtonProps, TextInputProps } from "./types";
 
 export default function CommitForm({
   containerClassname,
@@ -26,8 +16,8 @@ export default function CommitForm({
   textInput: TextInput,
 }: {
   containerClassname?: string;
-  submitButton: ComponentType<CommitFormButtonProps>;
-  textInput: ComponentType<CommitFormInputProps>;
+  submitButton: ComponentType<SubmitButtonProps>;
+  textInput: ComponentType<TextInputProps>;
 }) {
   const { repositorySelection } = useRepositorySelection();
 

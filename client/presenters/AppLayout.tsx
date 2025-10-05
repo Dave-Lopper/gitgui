@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import { useCases } from "../bootstrap";
 import { RepoTabsContext } from "./contexts/repo-tabs";
@@ -41,12 +41,11 @@ export default function AppLayout() {
   const { theme } = useContext(UiSettingsContext);
   const { currentTab } = useContext(RepoTabsContext);
   const { repositorySelection } = useRepositorySelection();
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const startupCallback = useCallback(async () => {
     await useCases.getSavedRepositories.execute();
-    window.electronAPI.onGitAuth(() => {
-      console.log("AUTH");
-    });
+    window.electronAPI.onGitAuth(() => setShowAuthModal(true));
   }, []);
 
   useEffect(() => {
