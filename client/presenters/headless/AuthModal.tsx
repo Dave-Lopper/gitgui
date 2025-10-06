@@ -1,17 +1,24 @@
 import { ComponentType, useState } from "react";
 
-import { LabelProps, SubmitButtonProps, TextInputProps } from "./types";
+import {
+  LabelProps,
+  ModalProps,
+  SubmitButtonProps,
+  TextInputProps,
+} from "./types";
 
 type AuthModalProps = {
-  modalClassname?: string;
+  close: () => void;
+  modal: ComponentType<ModalProps>;
   label: ComponentType<LabelProps>;
   submitButton: ComponentType<SubmitButtonProps>;
   textInput: ComponentType<TextInputProps>;
 };
 
 export default function AuthModal({
+  close,
   label: Label,
-  modalClassname,
+  modal: Modal,
   submitButton: SubmitButton,
   textInput: TextInput,
 }: AuthModalProps) {
@@ -19,23 +26,29 @@ export default function AuthModal({
   const [password, setPassword] = useState<string>();
 
   return (
-    <div className={`absolute ${modalClassname ? modalClassname : ""}`}>
-      <Label text="Username" />
-      <TextInput
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <Label text="Password" />
-      <TextInput
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        secret
-      />
+    <Modal close={close} title="Authentication required">
+      <div className="flex flex-col items-start w-full">
+        <Label text="Username" />
+        <TextInput
+          className="w-full"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+      </div>
+      <div className="flex flex-col items-start">
+        <Label text="Password" />
+        <TextInput
+          className="w-full mb-4"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          secret
+        />
+      </div>
       <SubmitButton
         disabled={!username && !password}
         text="Authenticate"
         onClick={async () => console.log("Auth")}
       />
-    </div>
+    </Modal>
   );
 }

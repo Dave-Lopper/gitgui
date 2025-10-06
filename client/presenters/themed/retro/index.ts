@@ -5,6 +5,8 @@ export { default as RetroDiffFileOption } from "./DiffFileOption";
 export { default as RetroDiffFileOptionRightClickMenuOption } from "./DiffFileListRightClickMenuOption";
 export { default as RetroDiffFileOptionRightClickFilesCounter } from "./DiffFileRightClickMenuFilesCounter";
 export { default as RetroDivider } from "./Divider";
+export { default as RetroLabel } from "./Label";
+export { default as RetroModal } from "./Modal";
 export { default as RetroModifiedFilesCounter } from "./ModifiedFilesCounter";
 export { default as RetroRepositoryDropdown } from "./RepoSelectionDropdown";
 export { default as RetroRepositorySelectionMenu } from "./RepoSelectionMenu";

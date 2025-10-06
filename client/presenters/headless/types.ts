@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, ReactNode } from "react";
 
 export type CheckboxProps = {
   className?: string;
@@ -12,6 +12,7 @@ export type LabelProps = { text: string };
 
 export type TextInputProps = {
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  className?: string;
   secret?: boolean;
   placeholder?: string;
   value?: string;
@@ -29,4 +30,11 @@ export type SubmitButtonProps = {
   disabled: boolean;
   text: string;
   onClick: () => Promise<void>;
+};
+
+export type ModalProps = {
+  children: ReactNode;
+  close: () => void;
+  modalClassname?: string;
+  title: string;
 };

@@ -4,6 +4,7 @@ import { useCases } from "../bootstrap";
 import { RepoTabsContext } from "./contexts/repo-tabs";
 import { UiSettingsContext } from "./contexts/ui-settings/context";
 import {
+  AuthModal,
   Header,
   ModifiedFilesList,
   SplitPane,
@@ -27,6 +28,8 @@ import {
   RetroDiffFileOption,
   RetroDiffFileOptionRightClickFilesCounter,
   RetroDivider,
+  RetroLabel,
+  RetroModal,
   RetroModifiedFilesCounter,
   RetroRepositoryDropdown,
   RetroRepositorySelectionMenu,
@@ -102,6 +105,15 @@ export default function AppLayout() {
 
   return (
     <div className="bg-retro flex h-full max-h-full w-full max-w-full flex-col items-center justify-start">
+      {showAuthModal && (
+        <AuthModal
+          close={() => setShowAuthModal(false)}
+          modal={RetroModal}
+          label={RetroLabel}
+          submitButton={RetroSubmitButton}
+          textInput={RetroTextInput}
+        />
+      )}
       <Header
         className={theme === "RETRO" ? "max-h-13" : "max-h-24"}
         contextualMenu={
