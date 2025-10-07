@@ -4,6 +4,12 @@ import { RepositorySelectionDto } from "../dto/repo-selection";
 export interface IGitService {
   addToGitignore(repositoryPath: string, filePaths: string[]): Promise<void>;
 
+  authenticate(
+    password: string,
+    repositoryPath: string,
+    username: string,
+  ): Promise<boolean>;
+
   batchAddToGitignore(repositoryPath: string, extension: string): Promise<void>;
 
   batchDiscardFileModifications(

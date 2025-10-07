@@ -10,6 +10,18 @@ export class GitService implements IGitService {
     await window.electronAPI.addToGitignore(repositoryPath, filePaths);
   }
 
+  async authenticate(
+    password: string,
+    repositoryPath: string,
+    username: string,
+  ): Promise<boolean> {
+    return await window.electronAPI.authenticate(
+      password,
+      repositoryPath,
+      username,
+    );
+  }
+
   async batchAddToGitignore(
     repositoryPath: string,
     extension: string,
@@ -52,7 +64,7 @@ export class GitService implements IGitService {
   }
 
   async fetch(repositoryPath: string): Promise<CommitStatus> {
-  return await window.electronAPI.fetch(repositoryPath);
+    return await window.electronAPI.fetch(repositoryPath);
   }
 
   async getHistory(

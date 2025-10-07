@@ -1,6 +1,7 @@
 import {
   AddFileTypeToGitignore,
   AddToGitignore,
+  Authenticate,
   BatchDiscardFileModifications,
   CloneRepository,
   ConsultCommitDiff,
@@ -29,6 +30,7 @@ const repositoryStore = new RepositoryStore();
 export const useCases = {
   addFileTypeToGitignore: new AddFileTypeToGitignore(gitService, eventBus),
   addToGitignore: new AddToGitignore(gitService, eventBus),
+  authenticate: new Authenticate(gitService, eventBus),
   batchDiscardFileModifications: new BatchDiscardFileModifications(
     gitService,
     eventBus,
@@ -43,7 +45,7 @@ export const useCases = {
   getCommitHistory: new GetCommitHistory(gitService, eventBus),
   getSavedRepositories: new GetSavedRepositories(repositoryStore, eventBus),
   pull: new Pull(gitService, eventBus),
-  push: new Push(gitService, eventBus), 
+  push: new Push(gitService, eventBus),
   selectRepositoryFromDisk: new SelectRepositoryFromDisk(gitService, eventBus),
   repositoryFetched: new RepositoryFetched(eventBus),
   selectRepositoryFromSaved: new SelectRepositoryFromSaved(

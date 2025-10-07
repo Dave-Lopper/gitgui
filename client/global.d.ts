@@ -18,6 +18,11 @@ declare global {
         repositoryPath: string,
         filePaths: string[],
       ) => Promise<void>;
+      authenticate: (
+        password: string,
+        repositoryPath: string,
+        username: string,
+      ) => Promise<boolean>;
       batchAddToGitignore: (
         repositoryPath: string,
         extension: string,
