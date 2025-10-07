@@ -45,6 +45,15 @@ async function createWindow() {
     return res;
   });
 
+  ipcMain.handle("repositories:authenticate", async (event, message) => {
+    const parsedMessage = JSON.parse(message);
+    return await repositoryUseCases.authenticate.execute(
+      parsedMessage.repositoryPath,
+      parsedMessage.username,
+      parsedMessage.password,
+    );
+  });
+
   ipcMain.handle(
     "repositories:fetch",
     async (event, message) => await repositoryUseCases.fetch.execute(message),

@@ -6,6 +6,11 @@ electron.contextBridge.exposeInMainWorld("electronAPI", {
       "diff:addToGitignore",
       JSON.stringify({ repositoryPath, filePaths }),
     ),
+  authenticate: (password: string, repositoryPath: string, username: string) =>
+    electron.ipcRenderer.invoke(
+      "repositories:authenticate",
+      JSON.stringify({ password, repositoryPath, username }),
+    ),
   batchAddToGitignore: (repositoryPath: string, extension: string) =>
     electron.ipcRenderer.invoke(
       "diff:batchAddToGitignore",

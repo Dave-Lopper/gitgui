@@ -20,4 +20,19 @@ export interface RepositoryGitRunner {
   listRefs(path: string): Promise<RepositoryReferences>;
 
   pull(path: string): Promise<void>;
+
+  removeCredentials(
+    remoteHost: string,
+    repositoryPath: string,
+    username: string,
+  ): Promise<void>;
+
+  storeCredentials(
+    password: string,
+    remoteHost: string,
+    repositoryPath: string,
+    username: string,
+  ): Promise<void>;
+
+  testCredentials(repositoryPath: string): Promise<boolean>;
 }

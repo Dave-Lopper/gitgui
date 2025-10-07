@@ -1,6 +1,7 @@
-import { spawn, ExecOptions } from "child_process";
+import { spawn } from "child_process";
 
 import {
+  CommandArgs,
   CommandOptions,
   CommandResult,
   CommandRunner,
@@ -27,6 +28,51 @@ export class ShellRunner implements CommandRunner {
     return lines;
   }
 
+  async pipe(piped: CommandArgs, pipee: CommandArgs): Promise<CommandResult> {
+    return new Promise((resolve, reject) => {
+      const pipedCmd = spawn(piped.cmd, piped.args, {
+        cwd: piped.options?.cwd || process.cwd(),
+        env: { ...this.env, ...piped.options?.env },
+        shell: false,
+      });
+      const pipeeCmd = spawn(pipee.cmd, pipee.args, {
+        cwd: pipee.options?.cwd || process.cwd(),
+        env: { ...this.env, ...pipee.options?.env },
+        shell: false,
+      });
+
+      pipedCmd.stdout.pipe(pipeeCmd.stdin);
+
+      let stdout = "";
+      let stderr = "";
+      let exited = false;
+
+      pipeeCmd.stdout.on("data", (data) => {
+        stdout += data.toString();
+      });
+
+      pipeeCmd.stderr.on("data", (data) => {
+        stderr += data.toString();
+      });
+
+      const handleExit = (code: number | null) => {
+        if (exited) return;
+        exited = true;
+
+        resolve({
+          command: `${piped.cmd} ${piped.args?.join(" ") ?? ""} | ${pipee.cmd} ${pipee.args?.join(" ") ?? ""}`,
+          stdout: this.splitLines(stdout, pipee.options?.trimOutput ?? true),
+          stderr: this.splitLines(stderr, pipee.options?.trimOutput ?? true),
+          exitCode: code ?? -1,
+        });
+      };
+
+      pipeeCmd.on("exit", (code) => handleExit(code));
+      pipedCmd.on("error", reject);
+      pipeeCmd.on("error", reject);
+    });
+  }
+
   async run(
     command: string,
     args: string[] = [],
@@ -39,7 +85,6 @@ export class ShellRunner implements CommandRunner {
         env: {
           ...process.env,
           ...this.env,
-          
         },
       });
 
@@ -49,16 +94,13 @@ export class ShellRunner implements CommandRunner {
       let exited = false;
 
       child.stdin?.on("data", (data) => {
-        // console.log("[STDIN]", data.toString(), "[STDINEND]");
         stdin += data.toString();
       });
       child.stdout?.on("data", (data) => {
-        // console.log("[STDOUT]", data.toString(), "[STDOUTEND]");
         stdout += data.toString();
       });
       child.stdout?.resume();
       child.stderr?.on("data", (data) => {
-        // console.log("[STDERR]", data.toString(), "[STDERREND]");
         stderr += data.toString();
       });
       child.stderr?.resume();
@@ -69,8 +111,6 @@ export class ShellRunner implements CommandRunner {
           reject(error);
         }
       });
-
-      // console.log({ stdin });
 
       child.on("exit", (code) => {
         if (!exited) {

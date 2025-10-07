@@ -265,4 +265,52 @@ export class RepositoryGitCliRunner
   async pull(path: string): Promise<void> {
     await this.safeRun("git", ["pull"], { cwd: path });
   }
+
+  async removeCredentials(
+    remoteHost: string,
+    repositoryPath: string,
+    username: string,
+  ): Promise<void> {
+    await this.cmdRunner.pipe(
+      {
+        cmd: "printf",
+        args: [`protocol=https\nhost=${remoteHost}\nusername=${username}\n\n`],
+        options: { cwd: repositoryPath },
+      },
+      {
+        cmd: "git",
+        args: ["credential", "reject"],
+        options: { cwd: repositoryPath },
+      },
+    );
+  }
+
+  async storeCredentials(
+    password: string,
+    remoteHost: string,
+    repositoryPath: string,
+    username: string,
+  ): Promise<void> {
+    await this.cmdRunner.pipe(
+      {
+        cmd: "printf",
+        args: [
+          `protocol=https\nhost=${remoteHost}\nusername=${username}\npassword=${password}\n\n`,
+        ],
+        options: { cwd: repositoryPath },
+      },
+      {
+        cmd: "git",
+        args: ["credential", "approve"],
+        options: { cwd: repositoryPath },
+      },
+    );
+  }
+
+  async testCredentials(repositoryPath: string): Promise<boolean> {
+    const result = await this.cmdRunner.run("git", ["fetch"], {
+      cwd: repositoryPath,
+    });
+    return result.exitCode !== 128;
+  }
 }

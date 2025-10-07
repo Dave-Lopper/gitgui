@@ -9,6 +9,7 @@ import { GetCommitStatus } from "../commit/application/services/get-commit-statu
 import { CommitGitCliRunner } from "../commit/infra/commit-cli-git-runner.js";
 import { GetRepoDiff } from "../diff/application/services/repo-diff.js";
 import { DiffCliGitRunner } from "../diff/infra/diff-git-cli-runner.js";
+import { Authenticate } from "./application/use-cases/authenticate.js";
 import { CloneRepository } from "./application/use-cases/clone-repository.js";
 import { Fetch } from "./application/use-cases/fetch.js";
 import { GetBranchesForRepository } from "./application/use-cases/get-branches.js";
@@ -36,6 +37,7 @@ export const bootstrap = async (window: BrowserWindow) => {
   const filesRepository = new FsFilesRepository();
 
   return {
+    authenticate: new Authenticate(eventEmitter, repoGitRunner),
     cloneRepository: new CloneRepository(
       eventEmitter,
       filesRepository,
