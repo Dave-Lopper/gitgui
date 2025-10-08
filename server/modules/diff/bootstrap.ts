@@ -14,7 +14,9 @@ import { DiffCliGitRunner } from "./infra/diff-git-cli-runner.js";
 export function bootstrap(window: BrowserWindow) {
   const eventEmitter = new ElectronEventEmitter(window);
   const filesRepo = new FsFilesRepository();
-  const gitRunner = new DiffCliGitRunner(new ShellRunner(GITENV));
+  const gitRunner = new DiffCliGitRunner(
+    new ShellRunner({ ...process.env, ...GITENV }),
+  );
   const diffService = new GetRepoDiff(eventEmitter, gitRunner);
 
   return {

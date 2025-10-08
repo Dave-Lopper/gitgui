@@ -1,4 +1,4 @@
-import { ExecOptions } from "child_process";
+import { SpawnOptions } from "child_process";
 
 export type CommandResult = {
   command: string;
@@ -7,7 +7,7 @@ export type CommandResult = {
   exitCode: number;
 };
 
-export type CommandOptions = ExecOptions & { trimOutput?: boolean };
+export type CommandOptions = SpawnOptions & { trimOutput?: boolean };
 
 export type CommandArgs = {
   cmd: string;

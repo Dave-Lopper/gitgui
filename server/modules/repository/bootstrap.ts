@@ -23,7 +23,7 @@ import { SqliteRepositoryStore } from "./infra/sqlite-repository-store.js";
 export const bootstrap = async (window: BrowserWindow) => {
   const eventEmitter = new ElectronEventEmitter(window);
   const repoStore = await SqliteRepositoryStore.create();
-  const commandRunner = new ShellRunner(GITENV);
+  const commandRunner = new ShellRunner({ ...process.env, ...GITENV });
   const commitStatusService = new GetCommitStatus(
     eventEmitter,
     new CommitGitCliRunner(commandRunner),

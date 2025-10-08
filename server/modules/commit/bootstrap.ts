@@ -9,7 +9,9 @@ import { CommitGitCliRunner } from "./infra/commit-cli-git-runner.js";
 
 export function bootstrap(window: BrowserWindow) {
   const eventEmitter = new ElectronEventEmitter(window);
-  const gitRunner = new CommitGitCliRunner(new ShellRunner(GITENV));
+  const gitRunner = new CommitGitCliRunner(
+    new ShellRunner({ ...process.env, ...GITENV }),
+  );
   return {
     commit: new CommitUseCase(eventEmitter, gitRunner),
     getHistory: new GetHistory(eventEmitter, gitRunner),

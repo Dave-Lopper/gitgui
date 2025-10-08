@@ -30,6 +30,7 @@ export class Authenticate {
 
     const credentialsTestResult =
       await this.gitRunner.testCredentials(repositoryPath);
+
     if (!credentialsTestResult) {
       await this.gitRunner.removeCredentials(
         remoteHost,

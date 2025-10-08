@@ -1,5 +1,8 @@
 import { ComponentType, useCallback, useState } from "react";
 
+import { useCases } from "../../bootstrap";
+import { useEventSubscription } from "../../infra/react-bus-helper";
+import { useRepositorySelection } from "./hooks/repository-selection";
 import {
   LabelProps,
   ModalProps,
@@ -22,8 +25,38 @@ export default function AuthModal({
   submitButton: SubmitButton,
   textInput: TextInput,
 }: AuthModalProps) {
+  const { repositorySelection } = useRepositorySelection();
+  const [authenticationFailed, setAuthenticationFailed] = useState(false);
   const [username, setUsername] = useState<string>();
   const [password, setPassword] = useState<string>();
+
+  const authenticate = useCallback(async () => {
+    if (!repositorySelection || !password || !username) {
+      return;
+    }
+    await useCases.authenticate.execute(
+      password,
+      repositorySelection.repository.localPath,
+      username,
+    );
+  }, [repositorySelection, password, username]);
+
+  useEventSubscription(
+    "Authenticated",
+    async (event) => {
+      if (event.payload.success === true) {
+        if (repositorySelection?.repository) {
+          await useCases.selectRepositoryFromSaved.execute(
+            repositorySelection?.repository.localPath,
+          );
+        }
+        close();
+      } else {
+        setAuthenticationFailed(true);
+      }
+    },
+    [close],
+  );
 
   return (
     <Modal close={close} title="Authentication required">
@@ -47,7 +80,7 @@ export default function AuthModal({
       <SubmitButton
         disabled={!username && !password}
         text="Authenticate"
-        onClick={async () => console.log("Auth")}
+        onClick={authenticate}
       />
     </Modal>
   );

@@ -8,9 +8,9 @@ import {
 } from "../application/command-runner.js";
 
 export class ShellRunner implements CommandRunner {
-  private env: Record<string, string>;
+  private env: Record<string, string | undefined>;
 
-  constructor(env: Record<string, string> = {}) {
+  constructor(env: Record<string, string | undefined> = {}) {
     this.env = env;
   }
 
@@ -33,12 +33,15 @@ export class ShellRunner implements CommandRunner {
       const pipedCmd = spawn(piped.cmd, piped.args, {
         cwd: piped.options?.cwd || process.cwd(),
         env: { ...this.env, ...piped.options?.env },
-        shell: false,
+        shell:
+          piped.options?.shell !== undefined ? piped.options?.shell : false,
       });
+
       const pipeeCmd = spawn(pipee.cmd, pipee.args, {
         cwd: pipee.options?.cwd || process.cwd(),
         env: { ...this.env, ...pipee.options?.env },
-        shell: false,
+        shell:
+          pipee.options?.shell !== undefined ? pipee.options?.shell : false,
       });
 
       pipedCmd.stdout.pipe(pipeeCmd.stdin);
@@ -81,7 +84,7 @@ export class ShellRunner implements CommandRunner {
     return new Promise((resolve, reject) => {
       const child = spawn(command, args, {
         cwd: options?.cwd || process.cwd(),
-        shell: false,
+        shell: options?.shell ? options?.shell : false,
         env: {
           ...process.env,
           ...this.env,
