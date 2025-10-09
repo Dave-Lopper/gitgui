@@ -10,7 +10,7 @@ export default function RetroModal({
 }: ModalProps) {
   return (
     <div
-      className={`absolute retro-borders border-2 bg-retro p-[2px] flex flex-col justify-start w-1/3 top-1/3 ${modalClassname ? modalClassname : ""}`}
+      className={`absolute retro-borders border-2 bg-retro p-[2px] flex flex-col justify-start w-1/3 ${modalClassname ? modalClassname : ""}`}
     >
       <div className="h-[28px] w-full bg-retro-active flex justify-between items-center font-retro text-white font-bold  pl-[4px]">
         {title}

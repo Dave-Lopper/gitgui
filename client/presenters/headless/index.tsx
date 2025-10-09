@@ -1,4 +1,3 @@
-export { default as AuthModal } from "./AuthModal";
 export { default as CloneRepositoryForm } from "./CloneRepositoryForm";
 export { default as ContextualAction } from "./ContextualMenu";
 export { default as Dropdown } from "./Dropdown";

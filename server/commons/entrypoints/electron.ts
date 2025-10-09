@@ -13,6 +13,12 @@ let diffUseCases: ReturnType<typeof diffBootstrap>;
 let repositoryUseCases: Awaited<ReturnType<typeof repositoryBootstrap>>;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught exception in main process:", err);
+});
+process.on("unhandledRejection", (err) => {
+  console.error("Unhandled rejection in main process:", err);
+});
 
 async function createWindow() {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
@@ -139,6 +145,10 @@ async function createWindow() {
       parsedMessage.repositoryPath,
       parsedMessage.filePaths,
     );
+  });
+
+  window.webContents.on("render-process-gone", (event, details) => {
+    console.error("Renderer process crashed:", details);
   });
 }
 

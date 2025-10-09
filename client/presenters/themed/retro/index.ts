@@ -1,3 +1,4 @@
+export { default as RetroAuthModal } from "./AuthModal";
 export { default as RetroBranchDropdown } from "./BranchSelectionDropdown";
 export { default as RetroCheckbox } from "./Checkbox";
 export { default as RetroContextualMenu } from "./ContextualMenu";

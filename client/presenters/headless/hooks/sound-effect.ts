@@ -9,6 +9,18 @@ const soundModules = import.meta.glob("/sound/**/*.mp3", {
 });
 
 const soundEffectsMapping = {
+  BUTTON_DISABLED: {
+    RETRO: "sound/retro/button-disabled.mp3",
+    MODERN: "sound/modern/button-disabled.mp3",
+  },
+  BUTTON_PRESSED: {
+    RETRO: "sound/retro/button-pressed.mp3",
+    MODERN: "sound/modern/button-pressed.mp3",
+  },
+  ERROR: {
+    RETRO: "sound/retro/error.mp3",
+    MODERN: "sound/retro/error.mp3",
+  },
   MAXIMIZE: {
     RETRO: "sound/retro/maximize.wav",
     MODERN: "sound/retro/maximize.wav",
@@ -17,17 +29,13 @@ const soundEffectsMapping = {
     RETRO: "sound/retro/minimize.mp3",
     MODERN: "sound/modern/minimize.mp3",
   },
+  SUCCESS: {
+    RETRO: "sound/retro/success.wav",
+    MODERN: "sound/modern/success.wav",
+  },
   SWITCH: {
     RETRO: "sound/retro/switch.mp3",
     MODERN: "sound/modern/switch.mp3",
-  },
-  BUTTON_PRESSED: {
-    RETRO: "sound/retro/button-pressed.mp3",
-    MODERN: "sound/modern/button-pressed.mp3",
-  },
-  BUTTON_DISABLED: {
-    RETRO: "sound/retro/button-disabled.mp3",
-    MODERN: "sound/modern/button-disabled.mp3",
   },
 } as const;
 export type SoundEffect = keyof typeof soundEffectsMapping;
