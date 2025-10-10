@@ -15,4 +15,4 @@ export { Push } from "./push";
 export { RepositoryFetched } from "./repository-fetched";
 export { SelectRepositoryFromSaved } from "./select-repository-from-saved";
 export { SelectRepositoryFromDisk } from "./select-repository-from-disk";
-export { ToggleFilesStaged } from "./toggle-files-staged";
+export { ToggleFileStaged } from "./toggle-file-staged";

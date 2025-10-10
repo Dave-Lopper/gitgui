@@ -182,7 +182,9 @@ export default function ModifiedFilesList({
           toggleStaging={async () =>
             await useCases.toggleFilesStaged.execute(
               repositorySelection?.repository.localPath!,
-              [file],
+              file,
+              idx,
+              repositorySelection,
             )
           }
           file={file}

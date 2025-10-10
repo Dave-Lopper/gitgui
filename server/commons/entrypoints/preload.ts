@@ -35,6 +35,8 @@ electron.contextBridge.exposeInMainWorld("electronAPI", {
     electron.ipcRenderer.invoke("repositories:fetch", repositoryPath),
   pull: (repositoryPath: string) =>
     electron.ipcRenderer.invoke("repositories:pull", repositoryPath),
+  push: (repositoryPath: string) =>
+    electron.ipcRenderer.invoke("repositories:push", repositoryPath),
   getBranchesForRepository: (path: string) =>
     electron.ipcRenderer.invoke("repositories:getBranchesForRepository", path),
   getCommitHistory: (page: number, pageSize: number, repositoryPath: string) =>

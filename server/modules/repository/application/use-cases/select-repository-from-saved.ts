@@ -65,6 +65,7 @@ export class SelectRepositoryFromSaved {
         this.eventEmitter.send("repository:fetched", commitStatus);
       } catch (err) {
         console.error(`Error while fetching and getting commit status: ${err}`);
+        throw err;
       }
     })();
 

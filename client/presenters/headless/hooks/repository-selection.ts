@@ -4,7 +4,7 @@ import { Event } from "../../../application/i-event-bus";
 import { RepositorySelectionDto } from "../../../dto/repo-selection";
 import { useEventSubscription } from "../../../infra/react-bus-helper";
 
-export function useRepositorySelection() {
+export function useRepositorySelection(listenStaging: boolean = false) {
   const [repositorySelection, setRepositorySelection] =
     useState<RepositorySelectionDto | null>(null);
 
@@ -13,6 +13,13 @@ export function useRepositorySelection() {
     [],
   );
 
-  useEventSubscription("RepositorySelected", handler, [handler]);
+  let event: string | string[];
+  if (listenStaging) {
+    event = ["RepositorySelected", "FileStaged"];
+  } else {
+    event = "RepositorySelected";
+  }
+
+  useEventSubscription(event, handler, [handler]);
   return { repositorySelection };
 }

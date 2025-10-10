@@ -43,7 +43,7 @@ import RetroRepositoryTab from "./themed/retro/RepositoryTab";
 export default function AppLayout() {
   const { theme } = useContext(UiSettingsContext);
   const { currentTab } = useContext(RepoTabsContext);
-  const { repositorySelection } = useRepositorySelection();
+  const { repositorySelection } = useRepositorySelection(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   const startupCallback = useCallback(async () => {
@@ -122,7 +122,7 @@ export default function AppLayout() {
         <SplitPane
           leftPane={
             <div
-              className={`${theme === "MODERN" ? "bg-modern-dark-ter" : "bg-retro-desktop"} flex h-full flex-col`}
+              className={`${theme === "MODERN" ? "bg-modern-dark-ter" : "bg-retro-desktop"} relative flex h-full flex-col`}
             >
               <RepositoryTabs tab={repositoryTab} />
               {currentTab === "DIFF" ? (

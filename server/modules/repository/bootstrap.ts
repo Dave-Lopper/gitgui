@@ -15,6 +15,7 @@ import { Fetch } from "./application/use-cases/fetch.js";
 import { GetBranchesForRepository } from "./application/use-cases/get-branches.js";
 import { GetSavedRepositories } from "./application/use-cases/get-saved-repositories.js";
 import { Pull } from "./application/use-cases/pull.js";
+import { Push } from "./application/use-cases/push.js";
 import { SelectRepositoryFromDisk } from "./application/use-cases/select-repository-from-disk.js";
 import { SelectRepositoryFromSaved } from "./application/use-cases/select-repository-from-saved.js";
 import { RepositoryGitCliRunner } from "./infra/repo-git-cli-runner.js";
@@ -57,6 +58,7 @@ export const bootstrap = async (window: BrowserWindow) => {
     ),
     fetch: new Fetch(commitStatusService, eventEmitter, repoGitRunner),
     pull: new Pull(eventEmitter, repoGitRunner),
+    push: new Push(eventEmitter, repoGitRunner),
     selectRepositoryFromDisk: new SelectRepositoryFromDisk(
       commitStatusService,
       eventEmitter,

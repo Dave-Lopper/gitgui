@@ -1,10 +1,4 @@
-import {
-  ChangeEvent,
-  ComponentType,
-  useCallback,
-  useMemo,
-  useState,
-} from "react";
+import { ComponentType, useCallback, useMemo, useState } from "react";
 
 import { useCases } from "../../bootstrap";
 import { useRepositorySelection } from "./hooks/repository-selection";
@@ -32,15 +26,15 @@ export default function CommitForm({
 
   const isSubmitDisabled = useMemo(
     () =>
-      repositorySelection !== null &&
-      stagedFiles.length > 0 &&
-      commitMessage !== undefined &&
-      commitMessage.length > 0,
-    [stagedFiles, commitMessage],
+      repositorySelection === null ||
+      stagedFiles.length === 0 ||
+      commitMessage === undefined ||
+      commitMessage.length === 0,
+    [repositorySelection, stagedFiles, commitMessage],
   );
 
   const submit = useCallback(async () => {
-    if (!repositorySelection || !commitMessage) {
+    if (!repositorySelection || isSubmitDisabled || !commitMessage) {
       return;
     }
     await useCases.commit.execute(
@@ -52,7 +46,7 @@ export default function CommitForm({
 
   return (
     <div
-      className={`flex flex-col ${containerClassname ? containerClassname : ""}`}
+      className={`flex flex-col absolute bottom-0 w-full ${containerClassname ? containerClassname : ""}`}
     >
       <TextInput
         placeholder="Commit message"

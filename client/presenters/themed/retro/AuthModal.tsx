@@ -15,8 +15,6 @@ export default function AuthModal({ close }: { close: () => void }) {
     username,
   } = useAuthentication(close);
 
-  console.log({ authenticationFailed });
-
   return (
     <>
       {authenticationFailed && (

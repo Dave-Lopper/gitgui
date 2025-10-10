@@ -21,6 +21,8 @@ export interface RepositoryGitRunner {
 
   pull(path: string): Promise<void>;
 
+  push(path: string): Promise<void>;
+
   removeCredentials(
     remoteHost: string,
     repositoryPath: string,

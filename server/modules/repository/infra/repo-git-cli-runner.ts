@@ -266,6 +266,11 @@ export class RepositoryGitCliRunner
     await this.safeRun("git", ["pull"], { cwd: path });
   }
 
+  async push(path: string): Promise<void> {
+    const result = await this.safeRun("git", ["pull"], { cwd: path });
+    console.log({ result });
+  }
+
   async removeCredentials(
     remoteHost: string,
     repositoryPath: string,

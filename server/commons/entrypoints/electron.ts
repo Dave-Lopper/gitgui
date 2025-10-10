@@ -83,6 +83,11 @@ async function createWindow() {
   );
 
   ipcMain.handle(
+    "repositories:push",
+    async (event, message) => await repositoryUseCases.push.execute(message),
+  );
+
+  ipcMain.handle(
     "repositories:selectFromDisk",
     async (event, message) =>
       await repositoryUseCases.selectRepositoryFromDisk.execute(),

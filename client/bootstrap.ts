@@ -16,7 +16,7 @@ import {
   RepositoryFetched,
   SelectRepositoryFromDisk,
   SelectRepositoryFromSaved,
-  ToggleFilesStaged,
+  ToggleFileStaged,
 } from "./application/use-cases";
 import { Commit } from "./application/use-cases/commit";
 import { ObservableEventBus } from "./infra/event-bus";
@@ -52,5 +52,5 @@ export const useCases = {
     gitService,
     eventBus,
   ),
-  toggleFilesStaged: new ToggleFilesStaged(gitService, eventBus),
+  toggleFilesStaged: new ToggleFileStaged(gitService, eventBus),
 };
