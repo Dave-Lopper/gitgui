@@ -38,6 +38,7 @@ import {
   RetroTextInput,
 } from "./themed/retro";
 import RetroDiffFileListRightClickMenuOption from "./themed/retro/DiffFileListRightClickMenuOption";
+import History from "./themed/retro/History";
 import RetroRepositoryTab from "./themed/retro/RepositoryTab";
 
 export default function AppLayout() {
@@ -122,7 +123,7 @@ export default function AppLayout() {
         <SplitPane
           leftPane={
             <div
-              className={`${theme === "MODERN" ? "bg-modern-dark-ter" : "bg-retro-desktop"} relative flex h-full flex-col`}
+              className={`${theme === "MODERN" ? "bg-modern-dark-ter" : "bg-retro-desktop"} relative flex h-full flex-col max-h-full`}
             >
               <RepositoryTabs tab={repositoryTab} />
               {currentTab === "DIFF" ? (
@@ -149,7 +150,7 @@ export default function AppLayout() {
                   </div>
                 </div>
               ) : (
-                <>HISTORY</>
+                <History />
               )}
             </div>
           }

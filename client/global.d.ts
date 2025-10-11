@@ -4,6 +4,7 @@ import { Commit, CommitStatus } from "./domain/commit";
 import { DiffFile } from "./domain/diff";
 import { Branch, Repository } from "./domain/repository";
 import { ActionResponse } from "./dto/action";
+import { HistoryPaginationDto } from "./dto/history-pagination";
 import { RepositorySelectionDto } from "./dto/repo-selection";
 
 // src/global.d.ts
@@ -43,11 +44,11 @@ declare global {
       getBranchesForRepository: (
         path: string,
       ) => Promise<ActionResponse<Branch[]>>;
-      getHistory: (
+      getCommitHistory: (
         page: number,
         pageSize: number,
         repositoryPath: string,
-      ) => Promise<Commit[]>;
+      ) => Promise<HistoryPaginationDto>;
       getSavedRepositories: () => Promise<ActionResponse<Repository[]>>;
       selectRepositoryFromDisk: () => Promise<
         ActionResponse<RepositorySelectionDto>

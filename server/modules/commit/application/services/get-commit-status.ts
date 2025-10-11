@@ -14,7 +14,6 @@ export class GetCommitStatus {
       this.gitRunner.getCommitStatus(repositoryPath),
       this.eventEmitter,
     );
-    console.log({ commitStatusLines });
     return parseCommitStatus(commitStatusLines);
   }
 }

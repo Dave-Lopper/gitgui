@@ -267,8 +267,7 @@ export class RepositoryGitCliRunner
   }
 
   async push(path: string): Promise<void> {
-    const result = await this.safeRun("git", ["pull"], { cwd: path });
-    console.log({ result });
+    await this.safeRun("git", ["pull"], { cwd: path });
   }
 
   async removeCredentials(

@@ -21,7 +21,7 @@ export default function SplitPane({
   });
 
   return (
-    <div ref={containerRef} className="flex h-full w-full">
+    <div ref={containerRef} className="flex h-full w-full min-h-0">
       <div
         className={`overflow-hidden ${leftPaneClassName ? leftPaneClassName : ""}`}
         style={{ width: `${splitPercentage}%` }}

@@ -7,6 +7,8 @@ export interface CommitGitRunner {
 
   getCommitStatus(repositoryPath: string): Promise<string[]>;
 
+  getCommitsCount(repositoryPath: string): Promise<string[]>;
+
   getHeadHashes(repositoryPath: string): Promise<HeadHashesDto>;
 
   getHistory(

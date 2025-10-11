@@ -1,4 +1,5 @@
 import { Commit, CommitStatus } from "../domain/commit";
+import { HistoryPaginationDto } from "../dto/history-pagination";
 import { RepositorySelectionDto } from "../dto/repo-selection";
 
 export interface IGitService {
@@ -31,7 +32,7 @@ export interface IGitService {
     page: number,
     pageSize: number,
     repositoryPath: string,
-  ): Promise<Commit[]>;
+  ): Promise<HistoryPaginationDto>;
 
   pull(repositoryPath: string): Promise<void>;
 

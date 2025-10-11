@@ -12,11 +12,14 @@ export class GetCommitHistory {
     pageSize: number,
     repositoryPath: string,
   ): Promise<void> {
-    const commits = await this.gitService.getHistory(
+    const dto = await this.gitService.getHistory(
       page,
       pageSize,
       repositoryPath,
     );
-    this.eventBus.emit({ type: "CommitHistoryFetched", payload: commits });
+    this.eventBus.emit({
+      type: "CommitHistoryFetched",
+      payload: dto,
+    });
   }
 }

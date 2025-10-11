@@ -43,6 +43,12 @@ export class CommitGitCliRunner
     );
   }
 
+  async getCommitsCount(repositoryPath: string): Promise<string[]> {
+    return await this.safeRun("git", ["rev-list", "--count", "HEAD"], {
+      cwd: repositoryPath,
+    });
+  }
+
   async getHistory(
     repositoryPath: string,
     page: number,
@@ -54,10 +60,10 @@ export class CommitGitCliRunner
         "--no-pager",
         "log",
         "--no-color",
-        `--skip=${pageSize * page}`,
+        `--skip=${pageSize * (page - 1)}`,
         "-n",
-        "--date=iso",
         pageSize.toString(),
+        "--date=iso",
         '--pretty=format:"%h|%H|%an|%ae|%ad|%s',
       ],
       {

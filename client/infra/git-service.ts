@@ -1,5 +1,6 @@
 import { IGitService } from "../application/i-git-service";
 import { Commit, CommitStatus } from "../domain/commit";
+import { HistoryPaginationDto } from "../dto/history-pagination";
 import { RepositorySelectionDto } from "../dto/repo-selection";
 
 export class GitService implements IGitService {
@@ -71,8 +72,12 @@ export class GitService implements IGitService {
     page: number,
     pageSize: number,
     repositoryPath: string,
-  ): Promise<Commit[]> {
-    return await window.electronAPI.getHistory(page, pageSize, repositoryPath);
+  ): Promise<HistoryPaginationDto> {
+    return await window.electronAPI.getCommitHistory(
+      page,
+      pageSize,
+      repositoryPath,
+    );
   }
 
   async pull(repositoryPath: string): Promise<void> {

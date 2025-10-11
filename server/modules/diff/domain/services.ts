@@ -1,9 +1,9 @@
 import {
   DiffFile,
+  DiffFileStatus,
+  DiffHunk,
   DiffLine,
   DiffLinePart,
-  DiffHunk,
-  DiffFileStatus,
 } from "./entities.js";
 
 type PartialFile = {
@@ -152,27 +152,15 @@ export function parseDiff(diffLines: string[]): DiffFile[] {
     // New file
     if (currentDiffLine.startsWith("diff --git")) {
       flushFile();
+
       currentFile = createEmptyFile();
+      const diffLineParts = currentDiffLine.split(" ");
+      const oldPath = diffLineParts[2].slice(2);
+      const newPath = diffLineParts[3].slice(2);
+      currentFile.oldPath = oldPath === "/dev/null" ? null : oldPath;
+      currentFile.newPath = newPath === "/dev/null" ? null : newPath;
     } else if (currentDiffLine.startsWith("index ")) {
       continue;
-    } else if (currentDiffLine.startsWith("---")) {
-      const oldPath = currentDiffLine.split(" ")[1];
-      if (currentFile) {
-        if (oldPath === "/dev/null") {
-          currentFile.oldPath = null;
-        } else {
-          currentFile.oldPath = oldPath.slice(2);
-        }
-      }
-    } else if (currentDiffLine.startsWith("+++")) {
-      const newPath = currentDiffLine.split(" ")[1];
-      if (currentFile) {
-        if (newPath === "/dev/null") {
-          currentFile.newPath = null;
-        } else {
-          currentFile.newPath = newPath.slice(2);
-        }
-      }
     }
     // New hunk
     else if (currentDiffLine.startsWith("@@")) {
