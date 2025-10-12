@@ -10,6 +10,7 @@ import { CommitGitCliRunner } from "../commit/infra/commit-cli-git-runner.js";
 import { GetRepoDiff } from "../diff/application/services/repo-diff.js";
 import { DiffCliGitRunner } from "../diff/infra/diff-git-cli-runner.js";
 import { Authenticate } from "./application/use-cases/authenticate.js";
+import { CheckoutBranch } from "./application/use-cases/checkout-branch.js";
 import { CloneRepository } from "./application/use-cases/clone-repository.js";
 import { Fetch } from "./application/use-cases/fetch.js";
 import { GetBranchesForRepository } from "./application/use-cases/get-branches.js";
@@ -39,6 +40,11 @@ export const bootstrap = async (window: BrowserWindow) => {
 
   return {
     authenticate: new Authenticate(eventEmitter, repoGitRunner),
+    checkoutBranch: new CheckoutBranch(
+      eventEmitter,
+      repoGitRunner,
+      repoDiffService,
+    ),
     cloneRepository: new CloneRepository(
       eventEmitter,
       filesRepository,

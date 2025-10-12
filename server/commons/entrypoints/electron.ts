@@ -2,6 +2,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import { BrowserWindow, app, ipcMain, screen } from "electron";
+import { eventNames } from "process";
 
 import { bootstrap as commitBootstrap } from "../../modules/commit/bootstrap.js";
 import { bootstrap as diffBootstrap } from "../../modules/diff/bootstrap.js";
@@ -57,6 +58,14 @@ async function createWindow() {
       parsedMessage.repositoryPath,
       parsedMessage.username,
       parsedMessage.password,
+    );
+  });
+
+  ipcMain.handle("repositories:checkout-branch", async (event, message) => {
+    const parsedMessage = JSON.parse(message);
+    return await repositoryUseCases.checkoutBranch.execute(
+      parsedMessage.repositoryPath,
+      parsedMessage.branchName,
     );
   });
 

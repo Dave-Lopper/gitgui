@@ -27,6 +27,15 @@ export class RepositoryGitCliRunner
   extends GitCliRunner
   implements RepositoryGitRunner
 {
+  async checkoutBranch(
+    branchName: string,
+    repositoryPath: string,
+  ): Promise<void> {
+    await this.safeRun("git", ["checkout", branchName], {
+      cwd: repositoryPath,
+    });
+  }
+
   async cloneRepository(url: string): Promise<string> {
     const tempFolder = `/tmp/${uuidv4()}`;
     await this.safeRun("git", [

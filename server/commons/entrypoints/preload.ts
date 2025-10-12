@@ -24,6 +24,11 @@ electron.contextBridge.exposeInMainWorld("electronAPI", {
       "diff:batchDiscardFileModifications",
       JSON.stringify({ repositoryPath, filePaths }),
     ),
+  checkoutBranch: (repositoryPath: string, branchName: string) =>
+    electron.ipcRenderer.invoke(
+      "repositories:checkout-branch",
+      JSON.stringify({ branchName, repositoryPath }),
+    ),
   cloneRepository: (url: string) =>
     electron.ipcRenderer.invoke("repositories:clone", url),
   commit: (repositoryPath: string, message: string, description?: string) =>
