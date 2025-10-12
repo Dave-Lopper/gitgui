@@ -1,6 +1,7 @@
 export { default as RetroAuthModal } from "./AuthModal";
 export { default as RetroBranchDropdown } from "./BranchSelectionDropdown";
 export { default as RetroCheckbox } from "./Checkbox";
+export { default as RetroCommitForm } from "./CommitForm";
 export { default as RetroContextualMenu } from "./ContextualMenu";
 export { default as RetroDiffFileOption } from "./DiffFileOption";
 export { default as RetroDiffFileOptionRightClickMenuOption } from "./DiffFileListRightClickMenuOption";

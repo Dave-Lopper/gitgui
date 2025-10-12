@@ -39,7 +39,7 @@ declare global {
         repositoryPath: string,
         message: string,
         description?: string,
-      ) => Promise<ActionResponse<Commit>>;
+      ) => Promise<Commit>;
       fetch: (repositoryPath: string) => Promise<CommitStatus>;
       getBranchesForRepository: (
         path: string,

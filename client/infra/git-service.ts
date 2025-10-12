@@ -53,15 +53,11 @@ export class GitService implements IGitService {
     message: string,
     description?: string,
   ): Promise<Commit> {
-    const result = await window.electronAPI.commit(
+    return await window.electronAPI.commit(
       repositoryPath,
       message,
       description,
     );
-    if (!result.success) {
-      throw new Error(result.message);
-    }
-    return result.data;
   }
 
   async fetch(repositoryPath: string): Promise<CommitStatus> {

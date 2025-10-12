@@ -101,7 +101,7 @@ export default function DiffFileOptionRightClickMenu({
 
   return (
     <div
-      className={`absolute flex flex-col ${containerClassname ? containerClassname : ""}`}
+      className={`fixed flex flex-col ${containerClassname ? containerClassname : ""}`}
       style={
         position
           ? { top: `${position[1]}px`, left: `${position[0]}px` }

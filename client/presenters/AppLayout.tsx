@@ -10,7 +10,6 @@ import {
   useRepositorySelection,
 } from "./headless";
 import CommitForm from "./headless/CommitForm";
-import ContextualMenu from "./headless/ContextualMenu";
 import RepositoryTabs from "./headless/RepositoryTabs";
 import {
   ModernBranchDropdown,
@@ -24,6 +23,7 @@ import {
 import {
   RetroAuthModal,
   RetroBranchDropdown,
+  RetroCommitForm,
   RetroContextualMenu,
   RetroDiffFileOption,
   RetroDiffFileOptionRightClickFilesCounter,
@@ -111,10 +111,8 @@ export default function AppLayout() {
       )}
       <Header
         className={theme === "RETRO" ? "max-h-13" : "max-h-24"}
-        contextualMenu={
-          <ContextualMenu menu={RetroContextualMenu}></ContextualMenu>
-        }
         branchDropdown={branchDropdown}
+        contextualMenu={<RetroContextualMenu />}
         repositoryDropdown={repositoryDropdown}
         uiSettings={settingsMenu}
       />
@@ -143,10 +141,7 @@ export default function AppLayout() {
                         RetroDiffFileOptionRightClickFilesCounter
                       }
                     />
-                    <CommitForm
-                      submitButton={RetroSubmitButton}
-                      textInput={RetroTextInput}
-                    />
+                    <RetroCommitForm />
                   </div>
                 </div>
               ) : (

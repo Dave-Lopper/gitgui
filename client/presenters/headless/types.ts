@@ -28,6 +28,8 @@ export type ThemedContextualMenuProps = {
 
 export type SubmitButtonProps = {
   disabled: boolean;
+  isLoading?: boolean;
+  loadingText?: string;
   text: string;
   onClick: () => Promise<void>;
 };

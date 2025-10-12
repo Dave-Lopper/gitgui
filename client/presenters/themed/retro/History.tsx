@@ -15,7 +15,7 @@ export default function History() {
   } = useHistoryPagination(30);
 
   return (
-    <div className="flex flex-col min-h-0">
+    <div className="flex flex-col justify-between min-h-0 h-full">
       <div className="flex flex-col w-full bg-white overflow-auto retro-scrollbar min-h-0">
         {history?.map((commit, index) => (
           <div

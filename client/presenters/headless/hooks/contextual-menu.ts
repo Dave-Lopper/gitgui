@@ -8,6 +8,8 @@ import { useRepositorySelection } from "./repository-selection";
 
 export function useContextualMenu() {
   const [isFetchLoading, setIsFetchLoading] = useState(false);
+  const [isPullLoading, setIsPullLoading] = useState(false);
+  const [isPushLoading, setIsPushLoading] = useState(false);
   const [commitStatus, setCommitStatus] = useState<CommitStatus>();
   const [contextualAction, setContextualAction] =
     useState<ContextualAction>(null);
@@ -30,11 +32,19 @@ export function useContextualMenu() {
   );
 
   useEventSubscription(
-    ["Pushed", "Pull"],
+    ["Pushed", "Pulled"],
     async (event) => {
       if (!repositorySelection) {
         return;
       }
+
+      if (event.type === "Pulled") {
+        setIsPullLoading(false);
+      }
+      if (event.type === "Pushed") {
+        setIsPushLoading(false);
+      }
+
       await useCases.selectRepositoryFromSaved.execute(
         repositorySelection?.repository.localPath,
       );
@@ -56,20 +66,38 @@ export function useContextualMenu() {
     }
   }, [commitStatus]);
 
-  const onActionClick = useCallback(async () => {
-    if (!contextualAction || !repositorySelection) {
+  const pull = useCallback(async () => {
+    if (contextualAction !== "PULL" || !repositorySelection) {
       return;
     }
-
-    if (contextualAction === "PULL") {
-      await useCases.pull.execute(repositorySelection.repository.localPath);
-    } else if (contextualAction === "PUSH") {
-      await useCases.push.execute(repositorySelection.repository.localPath);
-    } else {
-      setIsFetchLoading(true);
-      await useCases.fetch.execute(repositorySelection.repository.localPath);
-    }
+    setIsPullLoading(true);
+    await useCases.pull.execute(repositorySelection.repository.localPath);
   }, [contextualAction, repositorySelection]);
 
-  return { onActionClick, isFetchLoading, contextualAction, commitStatus };
+  const push = useCallback(async () => {
+    if (contextualAction !== "PUSH" || !repositorySelection) {
+      return;
+    }
+    setIsPushLoading(true);
+    await useCases.push.execute(repositorySelection.repository.localPath);
+  }, [contextualAction, repositorySelection]);
+
+  const refetch = useCallback(async () => {
+    if (contextualAction !== "REFRESH" || !repositorySelection) {
+      return;
+    }
+    setIsFetchLoading(true);
+    await useCases.fetch.execute(repositorySelection.repository.localPath);
+  }, [contextualAction, repositorySelection]);
+
+  return {
+    contextualAction,
+    commitStatus,
+    isFetchLoading,
+    isPullLoading,
+    isPushLoading,
+    pull,
+    push,
+    refetch,
+  };
 }

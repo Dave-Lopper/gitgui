@@ -10,8 +10,16 @@ import Button from "./Button";
 import "./styles/Rotating.css";
 
 export default function ContextualMenu() {
-  const { onActionClick, commitStatus, contextualAction, isFetchLoading } =
-    useContextualMenu();
+  const {
+    commitStatus,
+    contextualAction,
+    isFetchLoading,
+    isPullLoading,
+    isPushLoading,
+    pull,
+    push,
+    refetch,
+  } = useContextualMenu();
 
   return (
     <div className="h-full w-full flex">
@@ -20,9 +28,7 @@ export default function ContextualMenu() {
         isActive={isFetchLoading}
         sound
         disabled={contextualAction !== "REFRESH"}
-        onClick={async () =>
-          contextualAction === "REFRESH" && (await onActionClick())
-        }
+        onClick={refetch}
       >
         <span className={isFetchLoading ? "rotating" : ""}>
           {isFetchLoading ? (
@@ -37,26 +43,41 @@ export default function ContextualMenu() {
         className="flex h-full flex-col items-center justify-between px-3 py-1 text-xs"
         sound
         disabled={contextualAction !== "PULL"}
-        isActive={isFetchLoading}
-        onClick={async () =>
-          contextualAction === "PULL" && (await onActionClick())
-        }
+        isActive={isPullLoading}
+        onClick={pull}
       >
-        <ArrowDownRetroIcon size={22} color="#000" />
-        Pull{" "}
-        {contextualAction === "PULL" && `(${commitStatus?.remoteUnpulled})`}
+        <span className={isPullLoading ? "rotating" : ""}>
+          {isPullLoading ? (
+            <HourglassRetroIcon size={22} color="#000" />
+          ) : (
+            <ArrowDownRetroIcon size={22} color="#000" />
+          )}
+        </span>
+        {isPullLoading
+          ? "Pulling"
+          : contextualAction === "PULL"
+            ? `Pull (${commitStatus?.remoteUnpulled})`
+            : "Pull"}
       </Button>
       <Button
         className="flex h-full flex-col items-center justify-between px-3 py-1 text-xs"
         sound
         disabled={contextualAction !== "PUSH"}
-        isActive={isFetchLoading}
-        onClick={async () =>
-          contextualAction === "PUSH" && (await onActionClick())
-        }
+        isActive={isPushLoading}
+        onClick={push}
       >
-        <ArrowUpRetroIcon size={22} color="#000" />
-        Push {contextualAction === "PUSH" && `(${commitStatus?.localUnpushed})`}
+        <span className={isPushLoading ? "rotating" : ""}>
+          {isPushLoading ? (
+            <HourglassRetroIcon size={22} color="#000" />
+          ) : (
+            <ArrowUpRetroIcon size={22} color="#000" />
+          )}
+        </span>
+        {isPushLoading
+          ? "Pushing"
+          : contextualAction === "PUSH"
+            ? `Push (${commitStatus?.localUnpushed})`
+            : "Push"}
       </Button>
     </div>
   );

@@ -1,6 +1,7 @@
 import { ComponentType, useCallback, useMemo, useState } from "react";
 
 import { useCases } from "../../bootstrap";
+import { useEventSubscription } from "../../infra/react-bus-helper";
 import { useRepositorySelection } from "./hooks/repository-selection";
 import { SubmitButtonProps, TextInputProps } from "./types";
 
@@ -13,7 +14,7 @@ export default function CommitForm({
   submitButton: ComponentType<SubmitButtonProps>;
   textInput: ComponentType<TextInputProps>;
 }) {
-  const { repositorySelection } = useRepositorySelection();
+  const { repositorySelection } = useRepositorySelection(true);
 
   const stagedFiles = useMemo(() => {
     return repositorySelection
@@ -23,26 +24,30 @@ export default function CommitForm({
 
   const [commitMessage, setCommitMessage] = useState<string>();
   const [commitDescription, setCommitDescription] = useState<string>();
+  const [isCommitLoading, setIsCommitLoading] = useState(false);
 
-  const isSubmitDisabled = useMemo(
-    () =>
+  const isSubmitDisabled = useMemo(() => {
+    return (
       repositorySelection === null ||
       stagedFiles.length === 0 ||
       commitMessage === undefined ||
-      commitMessage.length === 0,
-    [repositorySelection, stagedFiles, commitMessage],
-  );
+      commitMessage.length === 0
+    );
+  }, [repositorySelection, stagedFiles, commitMessage]);
 
   const submit = useCallback(async () => {
     if (!repositorySelection || isSubmitDisabled || !commitMessage) {
       return;
     }
+    setIsCommitLoading(true);
     await useCases.commit.execute(
       repositorySelection.repository.localPath,
       commitMessage,
       commitDescription,
     );
   }, [repositorySelection]);
+
+  useEventSubscription("Commited", () => setIsCommitLoading(false), []);
 
   return (
     <div
