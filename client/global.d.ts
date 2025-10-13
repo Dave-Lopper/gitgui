@@ -32,6 +32,11 @@ declare global {
         repositoryPath: string,
         filePaths: string[],
       ) => Promise<void>;
+      checkoutBranch: (
+        repositoryPath: string,
+        branchName: string,
+        remoteName?: string,
+      ) => Promise<boolean>;
       cloneRepository: (
         url: string,
       ) => Promise<ActionResponse<RepositorySelectionDto>>;

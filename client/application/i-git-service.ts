@@ -18,6 +18,12 @@ export interface IGitService {
     filePaths: string[],
   ): Promise<void>;
 
+  checkoutBranch(
+    repositoryBranch: string,
+    branchName: string,
+    remoteName?: string,
+  ): Promise<boolean>;
+
   commit(
     repositoryPath: string,
     message: string,

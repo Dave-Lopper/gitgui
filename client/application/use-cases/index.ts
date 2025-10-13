@@ -2,6 +2,7 @@ export { AddFileTypeToGitignore } from "./add-file-type-to-gitignore";
 export { Authenticate } from "./authenticate";
 export { AddToGitignore } from "./add-to-gitignore";
 export { BatchDiscardFileModifications } from "./batch-discard-file-modifications";
+export { CheckoutBranch } from "./checkout-branch";
 export { CloneRepository } from "./clone-repository";
 export { ConsultCommitDiff } from "./consult-commit-diff";
 export { ConsultFileDiff } from "./consult-file-diff";

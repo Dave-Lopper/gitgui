@@ -1,3 +1,4 @@
+import { useCases } from "../../../bootstrap";
 import {
   SelectDropdown as HeadlessSelectDropdown,
   useRepositorySelection,
@@ -29,7 +30,7 @@ function BranchDropdownTrigger({
 }
 
 export default function RetroBranchDropdown() {
-  const { repositorySelection } = useRepositorySelection();
+  const { checkoutBranch, repositorySelection } = useRepositorySelection();
 
   if (!repositorySelection) {
     return (
@@ -40,7 +41,13 @@ export default function RetroBranchDropdown() {
   return (
     <HeadlessSelectDropdown
       animate
-      handleSelect={(val) => console.log(val, "selected")}
+      handleSelect={async (val) =>
+        val &&
+        (await checkoutBranch(
+          repositorySelection.branches[val].name,
+          repositorySelection.branches[val].remote,
+        ))
+      }
       children={repositorySelection.branches.map(
         (branch) => (isSelected: boolean) => (
           <div
@@ -55,6 +62,6 @@ export default function RetroBranchDropdown() {
       tabIndex={2}
       trigger={BranchDropdownTrigger}
       checkedOutBranchName={repositorySelection.repository.checkedOutBranch}
-    ></HeadlessSelectDropdown>
+    />
   );
 }

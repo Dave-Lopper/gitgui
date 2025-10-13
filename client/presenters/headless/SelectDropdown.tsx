@@ -8,7 +8,9 @@ export type SelectDropdownProps<TriggerExtraProps = {}> = {
   animate: boolean;
   children: SelectableChild[];
   className?: string;
-  handleSelect: (index: number | null) => void;
+  handleSelect:
+    | ((index: number | null) => void)
+    | ((index: number | null) => Promise<void>);
   selectClassName?: string;
   tabIndex?: number;
   trigger: ComponentType<DropdownTriggerProps & TriggerExtraProps>;
@@ -37,8 +39,10 @@ export default function SelectDropdown<TriggerExtraProps = {}>({
     setSelectedIndex,
   } = useSelectDropdown();
 
-  const handleTriggerKeyDown = (e: KeyboardEvent<HTMLElement>) =>
-    handleSelect(handleKeyDown(e, children.length));
+  const handleTriggerKeyDown = async (e: KeyboardEvent<HTMLElement>) =>
+    handleSelect instanceof Promise
+      ? await handleSelect(handleKeyDown(e, children.length))
+      : handleSelect(handleKeyDown(e, children.length));
 
   return (
     <div

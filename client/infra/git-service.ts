@@ -40,6 +40,18 @@ export class GitService implements IGitService {
     );
   }
 
+  async checkoutBranch(
+    repositoryPath: string,
+    branchName: string,
+    remoteName?: string,
+  ): Promise<boolean> {
+    return await window.electronAPI.checkoutBranch(
+      repositoryPath,
+      branchName,
+      remoteName,
+    );
+  }
+
   async clone(url: string): Promise<RepositorySelectionDto> {
     const results = await window.electronAPI.cloneRepository(url);
     if (!results.success) {

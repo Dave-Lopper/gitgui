@@ -3,7 +3,11 @@ import { RepositoryReferences } from "../dto/reference.js";
 import { Remote } from "../dto/remote.js";
 
 export interface RepositoryGitRunner {
-  checkoutBranch(branchName: string, repositoryPath: string): Promise<void>;
+  checkoutBranch(
+    branchName: string,
+    repositoryPath: string,
+    remoteName?: string,
+  ): Promise<void>;
 
   cloneRepository(url: string, path: string): Promise<string>;
 

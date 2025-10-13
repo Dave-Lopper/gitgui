@@ -10,14 +10,18 @@ export class CheckoutBranch {
     private readonly repoDiffService: RepoDiffService,
   ) {}
 
-  async execute(repositoryPath: string, branchName: string): Promise<boolean> {
+  async execute(
+    repositoryPath: string,
+    branchName: string,
+    remoteName?: string,
+  ): Promise<boolean> {
     const diff = await this.repoDiffService.execute(repositoryPath);
     if (diff.length > 0) {
       return false;
     }
 
     await safeGit(
-      this.gitRunner.checkoutBranch(branchName, repositoryPath),
+      this.gitRunner.checkoutBranch(branchName, repositoryPath, remoteName),
       this.eventEmitter,
     );
     return true;

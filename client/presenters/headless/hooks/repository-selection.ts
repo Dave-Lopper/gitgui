@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 
 import { Event } from "../../../application/i-event-bus";
+import { useCases } from "../../../bootstrap";
 import { RepositorySelectionDto } from "../../../dto/repo-selection";
 import { useEventSubscription } from "../../../infra/react-bus-helper";
 
@@ -21,5 +22,20 @@ export function useRepositorySelection(listenStaging: boolean = false) {
   }
 
   useEventSubscription(event, handler, [handler]);
-  return { repositorySelection };
+
+  const checkoutBranch = useCallback(
+    async (branchIndex: number) => {
+      if (!repositorySelection) {
+        return;
+      }
+
+      await useCases.checkoutBranch.execute(
+        repositorySelection.repository.localPath,
+        repositorySelection.branches[branchIndex],
+      );
+    },
+    [repositorySelection],
+  );
+
+  return { checkoutBranch, repositorySelection };
 }

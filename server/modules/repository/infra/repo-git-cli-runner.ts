@@ -30,8 +30,11 @@ export class RepositoryGitCliRunner
   async checkoutBranch(
     branchName: string,
     repositoryPath: string,
+    remoteName?: string,
   ): Promise<void> {
-    await this.safeRun("git", ["checkout", branchName], {
+    const branch = remoteName ? `${remoteName}/${branchName}` : branchName;
+
+    await this.safeRun("git", ["checkout", branch], {
       cwd: repositoryPath,
     });
   }

@@ -4,8 +4,8 @@ import {
   SelectDropdown as HeadlessSelectDropdown,
   useRepositorySelection,
 } from "../../headless";
-import RetroButton from "./Button";
 import { DropdownTriggerProps } from "../../headless/SelectDropdown";
+import RetroButton from "./Button";
 
 function RetroBranchDropdownTrigger({
   checkedOutBranchName,
@@ -41,10 +41,8 @@ function RetroBranchDropdownTrigger({
   );
 }
 
-const options = ["branch1", "branch2", "branch3"];
-
 export default function RetroBranchDropdown() {
-  const { repositorySelection } = useRepositorySelection();
+  const { checkoutBranch, repositorySelection } = useRepositorySelection();
 
   if (!repositorySelection) {
     return (
@@ -55,7 +53,11 @@ export default function RetroBranchDropdown() {
   return (
     <HeadlessSelectDropdown
       animate={false}
-      handleSelect={(val) => console.log(val, "selected")}
+      handleSelect={async (branchIndex) => {
+        if (branchIndex !== null) {
+          await checkoutBranch(branchIndex);
+        }
+      }}
       children={repositorySelection.branches.map((branch) => {
         return (isSelected: boolean) => (
           <div
