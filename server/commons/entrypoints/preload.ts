@@ -55,6 +55,8 @@ electron.contextBridge.exposeInMainWorld("electronAPI", {
     electron.ipcRenderer.invoke("repositories:selectFromDisk"),
   selectRepositoryFromSaved: (path: string) =>
     electron.ipcRenderer.invoke("repositories:selectFromSaved", path),
+  stageAndStash: (repositoryPath: string) =>
+    electron.ipcRenderer.invoke("diff:stageAndStash", repositoryPath),
   toggleFilesStaged: (repositoryPath: string, filePaths: string[]) =>
     electron.ipcRenderer.invoke(
       "diff:toggleFilesStaged",

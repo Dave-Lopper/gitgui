@@ -8,6 +8,7 @@ import { GetRepoDiff } from "./application/services/repo-diff.js";
 import { AddToGitignore } from "./application/use-cases/add-to-gitignore.js";
 import { BatchAddToGitignore } from "./application/use-cases/batch-add-to-gitignore.js";
 import { BatchDiscardFileModifications } from "./application/use-cases/batch-discard-file-mofiications.js";
+import { StageAndStash } from "./application/use-cases/stage-and-stash.js";
 import { ToggleFileStaged } from "./application/use-cases/toggle-files-staged.js";
 import { DiffCliGitRunner } from "./infra/diff-git-cli-runner.js";
 
@@ -28,6 +29,7 @@ export function bootstrap(window: BrowserWindow) {
       filesRepo,
       gitRunner,
     ),
+    stageAndStash: new StageAndStash(eventEmitter, gitRunner),
     toggleFileStaged: new ToggleFileStaged(eventEmitter, gitRunner),
   };
 }

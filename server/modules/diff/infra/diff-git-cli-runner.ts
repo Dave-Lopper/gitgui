@@ -44,8 +44,6 @@ export class DiffCliGitRunner extends GitCliRunner implements DiffGitRunner {
     );
   }
 
-
-
   async getRepoDiff(
     repositoryPath: string,
     staged: boolean,
@@ -83,6 +81,16 @@ export class DiffCliGitRunner extends GitCliRunner implements DiffGitRunner {
     await this.safeRun("git", ["add", filePath], {
       cwd: repositoryPath,
     });
+  }
+
+  async stageFiles(repositoryPath: string): Promise<void> {
+    await this.safeRun("git", ["add", "."], {
+      cwd: repositoryPath,
+    });
+  }
+
+  async stashFiles(repositoryPath: string): Promise<void> {
+    await this.safeRun("git", ["stash", "."], { cwd: repositoryPath });
   }
 
   async unstageFile(repositoryPath: string, filePath: string): Promise<void> {

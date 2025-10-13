@@ -7,6 +7,7 @@ import {
 import { DropdownTriggerProps } from "../../headless/SelectDropdown";
 import { useCheckoutBranch } from "../../headless/hooks/checkout-branch";
 import RetroButton from "./Button";
+import Button from "./Button";
 import RetroLabel from "./Label";
 import RetroModal from "./Modal";
 
@@ -67,12 +68,32 @@ export default function RetroBranchDropdown() {
           modalClassname="top-1/3 z-99"
           title="Branch checkout failed"
         >
-          <div className="flex items-center">
-            <img src="error.ico" className="mr-4 w-8 h-8" />
-            <p className="font-retro text-black">
-              Uncommitted changes detected, please stage and stash your local
-              changes before switching branches to avoid losing your work
-            </p>
+          <div className="flex flex-col">
+            <div className="flex items-center">
+              <img src="error.ico" className="mr-4 w-8 h-8" />
+              <p className="font-retro text-black">
+                Uncommitted changes detected, please stage and stash your local
+                changes before switching branches to avoid losing your work
+              </p>
+            </div>
+            <div className="w-full flex justify-center mt-6 mb-2">
+              <Button
+                className="w-1/3 mr-4 "
+                isActive={false}
+                onClick={() => console.log("Stage and stash")}
+                sound
+              >
+                Stage & stash
+              </Button>
+              <Button
+                className="w-1/3 mr-4 "
+                isActive={false}
+                onClick={resetFailedState}
+                sound
+              >
+                Cancel
+              </Button>
+            </div>
           </div>
         </RetroModal>
       )}

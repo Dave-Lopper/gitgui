@@ -136,7 +136,7 @@ async function createWindow() {
 
   ipcMain.handle("diff:batchAddToGitignore", async (event, message) => {
     const parsedMessage = JSON.parse(message);
-    await diffUseCases.batchAddToGitignore.execute(
+    return await diffUseCases.batchAddToGitignore.execute(
       parsedMessage.repository,
       parsedMessage.extension,
     );
@@ -146,16 +146,21 @@ async function createWindow() {
     "diff:batchDiscardFileModifications",
     async (event, message) => {
       const parsedMessage = JSON.parse(message);
-      await diffUseCases.batchDiscardFileModifications.execute(
+      return await diffUseCases.batchDiscardFileModifications.execute(
         parsedMessage.repositoryPath,
         parsedMessage.filePaths,
       );
     },
   );
 
+  ipcMain.handle(
+    "diff:stageAndStash",
+    async (event, message) => await diffUseCases.stageAndStash.execute(message),
+  );
+
   ipcMain.handle("diff:toggleFilesStaged", async (event, message) => {
     const parsedMessage = JSON.parse(message);
-    await diffUseCases.toggleFileStaged.execute(
+    return await diffUseCases.toggleFileStaged.execute(
       parsedMessage.repositoryPath,
       parsedMessage.filePaths,
     );

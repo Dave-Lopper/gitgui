@@ -4,13 +4,13 @@ import { FilesRepository } from "../../../../commons/application/files-repositor
 import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
 import { parseStatus } from "../../domain/services.js";
-import { DiffCliGitRunner } from "../../infra/diff-git-cli-runner.js";
+import { DiffGitRunner } from "../git-runner.js";
 
 export class BatchDiscardFileModifications {
   constructor(
     private readonly eventEmitter: IEventEmitter,
     private readonly filesRepository: FilesRepository,
-    private readonly gitRunner: DiffCliGitRunner,
+    private readonly gitRunner: DiffGitRunner,
   ) {}
 
   async execute(repositoryPath: string, filePaths: string[]): Promise<void> {
