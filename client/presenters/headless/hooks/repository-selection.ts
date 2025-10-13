@@ -23,19 +23,5 @@ export function useRepositorySelection(listenStaging: boolean = false) {
 
   useEventSubscription(event, handler, [handler]);
 
-  const checkoutBranch = useCallback(
-    async (branchIndex: number) => {
-      if (!repositorySelection) {
-        return;
-      }
-
-      await useCases.checkoutBranch.execute(
-        repositorySelection.repository.localPath,
-        repositorySelection.branches[branchIndex],
-      );
-    },
-    [repositorySelection],
-  );
-
-  return { checkoutBranch, repositorySelection };
+  return { repositorySelection };
 }

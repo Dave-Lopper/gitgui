@@ -30,7 +30,7 @@ function BranchDropdownTrigger({
 }
 
 export default function RetroBranchDropdown() {
-  const { checkoutBranch, repositorySelection } = useRepositorySelection();
+  const { repositorySelection } = useRepositorySelection();
 
   if (!repositorySelection) {
     return (
@@ -41,13 +41,7 @@ export default function RetroBranchDropdown() {
   return (
     <HeadlessSelectDropdown
       animate
-      handleSelect={async (val) =>
-        val &&
-        (await checkoutBranch(
-          repositorySelection.branches[val].name,
-          repositorySelection.branches[val].remote,
-        ))
-      }
+      handleSelect={async (val) => console.log(val)}
       children={repositorySelection.branches.map(
         (branch) => (isSelected: boolean) => (
           <div
