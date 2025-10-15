@@ -22,14 +22,19 @@ export function parseHistory(lines: string[]): Commit[] {
 
 export function parseCommitStatus(lines: string[]): CommitStatusDto {
   const line = lines[0];
+
+  if (!line.includes("...")) {
+    return {
+      localUnpushed: 0,
+      remoteUnpulled: 0,
+    };
+  }
   const relevantPart = line.split("...")[1];
 
-  let remoteBranch: string;
   let unpushed = 0;
   let unpulled = 0;
   if (relevantPart.includes(" ")) {
     const relevantPartParts = relevantPart.split(" ");
-    remoteBranch = relevantPartParts[0];
     const commitsPart = relevantPartParts.slice(1).join(" ");
     if (commitsPart.includes(",")) {
       const [ahead, behind] = commitsPart.split(",");
@@ -42,17 +47,10 @@ export function parseCommitStatus(lines: string[]): CommitStatusDto {
     } else {
       throw new Error(`Seemingly malformed status line ${line}`);
     }
-  } else {
-    remoteBranch = relevantPart;
   }
 
-  const remoteBranchParts = remoteBranch.split("/");
-  const remoteName = remoteBranchParts[0];
-  const branchName = remoteBranchParts.slice(1).join("/");
   return {
-    branchName,
     localUnpushed: unpushed,
-    remoteName,
     remoteUnpulled: unpulled,
   };
 }

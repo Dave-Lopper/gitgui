@@ -17,6 +17,7 @@ import {
   RepositoryFetched,
   SelectRepositoryFromDisk,
   SelectRepositoryFromSaved,
+  StageStashAndCheckout,
   ToggleFileStaged,
 } from "./application/use-cases";
 import { Commit } from "./application/use-cases/commit";
@@ -54,5 +55,6 @@ export const useCases = {
     gitService,
     eventBus,
   ),
+  stageStashAndCheckout: new StageStashAndCheckout(gitService, eventBus),
   toggleFilesStaged: new ToggleFileStaged(gitService, eventBus),
 };

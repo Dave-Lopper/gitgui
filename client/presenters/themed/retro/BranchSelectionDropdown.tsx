@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 import {
   SelectDropdown as HeadlessSelectDropdown,
@@ -8,7 +8,6 @@ import { DropdownTriggerProps } from "../../headless/SelectDropdown";
 import { useCheckoutBranch } from "../../headless/hooks/checkout-branch";
 import RetroButton from "./Button";
 import Button from "./Button";
-import RetroLabel from "./Label";
 import RetroModal from "./Modal";
 
 function RetroBranchDropdownTrigger({
@@ -50,8 +49,10 @@ export default function RetroBranchDropdown() {
   const {
     checkoutBranch,
     checkoutFailed,
-    failedCheckoutBranchName,
+    checkoutLoading,
+    failedCheckoutBranch,
     resetFailedState,
+    stageStashAndCheckout,
   } = useCheckoutBranch();
 
   if (!repositorySelection) {
@@ -62,7 +63,7 @@ export default function RetroBranchDropdown() {
 
   return (
     <>
-      {checkoutFailed && (
+      {checkoutFailed && failedCheckoutBranch && (
         <RetroModal
           close={resetFailedState}
           modalClassname="top-1/3 z-99"
@@ -80,10 +81,10 @@ export default function RetroBranchDropdown() {
               <Button
                 className="w-1/3 mr-4 "
                 isActive={false}
-                onClick={() => console.log("Stage and stash")}
+                onClick={stageStashAndCheckout}
                 sound
               >
-                Stage & stash
+                {checkoutLoading ? "Checking-out" : "Stage, stash & checkout"}
               </Button>
               <Button
                 className="w-1/3 mr-4 "

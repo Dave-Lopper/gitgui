@@ -6,7 +6,11 @@ export type Event = {
 export type Subscriber = (event: Event) => void;
 
 export interface IEventBus {
-  subscribe(eventType: EventType, subscriber: Subscriber): void;
+  subscribe(
+    eventType: EventType,
+    subscriber: Subscriber,
+    getLastEvent?: boolean,
+  ): void;
   unsubscribe(eventType: EventType, subscriber: Subscriber): void;
   emit(event: Event | Event[]): void;
 }

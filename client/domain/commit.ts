@@ -12,8 +12,6 @@ export type Commit = {
 };
 
 export type CommitStatus = {
-  branchName: string;
-  remoteName: string;
   remoteUnpulled: number;
   localUnpushed: number;
 };

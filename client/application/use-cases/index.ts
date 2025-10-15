@@ -16,4 +16,5 @@ export { Push } from "./push";
 export { RepositoryFetched } from "./repository-fetched";
 export { SelectRepositoryFromSaved } from "./select-repository-from-saved";
 export { SelectRepositoryFromDisk } from "./select-repository-from-disk";
+export { StageStashAndCheckout } from "./stage-stash-and-checkout";
 export { ToggleFileStaged } from "./toggle-file-staged";

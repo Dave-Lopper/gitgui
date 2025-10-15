@@ -1,4 +1,5 @@
 import { IGitService } from "../application/i-git-service";
+import { Branch } from "../domain/branch";
 import { Commit, CommitStatus } from "../domain/commit";
 import { HistoryPaginationDto } from "../dto/history-pagination";
 import { RepositorySelectionDto } from "../dto/repo-selection";
@@ -42,13 +43,12 @@ export class GitService implements IGitService {
 
   async checkoutBranch(
     repositoryPath: string,
-    branchName: string,
-    remoteName?: string,
+    branch: Branch,
   ): Promise<boolean> {
     return await window.electronAPI.checkoutBranch(
       repositoryPath,
-      branchName,
-      remoteName,
+      branch.name,
+      branch.remote,
     );
   }
 
@@ -113,6 +113,10 @@ export class GitService implements IGitService {
       throw new Error(result.message);
     }
     return result.data;
+  }
+
+  async stageAndStash(repositoryPath: string): Promise<void> {
+    await window.electronAPI.stageAndStash(repositoryPath);
   }
 
   async toggleFilesStaged(

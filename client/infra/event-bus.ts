@@ -35,7 +35,11 @@ export class ObservableEventBus implements IEventBus {
     }
   }
 
-  subscribe(eventType: EventType, subscriber: Subscriber): void {
+  subscribe(
+    eventType: EventType,
+    subscriber: Subscriber,
+    getLastEvent: boolean = true,
+  ): void {
     const currentSubs = this.subscriptions.get(eventType);
     if (currentSubs === undefined) {
       this.subscriptions.set(eventType, [subscriber]);
@@ -44,7 +48,7 @@ export class ObservableEventBus implements IEventBus {
     }
 
     const lastEvent = this.lastEvents.get(eventType);
-    if (lastEvent) {
+    if (lastEvent && getLastEvent) {
       subscriber(lastEvent);
     }
   }

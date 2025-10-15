@@ -7,14 +7,15 @@ export function useEventSubscription(
   event: EventType | EventType[],
   subscriber: Subscriber,
   dependencies: any[] | undefined,
+  getLastEvent: boolean = true,
 ) {
   useEffect(() => {
     if (Array.isArray(event)) {
       for (let i = 0; i < event.length; i++) {
-        eventBus.subscribe(event[i], subscriber);
+        eventBus.subscribe(event[i], subscriber, getLastEvent);
       }
     } else {
-      eventBus.subscribe(event, subscriber);
+      eventBus.subscribe(event, subscriber, getLastEvent);
     }
 
     return () => {

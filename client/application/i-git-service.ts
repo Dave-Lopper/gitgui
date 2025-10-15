@@ -1,3 +1,4 @@
+import { Branch } from "../domain/branch";
 import { Commit, CommitStatus } from "../domain/commit";
 import { HistoryPaginationDto } from "../dto/history-pagination";
 import { RepositorySelectionDto } from "../dto/repo-selection";
@@ -18,11 +19,7 @@ export interface IGitService {
     filePaths: string[],
   ): Promise<void>;
 
-  checkoutBranch(
-    repositoryBranch: string,
-    branchName: string,
-    remoteName?: string,
-  ): Promise<boolean>;
+  checkoutBranch(repositoryBranch: string, branch: Branch): Promise<boolean>;
 
   commit(
     repositoryPath: string,
@@ -47,6 +44,8 @@ export interface IGitService {
   selectRepoFromDisk(): Promise<RepositorySelectionDto>;
 
   selectRepoFromSaved(repositoryPath: string): Promise<RepositorySelectionDto>;
+
+  stageAndStash(repositoryPath: string): Promise<void>;
 
   toggleFilesStaged(repositoryPath: string, filePaths: string[]): Promise<void>;
 }

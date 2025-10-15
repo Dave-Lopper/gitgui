@@ -55,14 +55,15 @@ declare global {
         repositoryPath: string,
       ) => Promise<HistoryPaginationDto>;
       getSavedRepositories: () => Promise<ActionResponse<Repository[]>>;
+      pull: (repositoryPath: string) => Promise<void>;
+      push: (repositoryPath: string) => Promise<void>;
       selectRepositoryFromDisk: () => Promise<
         ActionResponse<RepositorySelectionDto>
       >;
-      pull: (repositoryPath: string) => Promise<void>;
-      push: (repositoryPath: string) => Promise<void>;
       selectRepositoryFromSaved: (
         path: string,
       ) => Promise<ActionResponse<RepositorySelectionDto>>;
+      stageAndStash: (repositoryPath: string) => Promise<void>;
       toggleFilesStaged: (
         repositoryPath: string,
         filePaths: string[],
