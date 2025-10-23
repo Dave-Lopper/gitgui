@@ -1,0 +1,1825 @@
+[
+  {
+    "status": "MODIFIED",
+    "displayPaths": ["client/presenters/AppLayout.tsx"],
+    "oldPath": "client/presenters/AppLayout.tsx",
+    "newPath": "client/presenters/AppLayout.tsx",
+    "hunks": [
+      {
+        "enclosingBlock": "function ModifiedFilesList({",
+        "oldLineCount": 7,
+        "oldLineStart": 38,
+        "newLineCount": 7,
+        "newLineStart": 38,
+        "beforeDiff": [
+          {
+            "newN": 38,
+            "oldN": 38,
+            "parts": [
+              { "content": "}: {", "status": "UNCHANGED" },
+              {
+                "content": "repositorySelection: RepositorySelectionDto;",
+                "status": "UNCHANGED"
+              },
+              { "content": "}) {", "status": "UNCHANGED" },
+              {
+                "content": "const { emptyFileSelection, selectFiles,",
+                "status": "UNCHANGED"
+              },
+              { "content": "selectedFiles } =", "status": "UNCHANGED" },
+              {
+                "content": "useContext(RepoTabsContext);",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "const keyDownHandler = useCallback(",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 38,
+            "oldN": 38,
+            "parts": [
+              { "content": "}: {", "status": "UNCHANGED" },
+              {
+                "content": "repositorySelection: RepositorySelectionDto;",
+                "status": "UNCHANGED"
+              },
+              { "content": "}) {", "status": "UNCHANGED" },
+              {
+                "content": "const { emptyFileSelection, selectFiles,",
+                "status": "UNCHANGED"
+              },
+              { "content": "selectFile,", "status": "ADDED" },
+              { "content": "selectedFiles } =", "status": "UNCHANGED" },
+              {
+                "content": "useContext(RepoTabsContext);",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "const keyDownHandler = useCallback(",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "enclosingBlock": "function ModifiedFilesList({",
+        "oldLineCount": 10,
+        "oldLineStart": 57,
+        "newLineCount": 15,
+        "newLineStart": 57,
+        "beforeDiff": [
+          {
+            "newN": 57,
+            "oldN": 57,
+            "parts": [
+              {
+                "content": "(a, b) => b.index - a.index,",
+                "status": "UNCHANGED"
+              },
+              { "content": ");", "status": "UNCHANGED" },
+              {
+                "content": "const maxSelectedIndex = indexSorted[0].index;",
+                "status": "UNCHANGED"
+              },
+              { "content": "console.log({", "status": "REMOVED" },
+              { "content": "maxSelectedIndex", "status": "UNCHANGED" },
+              { "content": "});", "status": "UNCHANGED" },
+              { "content": "}", "status": "UNCHANGED" },
+              { "content": "},", "status": "UNCHANGED" },
+              { "content": "[selectedFiles],", "status": "REMOVED" }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 57,
+            "oldN": 57,
+            "parts": [
+              {
+                "content": "(a, b) => b.index - a.index,",
+                "status": "UNCHANGED"
+              },
+              { "content": ");", "status": "UNCHANGED" },
+              {
+                "content": "const maxSelectedIndex = indexSorted[0].index;",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "if (maxSelectedIndex < repositorySelection.diff.length - 1) {",
+                "status": "ADDED"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "status": "MODIFIED",
+    "displayPaths": ["client/presenters/contexts/repo-tabs/provider.tsx"],
+    "oldPath": "client/presenters/contexts/repo-tabs/provider.tsx",
+    "newPath": "client/presenters/contexts/repo-tabs/provider.tsx",
+    "hunks": [
+      {
+        "enclosingBlock": "import {",
+        "oldLineCount": 7,
+        "oldLineStart": 6,
+        "newLineCount": 6,
+        "newLineStart": 6,
+        "beforeDiff": [
+          {
+            "newN": 6,
+            "oldN": 6,
+            "parts": [
+              { "content": "RepoTabsContext,", "status": "UNCHANGED" },
+              { "content": "RepoTab,", "status": "UNCHANGED" },
+              { "content": "} from \"./context\";", "status": "UNCHANGED" },
+              {
+                "content": "import { DiffFile } from \"../../../domain/diff\";",
+                "status": "REMOVED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 6,
+            "oldN": 6,
+            "parts": [
+              { "content": "RepoTabsContext,", "status": "UNCHANGED" },
+              { "content": "RepoTab,", "status": "UNCHANGED" },
+              { "content": "} from \"./context\";", "status": "UNCHANGED" },
+              {
+                "content": "export function RepoTabsContextProvider({ children }: { children: ReactNode }) {",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "const [currentTab, setCurrentTab] = useState<RepoTab>(defaultTab);",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "enclosingBlock": "export function RepoTabsContextProvider({ children }: { children: ReactNode }) {",
+        "oldLineCount": 19,
+        "oldLineStart": 44,
+        "newLineCount": 19,
+        "newLineStart": 43,
+        "beforeDiff": [
+          {
+            "newN": 43,
+            "oldN": 44,
+            "parts": [
+              { "content": "});", "status": "UNCHANGED" },
+              { "content": "}, []);", "status": "UNCHANGED" },
+              {
+                "content": "const toggleFileSelection =",
+                "status": "UNCHANGED"
+              },
+              { "content": "useCallback(", "status": "REMOVED" }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 43,
+            "oldN": 44,
+            "parts": [
+              { "content": "});", "status": "UNCHANGED" },
+              { "content": "}, []);", "status": "UNCHANGED" },
+              {
+                "content": "const toggleFileSelection =",
+                "status": "UNCHANGED"
+              },
+              { "content": "useCallback((file:", "status": "ADDED" },
+              { "content": "DiffFileWithIndex) =>", "status": "UNCHANGED" },
+              { "content": "{", "status": "ADDED" }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "status": "MODIFIED",
+    "displayPaths": ["client/presenters/headless/DiffFileOption.tsx"],
+    "oldPath": "client/presenters/headless/DiffFileOption.tsx",
+    "newPath": "client/presenters/headless/DiffFileOption.tsx",
+    "hunks": [
+      {
+        "enclosingBlock": "export type DiffFileOptionProps = {",
+        "oldLineCount": 10,
+        "oldLineStart": 14,
+        "newLineCount": 12,
+        "newLineStart": 14,
+        "beforeDiff": [
+          {
+            "newN": 14,
+            "oldN": 14,
+            "parts": [
+              { "content": "file: DiffFile;", "status": "UNCHANGED" },
+              { "content": "}>;", "status": "UNCHANGED" },
+              { "content": "file: DiffFile;", "status": "UNCHANGED" },
+              { "content": "};", "status": "UNCHANGED" },
+              {
+                "content": "export default function DiffFileOption({",
+                "status": "UNCHANGED"
+              },
+              { "content": "file,", "status": "UNCHANGED" },
+              { "content": "repositorySelection,", "status": "UNCHANGED" },
+              {
+                "content": "themedFileOption: ThemedFileOption,",
+                "status": "UNCHANGED"
+              },
+              { "content": "}: DiffFileOptionProps) {", "status": "UNCHANGED" }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 14,
+            "oldN": 14,
+            "parts": [
+              { "content": "file: DiffFile;", "status": "UNCHANGED" },
+              { "content": "}>;", "status": "UNCHANGED" },
+              { "content": "file: DiffFile;", "status": "UNCHANGED" },
+              { "content": "fileIndex: number;", "status": "ADDED" }
+            ]
+          }
+        ]
+      },
+      {
+        "enclosingBlock": "export default function DiffFileOption({",
+        "oldLineCount": 7,
+        "oldLineStart": 25,
+        "newLineCount": 7,
+        "newLineStart": 27,
+        "beforeDiff": [
+          {
+            "newN": 27,
+            "oldN": 25,
+            "parts": [
+              { "content": "return (", "status": "UNCHANGED" },
+              { "content": "<ThemedFileOption", "status": "UNCHANGED" },
+              { "content": "toggleSelection={() =>", "status": "UNCHANGED" },
+              { "content": "toggleFileSelection(file)}", "status": "REMOVED" },
+              {
+                "content": "toggleStaging={async () =>",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "await useCases.toggleFilesStaged.execute(",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "repositorySelection?.repository.localPath!,",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 27,
+            "oldN": 25,
+            "parts": [
+              { "content": "return (", "status": "UNCHANGED" },
+              { "content": "<ThemedFileOption", "status": "UNCHANGED" },
+              { "content": "toggleSelection={() =>", "status": "UNCHANGED" },
+              {
+                "content": "toggleFileSelection({ ...file, index: fileIndex })}",
+                "status": "ADDED"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "enclosingBlock": "export default function DiffFileOption({",
+        "oldLineCount": 7,
+        "oldLineStart": 33,
+        "newLineCount": 7,
+        "newLineStart": 35,
+        "beforeDiff": [
+          {
+            "newN": 35,
+            "oldN": 33,
+            "parts": [
+              { "content": ")", "status": "UNCHANGED" },
+              { "content": "}", "status": "UNCHANGED" },
+              { "content": "file={file}", "status": "UNCHANGED" },
+              {
+                "content": "isSelected={selectedFiles.has(file)}",
+                "status": "REMOVED"
+              },
+              { "content": "/>", "status": "UNCHANGED" },
+              { "content": ");", "status": "UNCHANGED" },
+              { "content": "}", "status": "UNCHANGED" }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 35,
+            "oldN": 33,
+            "parts": [
+              { "content": ")", "status": "UNCHANGED" },
+              { "content": "}", "status": "UNCHANGED" },
+              { "content": "file={file}", "status": "UNCHANGED" },
+              {
+                "content": "isSelected={selectedFiles.has({ ...file, index: fileIndex })}",
+                "status": "ADDED"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "status": "MODIFIED",
+    "displayPaths": [
+      "client/presenters/headless/hooks/repository-selection.ts"
+    ],
+    "oldPath": "client/presenters/headless/hooks/repository-selection.ts",
+    "newPath": "client/presenters/headless/hooks/repository-selection.ts",
+    "hunks": [
+      {
+        "enclosingBlock": "export function useRepositorySelection() {",
+        "oldLineCount": 7,
+        "oldLineStart": 9,
+        "newLineCount": 10,
+        "newLineStart": 9,
+        "beforeDiff": [
+          {
+            "newN": 9,
+            "oldN": 9,
+            "parts": [
+              { "content": "useEventSubscription(", "status": "UNCHANGED" },
+              { "content": "\"RepositorySelected\",", "status": "UNCHANGED" },
+              { "content": "(event) =>", "status": "UNCHANGED" },
+              {
+                "content": "setRepositorySelection(event.payload),",
+                "status": "REMOVED"
+              },
+              { "content": "[],", "status": "UNCHANGED" },
+              { "content": ");", "status": "UNCHANGED" },
+              {
+                "content": "return { repositorySelection };",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 9,
+            "oldN": 9,
+            "parts": [
+              { "content": "useEventSubscription(", "status": "UNCHANGED" },
+              { "content": "\"RepositorySelected\",", "status": "UNCHANGED" },
+              { "content": "(event) =>", "status": "UNCHANGED" },
+              { "content": "{", "status": "ADDED" }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "status": "MODIFIED",
+    "displayPaths": ["server/modules/diff/application/services/repo-diff.ts"],
+    "oldPath": "server/modules/diff/application/services/repo-diff.ts",
+    "newPath": "server/modules/diff/application/services/repo-diff.ts",
+    "hunks": [
+      {
+        "oldLineCount": 4,
+        "oldLineStart": 1,
+        "newLineCount": 3,
+        "newLineStart": 1,
+        "beforeDiff": [
+          {
+            "newN": 1,
+            "oldN": 1,
+            "parts": [
+              { "content": "import * as fs from \"fs\";", "status": "REMOVED" }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 1,
+            "oldN": 1,
+            "parts": [
+              {
+                "content": "import { BrowserWindow } from \"electron\";",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "import { DiffGitRunner } from \"../git-runner.js\";",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "enclosingBlock": "export class GetRepoDiff {",
+        "oldLineCount": 7,
+        "oldLineStart": 16,
+        "newLineCount": 6,
+        "newLineStart": 15,
+        "beforeDiff": [
+          {
+            "newN": 15,
+            "oldN": 16,
+            "parts": [
+              {
+                "content": "this.gitRunner.getRepoDiff(repositoryPath, false),",
+                "status": "UNCHANGED"
+              },
+              { "content": "window,", "status": "UNCHANGED" },
+              { "content": ");", "status": "UNCHANGED" },
+              {
+                "content": "    fs.writeFileSync(\"diff.log\", unstagedDiffLines.join(\"",
+                "status": "REMOVED"
+              },
+              { "content": "\"));", "status": "UNCHANGED" },
+              {
+                "content": "const unstagedChangedFiles = parseDiff(unstagedDiffLines);",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 15,
+            "oldN": 16,
+            "parts": [
+              {
+                "content": "this.gitRunner.getRepoDiff(repositoryPath, false),",
+                "status": "UNCHANGED"
+              },
+              { "content": "window,", "status": "UNCHANGED" },
+              { "content": ");", "status": "UNCHANGED" },
+              { "content": "\"));", "status": "UNCHANGED" },
+              {
+                "content": "const unstagedChangedFiles = parseDiff(unstagedDiffLines);",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "enclosingBlock": "export class GetRepoDiff {",
+        "oldLineCount": 6,
+        "oldLineStart": 26,
+        "newLineCount": 12,
+        "newLineStart": 24,
+        "beforeDiff": [
+          {
+            "newN": 24,
+            "oldN": 26,
+            "parts": [
+              { "content": ");", "status": "UNCHANGED" },
+              {
+                "content": "const stagedChangedFiles = parseDiff(stagedDiffLines);",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "const changedFiles = [...stagedChangedFiles, ...unstagedChangedFiles].map(",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "(file) => ({ ...file, staged: stagedChangedFiles.includes(file) }),",
+                "status": "UNCHANGED"
+              },
+              { "content": ");", "status": "UNCHANGED" },
+              {
+                "content": "~diff --git a/client/presenters/AppLayout.tsx b/client/presenters/AppLayout.tsx",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "-- a/client/presenters/AppLayout.tsx",
+                "status": "REMOVED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 24,
+            "oldN": 26,
+            "parts": [
+              { "content": ");", "status": "UNCHANGED" },
+              {
+                "content": "const stagedChangedFiles = parseDiff(stagedDiffLines);",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "for (let i = 0; i < stagedChangedFiles.length; i++) {",
+                "status": "ADDED"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "enclosingBlock": "import {",
+        "oldLineCount": 6,
+        "oldLineStart": 10,
+        "newLineCount": 7,
+        "newLineStart": 10,
+        "beforeDiff": [
+          {
+            "newN": 10,
+            "oldN": 10,
+            "parts": [
+              {
+                "content": "   useRepositorySelection,",
+                "status": "UNCHANGED"
+              },
+              { "content": " } from \"./headless\";", "status": "UNCHANGED" },
+              {
+                "content": " import CommitForm from \"./headless/CommitForm\";",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": " import RepositoryTabs from \"./headless/RepositoryTabs\";",
+                "status": "UNCHANGED"
+              },
+              { "content": " import {", "status": "UNCHANGED" },
+              { "content": "   ModernBranchDropdown,", "status": "UNCHANGED" }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 10,
+            "oldN": 10,
+            "parts": [
+              {
+                "content": "   useRepositorySelection,",
+                "status": "UNCHANGED"
+              },
+              { "content": " } from \"./headless\";", "status": "UNCHANGED" },
+              {
+                "content": " import CommitForm from \"./headless/CommitForm\";",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "import DiffViewer from \"./headless/DiffViewer\";",
+                "status": "ADDED"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "enclosingBlock": "import RetroRepositoryTab from \"./themed/retro/RepositoryTab\";",
+        "oldLineCount": 7,
+        "oldLineStart": 43,
+        "newLineCount": 7,
+        "newLineStart": 44,
+        "beforeDiff": [
+          {
+            "newN": 44,
+            "oldN": 43,
+            "parts": [
+              { "content": " ", "status": "UNCHANGED" },
+              {
+                "content": " export default function AppLayout() {",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "   const { theme } = useContext(UiSettingsContext);",
+                "status": "UNCHANGED"
+              },
+              { "content": "   const { ", "status": "UNCHANGED" },
+              { "content": "currentTab", "status": "REMOVED" },
+              {
+                "content": "  } = useContext(RepoTabsContext);",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "   const { repositorySelection } = useRepositorySelection(true);",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "   const [showAuthModal, setShowAuthModal] = useState(false);",
+                "status": "UNCHANGED"
+              },
+              { "content": " ", "status": "UNCHANGED" }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 44,
+            "oldN": 43,
+            "parts": [
+              { "content": " ", "status": "UNCHANGED" },
+              {
+                "content": " export default function AppLayout() {",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "   const { theme } = useContext(UiSettingsContext);",
+                "status": "UNCHANGED"
+              },
+              { "content": "   const { ", "status": "UNCHANGED" },
+              { "content": "currentTab, selectedFiles", "status": "ADDED" },
+              {
+                "content": "  } = useContext(RepoTabsContext);",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "   const { repositorySelection } = useRepositorySelection(true);",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "   const [showAuthModal, setShowAuthModal] = useState(false);",
+                "status": "UNCHANGED"
+              },
+              { "content": " ", "status": "UNCHANGED" }
+            ]
+          }
+        ]
+      },
+      {
+        "enclosingBlock": "export default function AppLayout() {",
+        "oldLineCount": 7,
+        "oldLineStart": 150,
+        "newLineCount": 13,
+        "newLineStart": 151,
+        "beforeDiff": [
+          {
+            "newN": 151,
+            "oldN": 150,
+            "parts": [
+              { "content": "             </div>", "status": "UNCHANGED" },
+              { "content": "           }", "status": "UNCHANGED" },
+              {
+                "content": "           leftPaneClassName=\"bg-red h-full\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "           ", "status": "UNCHANGED" },
+              { "content": "rightPane={<>Some", "status": "REMOVED" },
+              { "content": "  right ", "status": "UNCHANGED" },
+              { "content": "pane</>}", "status": "REMOVED" }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 151,
+            "oldN": 150,
+            "parts": [
+              { "content": "             </div>", "status": "UNCHANGED" },
+              { "content": "           }", "status": "UNCHANGED" },
+              {
+                "content": "           leftPaneClassName=\"bg-red h-full\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "           ", "status": "UNCHANGED" },
+              { "content": "rightPane={", "status": "ADDED" }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "status": "MODIFIED",
+    "displayPaths": ["package-lock.json"],
+    "oldPath": "package-lock.json",
+    "newPath": "package-lock.json",
+    "hunks": [
+      {
+        "oldLineCount": 6,
+        "oldLineStart": 12,
+        "newLineCount": 7,
+        "newLineStart": 12,
+        "beforeDiff": [
+          {
+            "newN": 12,
+            "oldN": 12,
+            "parts": [
+              {
+                "content": "         \"ini\": \"^5.0.0\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "         \"react\": \"^19.1.0\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "         \"react-dom\": \"^19.1.0\",",
+                "status": "UNCHANGED"
+              },
+              { "content": "         ", "status": "UNCHANGED" },
+              {
+                "content": "         \"sqlite\": \"^5.1.1\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "         \"sqlite3\": \"^5.1.7\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "         \"tailwindcss\": \"^4.1.8\",",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 12,
+            "oldN": 12,
+            "parts": [
+              {
+                "content": "         \"ini\": \"^5.0.0\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "         \"react\": \"^19.1.0\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "         \"react-dom\": \"^19.1.0\",",
+                "status": "UNCHANGED"
+              },
+              { "content": "         ", "status": "UNCHANGED" },
+              {
+                "content": "\"react-syntax-highlighter\": \"^15.6.6\",",
+                "status": "ADDED"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "oldLineCount": 6,
+        "oldLineStart": 288,
+        "newLineCount": 15,
+        "newLineStart": 289,
+        "beforeDiff": [
+          {
+            "newN": 289,
+            "oldN": 288,
+            "parts": [
+              {
+                "content": "         \"@babel/core\": \"^7.0.0-0\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "     \"node_modules/@babel/template\": {",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"version\": \"7.27.2\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"resolved\": \"https://registry.npmjs.org/@babel/template/-/template-7.27.2.tgz\",",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 289,
+            "oldN": 288,
+            "parts": [
+              {
+                "content": "         \"@babel/core\": \"^7.0.0-0\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "\"node_modules/@babel/runtime\": {",
+                "status": "ADDED"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "oldLineCount": 6,
+        "oldLineStart": 1831,
+        "newLineCount": 15,
+        "newLineStart": 1841,
+        "beforeDiff": [
+          {
+            "newN": 1841,
+            "oldN": 1831,
+            "parts": [
+              {
+                "content": "       \"integrity\": \"sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"license\": \"MIT\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "     \"node_modules/@types/http-cache-semantics\": {",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"version\": \"4.0.4\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"resolved\": \"https://registry.npmjs.org/@types/http-cache-semantics/-/http-cache-semantics-4.0.4.tgz\",",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 1841,
+            "oldN": 1831,
+            "parts": [
+              {
+                "content": "       \"integrity\": \"sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"license\": \"MIT\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "\"node_modules/@types/hast\": {",
+                "status": "ADDED"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "oldLineCount": 6,
+        "oldLineStart": 1912,
+        "newLineCount": 12,
+        "newLineStart": 1931,
+        "beforeDiff": [
+          {
+            "newN": 1931,
+            "oldN": 1912,
+            "parts": [
+              {
+                "content": "         \"@types/node\": \"*\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "     \"node_modules/@types/yauzl\": {",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"version\": \"2.10.3\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"resolved\": \"https://registry.npmjs.org/@types/yauzl/-/yauzl-2.10.3.tgz\",",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 1931,
+            "oldN": 1912,
+            "parts": [
+              {
+                "content": "         \"@types/node\": \"*\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "\"node_modules/@types/unist\": {",
+                "status": "ADDED"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "oldLineCount": 6,
+        "oldLineStart": 2712,
+        "newLineCount": 36,
+        "newLineStart": 2737,
+        "beforeDiff": [
+          {
+            "newN": 2737,
+            "oldN": 2712,
+            "parts": [
+              {
+                "content": "         \"node\": \">=8\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "     \"node_modules/chownr\": {",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"version\": \"2.0.0\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"resolved\": \"https://registry.npmjs.org/chownr/-/chownr-2.0.0.tgz\",",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 2737,
+            "oldN": 2712,
+            "parts": [
+              {
+                "content": "         \"node\": \">=8\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "\"node_modules/character-entities\": {",
+                "status": "ADDED"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "oldLineCount": 6,
+        "oldLineStart": 2825,
+        "newLineCount": 16,
+        "newLineStart": 2880,
+        "beforeDiff": [
+          {
+            "newN": 2880,
+            "oldN": 2825,
+            "parts": [
+              {
+                "content": "         \"color-support\": \"bin.js\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "     \"node_modules/concat-map\": {",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"version\": \"0.0.1\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"resolved\": \"https://registry.npmjs.org/concat-map/-/concat-map-0.0.1.tgz\",",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 2880,
+            "oldN": 2825,
+            "parts": [
+              {
+                "content": "         \"color-support\": \"bin.js\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "\"node_modules/comma-separated-tokens\": {",
+                "status": "ADDED"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "oldLineCount": 6,
+        "oldLineStart": 3624,
+        "newLineCount": 19,
+        "newLineStart": 3689,
+        "beforeDiff": [
+          {
+            "newN": 3689,
+            "oldN": 3624,
+            "parts": [
+              {
+                "content": "         \"reusify\": \"^1.0.4\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "     \"node_modules/fd-slicer\": {",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"version\": \"1.1.0\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"resolved\": \"https://registry.npmjs.org/fd-slicer/-/fd-slicer-1.1.0.tgz\",",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 3689,
+            "oldN": 3624,
+            "parts": [
+              {
+                "content": "         \"reusify\": \"^1.0.4\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              { "content": "\"node_modules/fault\": {", "status": "ADDED" }
+            ]
+          }
+        ]
+      },
+      {
+        "oldLineCount": 6,
+        "oldLineStart": 3704,
+        "newLineCount": 14,
+        "newLineStart": 3782,
+        "beforeDiff": [
+          {
+            "newN": 3782,
+            "oldN": 3704,
+            "parts": [
+              { "content": "       \"dev\": true,", "status": "UNCHANGED" },
+              {
+                "content": "       \"license\": \"ISC\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "     \"node_modules/fs-constants\": {",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"version\": \"1.0.0\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"resolved\": \"https://registry.npmjs.org/fs-constants/-/fs-constants-1.0.0.tgz\",",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 3782,
+            "oldN": 3704,
+            "parts": [
+              { "content": "       \"dev\": true,", "status": "UNCHANGED" },
+              {
+                "content": "       \"license\": \"ISC\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              { "content": "\"node_modules/format\": {", "status": "ADDED" }
+            ]
+          }
+        ]
+      },
+      {
+        "oldLineCount": 6,
+        "oldLineStart": 4004,
+        "newLineCount": 48,
+        "newLineStart": 4090,
+        "beforeDiff": [
+          {
+            "newN": 4090,
+            "oldN": 4004,
+            "parts": [
+              {
+                "content": "       \"devOptional\": true,",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"license\": \"ISC\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "     \"node_modules/http-cache-semantics\": {",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"version\": \"4.2.0\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"resolved\": \"https://registry.npmjs.org/http-cache-semantics/-/http-cache-semantics-4.2.0.tgz\",",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 4090,
+            "oldN": 4004,
+            "parts": [
+              {
+                "content": "       \"devOptional\": true,",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"license\": \"ISC\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "\"node_modules/hast-util-parse-selector\": {",
+                "status": "ADDED"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "oldLineCount": 6,
+        "oldLineStart": 4192,
+        "newLineCount": 40,
+        "newLineStart": 4320,
+        "beforeDiff": [
+          {
+            "newN": 4320,
+            "oldN": 4192,
+            "parts": [
+              {
+                "content": "         \"node\": \">= 12\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "     \"node_modules/is-extglob\": {",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"version\": \"2.1.1\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"resolved\": \"https://registry.npmjs.org/is-extglob/-/is-extglob-2.1.1.tgz\",",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 4320,
+            "oldN": 4192,
+            "parts": [
+              {
+                "content": "         \"node\": \">= 12\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "\"node_modules/is-alphabetical\": {",
+                "status": "ADDED"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "oldLineCount": 6,
+        "oldLineStart": 4225,
+        "newLineCount": 16,
+        "newLineStart": 4387,
+        "beforeDiff": [
+          {
+            "newN": 4387,
+            "oldN": 4225,
+            "parts": [
+              {
+                "content": "         \"node\": \">=0.10.0\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "     \"node_modules/is-interactive\": {",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"version\": \"1.0.0\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"resolved\": \"https://registry.npmjs.org/is-interactive/-/is-interactive-1.0.0.tgz\",",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 4387,
+            "oldN": 4225,
+            "parts": [
+              {
+                "content": "         \"node\": \">=0.10.0\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "\"node_modules/is-hexadecimal\": {",
+                "status": "ADDED"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "oldLineCount": 6,
+        "oldLineStart": 4689,
+        "newLineCount": 20,
+        "newLineStart": 4861,
+        "beforeDiff": [
+          {
+            "newN": 4861,
+            "oldN": 4689,
+            "parts": [
+              {
+                "content": "         \"node\": \">=8\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "     \"node_modules/lru-cache\": {",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"version\": \"5.1.1\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"resolved\": \"https://registry.npmjs.org/lru-cache/-/lru-cache-5.1.1.tgz\",",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 4861,
+            "oldN": 4689,
+            "parts": [
+              {
+                "content": "         \"node\": \">=8\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              { "content": "\"node_modules/lowlight\": {", "status": "ADDED" }
+            ]
+          }
+        ]
+      },
+      {
+        "oldLineCount": 6,
+        "oldLineStart": 5360,
+        "newLineCount": 24,
+        "newLineStart": 5546,
+        "beforeDiff": [
+          {
+            "newN": 5546,
+            "oldN": 5360,
+            "parts": [
+              {
+                "content": "         \"node\": \">=6\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "     \"node_modules/path-exists\": {",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"version\": \"4.0.0\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"resolved\": \"https://registry.npmjs.org/path-exists/-/path-exists-4.0.0.tgz\",",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 5546,
+            "oldN": 5360,
+            "parts": [
+              {
+                "content": "         \"node\": \">=6\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "\"node_modules/parse-entities\": {",
+                "status": "ADDED"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "oldLineCount": 6,
+        "oldLineStart": 5609,
+        "newLineCount": 15,
+        "newLineStart": 5813,
+        "beforeDiff": [
+          {
+            "newN": 5813,
+            "oldN": 5609,
+            "parts": [
+              { "content": "         }", "status": "UNCHANGED" },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "     \"node_modules/progress\": {",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"version\": \"2.0.3\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"resolved\": \"https://registry.npmjs.org/progress/-/progress-2.0.3.tgz\",",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 5813,
+            "oldN": 5609,
+            "parts": [
+              { "content": "         }", "status": "UNCHANGED" },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              { "content": "\"node_modules/prismjs\": {", "status": "ADDED" }
+            ]
+          }
+        ]
+      },
+      {
+        "oldLineCount": 6,
+        "oldLineStart": 5640,
+        "newLineCount": 19,
+        "newLineStart": 5853,
+        "beforeDiff": [
+          {
+            "newN": 5853,
+            "oldN": 5640,
+            "parts": [
+              {
+                "content": "         \"node\": \">=10\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "     \"node_modules/pump\": {",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"version\": \"3.0.3\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"resolved\": \"https://registry.npmjs.org/pump/-/pump-3.0.3.tgz\",",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 5853,
+            "oldN": 5640,
+            "parts": [
+              {
+                "content": "         \"node\": \">=10\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "\"node_modules/property-information\": {",
+                "status": "ADDED"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "oldLineCount": 6,
+        "oldLineStart": 5755,
+        "newLineCount": 23,
+        "newLineStart": 5981,
+        "beforeDiff": [
+          {
+            "newN": 5981,
+            "oldN": 5755,
+            "parts": [
+              {
+                "content": "         \"node\": \">=0.10.0\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "     \"node_modules/readable-stream\": {",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"version\": \"3.6.2\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"resolved\": \"https://registry.npmjs.org/readable-stream/-/readable-stream-3.6.2.tgz\",",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 5981,
+            "oldN": 5755,
+            "parts": [
+              {
+                "content": "         \"node\": \">=0.10.0\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "\"node_modules/react-syntax-highlighter\": {",
+                "status": "ADDED"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "oldLineCount": 6,
+        "oldLineStart": 5769,
+        "newLineCount": 30,
+        "newLineStart": 6012,
+        "beforeDiff": [
+          {
+            "newN": 6012,
+            "oldN": 5769,
+            "parts": [
+              {
+                "content": "         \"node\": \">= 6\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "     \"node_modules/require-directory\": {",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"version\": \"2.1.1\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"resolved\": \"https://registry.npmjs.org/require-directory/-/require-directory-2.1.1.tgz\",",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 6012,
+            "oldN": 5769,
+            "parts": [
+              {
+                "content": "         \"node\": \">= 6\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              { "content": "\"node_modules/refractor\": {", "status": "ADDED" }
+            ]
+          }
+        ]
+      },
+      {
+        "oldLineCount": 6,
+        "oldLineStart": 6166,
+        "newLineCount": 16,
+        "newLineStart": 6433,
+        "beforeDiff": [
+          {
+            "newN": 6433,
+            "oldN": 6166,
+            "parts": [
+              {
+                "content": "         \"node\": \">=0.10.0\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "     \"node_modules/sprintf-js\": {",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"version\": \"1.1.3\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"resolved\": \"https://registry.npmjs.org/sprintf-js/-/sprintf-js-1.1.3.tgz\",",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 6433,
+            "oldN": 6166,
+            "parts": [
+              {
+                "content": "         \"node\": \">=0.10.0\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "       }", "status": "UNCHANGED" },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "\"node_modules/space-separated-tokens\": {",
+                "status": "ADDED"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "oldLineCount": 6,
+        "oldLineStart": 7095,
+        "newLineCount": 15,
+        "newLineStart": 7372,
+        "beforeDiff": [
+          {
+            "newN": 7372,
+            "oldN": 7095,
+            "parts": [
+              {
+                "content": "       \"integrity\": \"sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"license\": \"ISC\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "     \"node_modules/y18n\": {",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"version\": \"5.0.8\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"resolved\": \"https://registry.npmjs.org/y18n/-/y18n-5.0.8.tgz\",",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 7372,
+            "oldN": 7095,
+            "parts": [
+              {
+                "content": "       \"integrity\": \"sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "       \"license\": \"ISC\"",
+                "status": "UNCHANGED"
+              },
+              { "content": "     },", "status": "UNCHANGED" },
+              { "content": "     ", "status": "UNCHANGED" },
+              { "content": "\"node_modules/xtend\": {", "status": "ADDED" }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "status": "MODIFIED",
+    "displayPaths": ["package.json"],
+    "oldPath": "package.json",
+    "newPath": "package.json",
+    "hunks": [
+      {
+        "oldLineCount": 6,
+        "oldLineStart": 15,
+        "newLineCount": 7,
+        "newLineStart": 15,
+        "beforeDiff": [
+          {
+            "newN": 15,
+            "oldN": 15,
+            "parts": [
+              { "content": "     \"ini\": \"^5.0.0\",", "status": "UNCHANGED" },
+              {
+                "content": "     \"react\": \"^19.1.0\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "     \"react-dom\": \"^19.1.0\",",
+                "status": "UNCHANGED"
+              },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "     \"sqlite\": \"^5.1.1\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "     \"sqlite3\": \"^5.1.7\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "     \"tailwindcss\": \"^4.1.8\",",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 15,
+            "oldN": 15,
+            "parts": [
+              { "content": "     \"ini\": \"^5.0.0\",", "status": "UNCHANGED" },
+              {
+                "content": "     \"react\": \"^19.1.0\",",
+                "status": "UNCHANGED"
+              },
+              {
+                "content": "     \"react-dom\": \"^19.1.0\",",
+                "status": "UNCHANGED"
+              },
+              { "content": "     ", "status": "UNCHANGED" },
+              {
+                "content": "\"react-syntax-highlighter\": \"^15.6.6\",",
+                "status": "ADDED"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "status": "MODIFIED",
+    "displayPaths": ["server/modules/diff/domain/services.ts"],
+    "oldPath": "server/modules/diff/domain/services.ts",
+    "newPath": "server/modules/diff/domain/services.ts",
+    "hunks": [
+      {
+        "enclosingBlock": "function finalizeLine(line: PartialLine): DiffLine {",
+        "oldLineCount": 6,
+        "oldLineStart": 117,
+        "newLineCount": 7,
+        "newLineStart": 117,
+        "beforeDiff": [
+          {
+            "newN": 117,
+            "oldN": 117,
+            "parts": [
+              { "content": " }", "status": "UNCHANGED" },
+              { "content": " ", "status": "UNCHANGED" },
+              {
+                "content": " export function parseDiff(diffLines: string[]): DiffFile[] {",
+                "status": "UNCHANGED"
+              },
+              { "content": "   ", "status": "UNCHANGED" },
+              {
+                "content": "   const files: DiffFile[] = [];",
+                "status": "UNCHANGED"
+              },
+              { "content": " ", "status": "UNCHANGED" },
+              {
+                "content": "   let currentFile: PartialFile | undefined;",
+                "status": "UNCHANGED"
+              }
+            ]
+          }
+        ],
+        "afterDiff": [
+          {
+            "newN": 117,
+            "oldN": 117,
+            "parts": [
+              { "content": " }", "status": "UNCHANGED" },
+              { "content": " ", "status": "UNCHANGED" },
+              {
+                "content": " export function parseDiff(diffLines: string[]): DiffFile[] {",
+                "status": "UNCHANGED"
+              },
+              { "content": "   ", "status": "UNCHANGED" },
+              { "content": "console.log(diffLines);", "status": "ADDED" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

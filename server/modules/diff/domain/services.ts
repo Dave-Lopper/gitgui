@@ -77,24 +77,44 @@ function createEmptyHunk(): PartialHunk {
   };
 }
 
+function createEmptyLine(n: number): DiffLine {
+  return {
+    n,
+    parts: [],
+  };
+}
+
 function finalizeHunk(hunk: PartialHunk): DiffHunk {
-  for (const hunkLine of hunk.lines) {
-    if (hunkLine.parts.some((part) => part.status === "REMOVED")) {
-      hunk.beforeDiff.push({
-        ...hunkLine,
-        parts: hunkLine.parts.filter(
-          (part) => part.status === "UNCHANGED" || part.status === "REMOVED",
-        ),
-      });
+  let addedPartsCount = 0;
+  for (const addedLine of hunk.afterDiff) {
+    for (const addedLinePart of addedLine.parts) {
+      if (addedLinePart.status === "ADDED") {
+        addedPartsCount += 1;
+        break;
+      }
+      if (addedPartsCount > 0) {
+        break;
+      }
     }
-    if (hunkLine.parts.some((part) => part.status === "ADDED")) {
-      hunk.afterDiff.push({
-        ...hunkLine,
-        parts: hunkLine.parts.filter(
-          (part) => part.status === "UNCHANGED" || part.status === "ADDED",
-        ),
-      });
+  }
+  if (addedPartsCount === 0) {
+    hunk.afterDiff = [];
+  }
+
+  let removedPartsCount = 0;
+  for (const removedLine of hunk.beforeDiff) {
+    for (const removedLinePart of removedLine.parts) {
+      if (removedLinePart.status === "REMOVED") {
+        removedPartsCount += 1;
+        break;
+      }
+      if (removedPartsCount > 0) {
+        break;
+      }
     }
+  }
+  if (removedPartsCount === 0) {
+    hunk.beforeDiff = [];
   }
 
   return {
@@ -108,30 +128,32 @@ function finalizeHunk(hunk: PartialHunk): DiffHunk {
   };
 }
 
-function finalizeLine(line: PartialLine): DiffLine {
-  return {
-    parts: line.parts,
-    oldN: line.oldN!,
-    newN: line.newN!,
-  };
-}
-
 export function parseDiff(diffLines: string[]): DiffFile[] {
   const files: DiffFile[] = [];
 
   let currentFile: PartialFile | undefined;
   let currentHunk: PartialHunk | undefined;
-  let currentLine: PartialLine | undefined;
+  let currentAfterLine: DiffLine | undefined;
+  let currentBeforeLine: DiffLine | undefined;
+  let currentAfterLineNumber: number | undefined;
+  let currentBeforeLineNumber: number | undefined;
+  let processedLineParts: Set<"REMOVED" | "ADDED" | "UNCHANGED"> = new Set();
 
-  const flushLine = () => {
-    if (currentLine && currentHunk) {
-      currentHunk.lines.push(finalizeLine(currentLine));
-      currentLine = undefined;
+  const flushLine = (lineType: "AFTER" | "BEFORE") => {
+    if (lineType === "AFTER" && currentAfterLine && currentHunk) {
+      currentAfterLineNumber = currentAfterLine.n;
+      currentHunk.afterDiff.push(currentAfterLine);
+      currentAfterLine = createEmptyLine(currentAfterLineNumber + 1);
+    } else if (lineType === "BEFORE" && currentBeforeLine && currentHunk) {
+      currentBeforeLineNumber = currentBeforeLine.n;
+      currentHunk.beforeDiff.push(currentBeforeLine);
+      currentBeforeLine = createEmptyLine(currentBeforeLineNumber + 1);
     }
   };
 
   const flushHunk = () => {
-    flushLine();
+    flushLine("BEFORE");
+    flushLine("AFTER");
     if (currentHunk && currentFile) {
       currentFile.hunks.push(finalizeHunk(currentHunk));
       currentHunk = undefined;
@@ -191,45 +213,68 @@ export function parseDiff(diffLines: string[]): DiffFile[] {
         currentHunk.enclosingBlock = lineParts[2].trim();
       }
 
-      currentLine = {
-        newN: currentHunk?.newStart!,
-        oldN: currentHunk?.oldStart!,
-        parts: [],
-      };
+      currentBeforeLine = createEmptyLine(currentHunk.oldStart);
+      currentAfterLine = createEmptyLine(currentHunk.newStart);
     }
     // New line
     else if (currentDiffLine === "~") {
-      if (currentLine && currentHunk) {
-        currentHunk.lines.push(finalizeLine(currentLine));
-        currentLine = {
-          parts: [],
-          oldN: currentLine.oldN! + 1,
-          newN: currentLine.newN! + 1,
-        };
+      const lastDiffLine = diffLines[i - 1];
+      const nextDiffLine = diffLines[i + 1];
+
+      if (lastDiffLine?.startsWith("-")) {
+        flushLine("BEFORE");
       }
+
+      if (lastDiffLine?.startsWith("+")) {
+        flushLine("AFTER");
+      }
+
+      if (lastDiffLine?.startsWith(" ")) {
+        flushLine("BEFORE");
+        flushLine("AFTER");
+      }
+
+      if (nextDiffLine?.startsWith(" ")) {
+        flushLine("BEFORE");
+        flushLine("AFTER");
+      }
+
+      processedLineParts = new Set();
+      continue;
     }
     // Removed line part
     else if (currentDiffLine.startsWith("-")) {
-      if (currentLine) {
-        currentLine.parts.push({
-          content: currentDiffLine.slice(1),
+      if (currentBeforeLine) {
+        const content = currentDiffLine.slice(1);
+        processedLineParts.add("REMOVED");
+        currentBeforeLine.parts.push({
+          content,
           status: "REMOVED",
         });
       }
     }
     // Added line part
     else if (currentDiffLine.startsWith("+")) {
-      if (currentLine) {
-        currentLine.parts.push({
-          content: currentDiffLine.slice(1),
+      if (currentAfterLine) {
+        const content = currentDiffLine.slice(1);
+        processedLineParts.add("ADDED");
+        currentAfterLine.parts.push({
+          content,
           status: "ADDED",
         });
       }
     }
     // Unchanged line part
     else {
-      if (currentLine) {
-        currentLine.parts.push({
+      processedLineParts.add("UNCHANGED");
+      if (currentBeforeLine) {
+        currentBeforeLine.parts.push({
+          content: currentDiffLine.slice(1),
+          status: "UNCHANGED",
+        });
+      }
+      if (currentAfterLine) {
+        currentAfterLine.parts.push({
           content: currentDiffLine.slice(1),
           status: "UNCHANGED",
         });

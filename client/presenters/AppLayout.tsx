@@ -10,6 +10,7 @@ import {
   useRepositorySelection,
 } from "./headless";
 import CommitForm from "./headless/CommitForm";
+import DiffViewer from "./headless/DiffViewer";
 import RepositoryTabs from "./headless/RepositoryTabs";
 import {
   ModernBranchDropdown,
@@ -43,7 +44,7 @@ import RetroRepositoryTab from "./themed/retro/RepositoryTab";
 
 export default function AppLayout() {
   const { theme } = useContext(UiSettingsContext);
-  const { currentTab } = useContext(RepoTabsContext);
+  const { currentTab, selectedFiles } = useContext(RepoTabsContext);
   const { repositorySelection } = useRepositorySelection(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
@@ -150,7 +151,13 @@ export default function AppLayout() {
             </div>
           }
           leftPaneClassName="bg-red h-full"
-          rightPane={<>Some right pane</>}
+          rightPane={
+            selectedFiles.size === 1 ? (
+              <DiffViewer diff={selectedFiles.values().next().value!} />
+            ) : (
+              <>Some right pane</>
+            )
+          }
           divider={divider}
         />
       )}

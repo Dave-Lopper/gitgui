@@ -17,6 +17,7 @@ export class GitCliRunner implements GitRunner {
     const repositoryPath = (options?.cwd || process.cwd()) as string;
     const res = await this.cmdRunner.run(command, args, {
       cwd: repositoryPath,
+      ...options,
     });
 
     if (!expectedCodes.includes(res.exitCode)) {

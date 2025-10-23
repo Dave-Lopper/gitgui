@@ -10,8 +10,7 @@ export type DiffLinePart = {
 };
 
 export type DiffLine = {
-  oldN: number;
-  newN: number;
+  n: number;
   parts: DiffLinePart[];
 };
 

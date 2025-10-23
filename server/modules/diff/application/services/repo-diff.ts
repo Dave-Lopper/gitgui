@@ -20,6 +20,7 @@ export class GetRepoDiff {
       this.gitRunner.getRepoDiff(repositoryPath, false),
       this.eventEmitter,
     );
+    // console.log({ unstagedDiffLines });
     const unstagedChangedFiles = parseDiff(unstagedDiffLines);
 
     const stagedDiffLines = await safeGit(
