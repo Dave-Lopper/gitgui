@@ -1,7 +1,6 @@
 import { ComponentType, useCallback, useContext, useMemo } from "react";
 
 import { useCases } from "../../bootstrap";
-import { getFilePath } from "../../domain/diff";
 import { RepoTabsContext } from "../contexts/repo-tabs";
 import { useRepositorySelection } from "./hooks/repository-selection";
 
@@ -46,8 +45,9 @@ export default function DiffFileOptionRightClickMenu({
     if (selectedFiles.size !== 1) {
       return null;
     }
+
     const [selectedFile] = selectedFiles;
-    const filePathParts = getFilePath(selectedFile).split(".");
+    const filePathParts = selectedFile.path.split(".");
     const extension = filePathParts[filePathParts.length - 1];
 
     return `.${extension}`;
@@ -60,7 +60,7 @@ export default function DiffFileOptionRightClickMenu({
 
     await useCases.addToGitignore.execute(
       repositorySelection.repository.localPath,
-      Array.from(selectedFiles).map((file) => getFilePath(file)),
+      Array.from(selectedFiles).map((file) => file.path),
     );
   }, [repositorySelection, selectedFiles]);
 
@@ -72,7 +72,7 @@ export default function DiffFileOptionRightClickMenu({
     const [selectedFile] = selectedFiles;
     await useCases.copyAbsoluteFilePath.execute(
       repositorySelection?.repository.localPath,
-      getFilePath(selectedFile),
+      selectedFile.path,
     );
   }, [repositorySelection, selectedFiles]);
 
@@ -84,7 +84,7 @@ export default function DiffFileOptionRightClickMenu({
     const [selectedFile] = selectedFiles;
     await useCases.copyRelativeFilePath.execute(
       repositorySelection?.repository.localPath,
-      getFilePath(selectedFile),
+      selectedFile.path,
     );
   }, [repositorySelection, selectedFiles]);
 
@@ -95,7 +95,7 @@ export default function DiffFileOptionRightClickMenu({
 
     await useCases.batchDiscardFileModifications.execute(
       repositorySelection.repository.localPath,
-      Array.from(selectedFiles).map((file) => getFilePath(file)),
+      Array.from(selectedFiles).map((file) => file.path),
     );
   }, [repositorySelection, selectedFiles]);
 

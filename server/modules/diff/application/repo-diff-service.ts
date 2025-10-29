@@ -1,5 +1,5 @@
-import { DiffFile } from "../domain/entities.js";
+import { File } from "../domain/entities.js";
 
 export interface RepoDiffService {
-  execute(repositoryPath: string): Promise<(DiffFile & { staged: boolean })[]>;
+  execute(repositoryPath: string): Promise<(File & { staged: boolean })[]>;
 }

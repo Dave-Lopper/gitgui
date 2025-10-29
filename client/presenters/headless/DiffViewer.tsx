@@ -1,35 +1,22 @@
-import { DiffFile } from "../../domain/diff";
+import { useMemo } from "react";
+
+import { ChangedLineStatus, File } from "../../domain/diff";
 
 // import "./App.css";
 
-export default function DiffViewer({ diff }: { diff: DiffFile }) {
+export default function DiffViewer({ diff }: { diff: File }) {
   console.log({ diff });
-  let status = "";
-  let path = "";
-  if (diff.oldPath && diff.newPath && diff.oldPath == diff.newPath) {
-    status = "MODIFIED";
-    path = diff.newPath;
-  } else if (diff.oldPath === null && diff.newPath) {
-    status = "ADDED";
-    path = diff.newPath;
-  } else if (diff.newPath === null && diff.oldPath) {
-    status = "REMOVED";
-    path = diff.oldPath;
-  } else {
-    status = "MOVED";
-    path = `${diff.oldPath} -> ${diff.newPath}`;
-  }
 
-  let colorClass = "";
-  if (status === "MODIFIED") {
-    colorClass = "text-amber-600";
-  } else if (status === "ADDED") {
-    colorClass = "text-emerald-600";
-  } else if (status === "MOVED") {
-    colorClass = "text-sky-600";
-  } else {
-    colorClass = "text-rose-600";
-  }
+  const diffColors = useMemo<{
+    ADDED: { bg: string; highlight: string };
+    REMOVED: { bg: string; highlight: string };
+  }>(
+    () => ({
+      ADDED: { bg: "bg-emerald-400", highlight: "bg-green-600" },
+      REMOVED: { bg: "bg-red-400", highlight: "bg-red-600" },
+    }),
+    [],
+  );
 
   return (
     <div className="m-0 flex h-full w-full flex-col items-start justify-start p-4 bg-white select-text overflow-auto">
@@ -46,11 +33,29 @@ export default function DiffViewer({ diff }: { diff: DiffFile }) {
                 {hunk.enclosingBlock && (
                   <span className="text-black">{hunk.enclosingBlock}</span>
                 )}
-                <div className="flex flex-col items-start bg-red-400 mb-2">
-                  {hunk.beforeDiff &&
-                    hunk.beforeDiff.map((line) => (
-                      <div className="flex items-start font-semibold text-white LINE">
-                        {line.parts.map((part) => {
+                <div className="flex flex-col items-start mb-2">
+                  {hunk.lines.map((line) => (
+                    <div className="flex items-start font-semibold text-white LINE">
+                      {line.type === "CONTEXT" ? (
+                        <span className="whitespace-pre text-black">
+                          {line.content}
+                        </span>
+                      ) : (
+                        <div className={`flex ${diffColors[line.type].bg}`}>
+                          {line.parts.map((part) => (
+                            <span
+                              className={
+                                part.type === "DIFF"
+                                  ? diffColors[line.type].highlight
+                                  : ""
+                              }
+                            >
+                              {part.content}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {/* {line.parts.map((part) => {
                           if (part.status === "UNCHANGED") {
                             return (
                               <span className="whitespace-pre">
@@ -65,13 +70,13 @@ export default function DiffViewer({ diff }: { diff: DiffFile }) {
                               </span>
                             );
                           }
-                        })}
-                      </div>
-                    ))}
+                        })} */}
+                    </div>
+                  ))}
                 </div>
 
                 <div className="flex flex-col items-start flex-center bg-emerald-400 mb-2">
-                  {hunk.afterDiff &&
+                  {/* {hunk.afterDiff &&
                     hunk.afterDiff.map((line) => (
                       <div className="flex items-start font-semibold text-white LINE">
                         <div className="flex">
@@ -93,7 +98,7 @@ export default function DiffViewer({ diff }: { diff: DiffFile }) {
                           })}
                         </div>
                       </div>
-                    ))}
+                    ))} */}
                 </div>
               </div>
             ))}

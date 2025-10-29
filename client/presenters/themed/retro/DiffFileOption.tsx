@@ -1,6 +1,6 @@
-import RetroCheckbox from "./Checkbox";
+import { FileStatus } from "../../../domain/diff";
 import { ThemedFileOptionProps } from "../../headless/ModifiedFilesList";
-import { DiffFileStatus } from "../../../domain/diff";
+import RetroCheckbox from "./Checkbox";
 
 export default function RetroDiffFileOption({
   file,
@@ -9,7 +9,7 @@ export default function RetroDiffFileOption({
   onContextMenu,
   toggleStaging,
 }: ThemedFileOptionProps) {
-  const colors: { [K in DiffFileStatus]: string[] } = {
+  const colors: { [K in FileStatus]: string[] } = {
     ADDED: ["border-green-500", "bg-green-500"],
     MODIFIED: ["border-yellow-400", "bg-yellow-400"],
     MOVED: ["border-blue-600", "bg-blue-600"],

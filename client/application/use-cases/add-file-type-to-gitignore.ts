@@ -1,4 +1,4 @@
-import { DiffFile, getFilePath } from "../../domain/diff";
+import { File } from "../../domain/diff";
 import { IEventBus } from "../i-event-bus";
 import { IGitService } from "../i-git-service";
 
@@ -8,8 +8,8 @@ export class AddFileTypeToGitignore {
     private readonly eventBus: IEventBus,
   ) {}
 
-  async execute(repositoryPath: string, file: DiffFile): Promise<void> {
-    const pathParts = getFilePath(file).split(".");
+  async execute(repositoryPath: string, file: File): Promise<void> {
+    const pathParts = file.path.split(".");
     const extension = pathParts[pathParts.length - 1];
     await this.gitService.batchAddToGitignore(repositoryPath, extension);
     const dto = await this.gitService.selectRepoFromSaved(repositoryPath);

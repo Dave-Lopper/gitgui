@@ -17,6 +17,11 @@ export class FsFilesRepository implements FilesRepository {
     });
   }
 
+  async countLines(path: string): Promise<number> {
+    const fileContent = await fs.readFile(path, "utf-8");
+    return fileContent.split("\n").length;
+  }
+
   async endsWithNewLine(path: string): Promise<boolean> {
     const stats = await fs.stat(path);
     if (stats.size === 0) {

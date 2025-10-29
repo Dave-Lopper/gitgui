@@ -3,6 +3,8 @@ export interface FilesRepository {
 
   copyFolder(path: string, destination: string): Promise<void>;
 
+  countLines(path: string): Promise<number>;
+
   endsWithNewLine(path: string): Promise<boolean>;
 
   getLastModifiedTime(filePath: string): Promise<Date>;

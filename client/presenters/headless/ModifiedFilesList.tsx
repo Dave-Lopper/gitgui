@@ -8,7 +8,7 @@ import {
 } from "react";
 
 import { useCases } from "../../bootstrap";
-import { DiffFile, getFilePath } from "../../domain/diff";
+import { File } from "../../domain/diff";
 import { RepositorySelectionDto } from "../../dto/repo-selection";
 import { RepoTabsContext } from "../contexts/repo-tabs";
 import {
@@ -22,7 +22,7 @@ export type ThemedFileOptionProps = {
   onClick: (e: MouseEvent<HTMLDivElement>) => void;
   onContextMenu: (e: MouseEvent<HTMLDivElement>) => void;
   toggleStaging: () => Promise<void>;
-  file: DiffFile;
+  file: File;
 };
 
 export default function ModifiedFilesList({
@@ -52,7 +52,7 @@ export default function ModifiedFilesList({
   >(null);
 
   const clickHandler = useCallback(
-    (e: MouseEvent<HTMLDivElement>, file: DiffFile, idx: number) => {
+    (e: MouseEvent<HTMLDivElement>, file: File, idx: number) => {
       if (rightClickMenuPosition !== null) {
         setRightClickMenuPosition(null);
       }
@@ -84,7 +84,7 @@ export default function ModifiedFilesList({
   );
 
   const rightClickHandler = useCallback(
-    (e: MouseEvent<HTMLDivElement>, file: DiffFile, idx: number) => {
+    (e: MouseEvent<HTMLDivElement>, file: File, idx: number) => {
       if (!isFileSelected(file)) {
         emptyFileSelection();
         toggleFileSelection({ ...file, index: idx });

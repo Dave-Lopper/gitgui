@@ -62,10 +62,18 @@ export class ShellRunner implements CommandRunner {
         if (exited) return;
         exited = true;
 
+        const formattedStdout = pipee.options?.splitLines
+          ? this.splitLines(stdout, pipee.options?.trimOutput ?? true)
+          : stdout;
+
+        const formattedStderr = pipee.options?.splitLines
+          ? this.splitLines(stderr, pipee.options?.trimOutput ?? true)
+          : stderr;
+
         resolve({
           command: `${piped.cmd} ${piped.args?.join(" ") ?? ""} | ${pipee.cmd} ${pipee.args?.join(" ") ?? ""}`,
-          stdout: this.splitLines(stdout, pipee.options?.trimOutput ?? true),
-          stderr: this.splitLines(stderr, pipee.options?.trimOutput ?? true),
+          stdout: formattedStdout,
+          stderr: formattedStderr,
           exitCode: code ?? -1,
         });
       };
@@ -119,10 +127,17 @@ export class ShellRunner implements CommandRunner {
         if (!exited) {
           exited = true;
 
+          const formattedStdout = options?.splitLines
+            ? this.splitLines(stdout, options?.trimOutput ?? true)
+            : stdout;
+          const formattedStderr = options?.splitLines
+            ? this.splitLines(stderr, options?.trimOutput ?? true)
+            : stderr;
+
           resolve({
             command: `${command} ${args.join(" ")}`,
-            stdout: this.splitLines(stdout, options?.trimOutput ?? true),
-            stderr: this.splitLines(stderr, options?.trimOutput ?? true),
+            stdout: formattedStdout,
+            stderr: formattedStderr,
             exitCode: code ?? -1,
           });
         }

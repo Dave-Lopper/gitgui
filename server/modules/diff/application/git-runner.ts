@@ -5,7 +5,31 @@ export interface DiffGitRunner {
 
   getCommitDiff(repositoryPath: string, commitHash: string): Promise<string[]>;
 
-  getRepoDiff(repositoryPath: string, staged: boolean): Promise<string[]>;
+  getFileDiff(
+    repositoryPath: string,
+    filePath: string,
+    staged: boolean,
+  ): Promise<string>;
+
+  getFileNumStats(
+    repositoryPath: string,
+    filePath: string,
+    staged: boolean,
+  ): Promise<string>;
+
+  getHeadFileContents(
+    branchName: string,
+    remoteName: string,
+    repositoryPath: string,
+    filePath: string,
+  ): Promise<string>;
+
+  getHeadFileLinecount(
+    repositoryPath: string,
+    filePath: string,
+  ): Promise<string>;
+
+  getRepoDiff(repositoryPath: string, staged: boolean): Promise<string>;
 
   getRepoStatus(repositoryPath: string): Promise<string[]>;
 

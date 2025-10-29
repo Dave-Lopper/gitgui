@@ -1,7 +1,7 @@
-import { DiffFile } from "../../diff/domain/entities.js";
+import { File } from "../../diff/domain/entities.js";
 import { Commit } from "../domain/entities.js";
 
-export type CommitDiffDto = Commit & { diff: DiffFile[] };
+export type CommitDiffDto = Commit & { diff: File[] };
 
 export type HistoryPaginationDto = {
   hasNextPage: boolean;

@@ -29,6 +29,7 @@ export class DiffCliGitRunner extends GitCliRunner implements DiffGitRunner {
         filePath,
       ],
       { cwd: repositoryPath },
+      true,
       [0, 1],
     );
   }
@@ -44,24 +45,96 @@ export class DiffCliGitRunner extends GitCliRunner implements DiffGitRunner {
     );
   }
 
-  async getRepoDiff(
+  async getFileNumStats(
     repositoryPath: string,
+    filePath: string,
     staged: boolean,
-  ): Promise<string[]> {
+  ): Promise<string> {
+    const args = ["--no-pager", "diff", "--no-color", "--numstat"];
+    if (staged) {
+      args.push("--cached");
+    }
+    args.push(filePath);
+    const result = await this.safeRun(
+      "git",
+      args,
+      { cwd: repositoryPath, trimOutput: false },
+      false,
+    );
+    return result;
+  }
+
+  async getFileDiff(
+    repositoryPath: string,
+    filePath: string,
+    staged: boolean,
+  ): Promise<string> {
+    const args = ["--no-pager", "diff", "--no-color", "--word-diff=porcelain"];
+    if (staged) {
+      args.push("--cached");
+    }
+    args.push(filePath);
+    return await this.safeRun(
+      "git",
+      args,
+      { cwd: repositoryPath, trimOutput: false },
+      false,
+    );
+  }
+
+  async getHeadFileContents(
+    branchName: string,
+    remoteName: string,
+    repositoryPath: string,
+    filePath: string,
+  ): Promise<string> {
+    return await this.safeRun(
+      "git",
+      ["--no-pager", "show", `${remoteName}/${branchName}:${filePath}`],
+      { cwd: repositoryPath, trimOutput: false },
+      false,
+    );
+  }
+
+  async getHeadFileLinecount(
+    repositoryPath: string,
+    filePath: string,
+  ): Promise<string> {
+    const result = await this.cmdRunner.pipe(
+      {
+        cmd: "git",
+        args: ["show", `HEAD:${filePath}`],
+        options: { cwd: repositoryPath, splitLines: false },
+      },
+      {
+        cmd: "wc",
+        args: ["-l"],
+        options: { cwd: repositoryPath, splitLines: false },
+      },
+    );
+    return result.stdout as string;
+  }
+
+  async getRepoDiff(repositoryPath: string, staged: boolean): Promise<string> {
     const args = ["diff", "--no-color", "--word-diff=porcelain"];
     if (staged) {
       args.push("--cached");
     }
-    const lines = await this.safeRun("git", args, {
-      trimOutput: false,
-      cwd: repositoryPath,
-    });
-    return lines;
+    return await this.safeRun(
+      "git",
+      args,
+      {
+        trimOutput: false,
+        cwd: repositoryPath,
+      },
+      false,
+    );
   }
 
   async getRepoStatus(repositoryPath: string): Promise<string[]> {
     return await this.safeRun("git", ["--no-pager", "status", "--porcelain"], {
       cwd: repositoryPath,
+      trimOutput: false,
     });
   }
 

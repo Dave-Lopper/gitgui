@@ -1,12 +1,12 @@
 import { ReactNode, useCallback, useState } from "react";
 
+import { File } from "../../../domain/diff";
 import {
-  defaultTab,
   DiffFileWithIndex,
-  RepoTabsContext,
   RepoTab,
+  RepoTabsContext,
+  defaultTab,
 } from "./context";
-import { DiffFile, getFilePath } from "../../../domain/diff";
 
 export function RepoTabsContextProvider({ children }: { children: ReactNode }) {
   const [currentTab, setCurrentTab] = useState<RepoTab>(defaultTab);
@@ -37,7 +37,7 @@ export function RepoTabsContextProvider({ children }: { children: ReactNode }) {
   );
 
   const isFileSelected = useCallback(
-    (file: DiffFile) => {
+    (file: File) => {
       const selectedFileNames = Array.from(selectedFiles, (file) =>
         file.displayPaths.join(","),
       );
@@ -60,9 +60,7 @@ export function RepoTabsContextProvider({ children }: { children: ReactNode }) {
         let newFiles;
         if (isFileSelected(file)) {
           newFiles = new Set(
-            Array.from(files).filter(
-              (f) => getFilePath(f) !== getFilePath(file),
-            ),
+            Array.from(files).filter((f) => f.path !== file.path),
           );
         } else {
           const newFilesArray = Array.from(files);

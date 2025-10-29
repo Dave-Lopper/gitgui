@@ -1,27 +1,11 @@
 import { v4 as uuidv4 } from "uuid";
 
 import { GitCliRunner } from "../../../commons/infra/git-cli-runner.js";
+import { ShellRunner } from "../../../commons/infra/shell-command-runner.js";
 import { RepositoryGitRunner } from "../application/git-runner.js";
-import { Branch, ChangedFile, ModType } from "../domain/entities.js";
+import { Branch } from "../domain/entities.js";
 import { RepositoryReferences } from "../dto/reference.js";
 import { Remote } from "../dto/remote.js";
-
-const validGitActions = ["M", "T", "A", "D", "R", "C", "U", "??"] as const;
-type GitFileAction = (typeof validGitActions)[number];
-const isValidGitAction = (action: string): action is GitFileAction => {
-  return (validGitActions as readonly string[]).includes(action);
-};
-
-const gitFileActionsToModType: Record<GitFileAction, ModType | null> = {
-  M: "MODIFIED",
-  T: "MODIFIED",
-  A: "ADDED",
-  D: "REMOVED",
-  U: "MODIFIED",
-  R: null,
-  C: null,
-  "??": "UNTRACKED",
-};
 
 export class RepositoryGitCliRunner
   extends GitCliRunner
@@ -41,13 +25,11 @@ export class RepositoryGitCliRunner
 
   async cloneRepository(url: string): Promise<string> {
     const tempFolder = `/tmp/${uuidv4()}`;
-    await this.safeRun("git", [
-      "clone",
-      "--depth=1",
-      "--single-branch",
-      url,
-      tempFolder,
-    ]);
+    await this.safeRun(
+      "git",
+      ["clone", "--depth=1", "--single-branch", url, tempFolder],
+      {},
+    );
     return tempFolder;
   }
 
@@ -94,38 +76,6 @@ export class RepositoryGitCliRunner
     }
 
     return remotes[0];
-  }
-
-  async getModifiedFiles(path: string): Promise<ChangedFile[]> {
-    const lines = await this.safeRun("git", ["status", "--porcelain"], {
-      cwd: path,
-    });
-
-    const files: ChangedFile[] = [];
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      const parts = line.split(" ");
-
-      if (parts.length !== 2) {
-        console.error(`Malformed git status --porcelain line: ${line}`);
-        continue;
-      }
-
-      const action = parts[0];
-      if (!isValidGitAction(action)) {
-        console.error(
-          `Unknown git status --porcelain file action ${action} on line: ${line}`,
-        );
-        continue;
-      }
-      if (gitFileActionsToModType[action] === null) {
-        continue;
-      }
-      const filePath = parts[1];
-      files.push({ path: filePath, modType: gitFileActionsToModType[action] });
-    }
-
-    return files;
   }
 
   async isValidRepository(path: string): Promise<boolean> {

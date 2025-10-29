@@ -1,9 +1,12 @@
+import { FilesRepository } from "../../../../commons/application/files-repository.js";
 import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
-import { DiffFile } from "../../domain/entities.js";
+import { RepositoryGitRunner } from "../../../repository/application/git-runner.js";
+import { File } from "../../domain/entities.js";
 import {
-  parseDiff,
-  parseNewFileDiff,
+  getOneSidedDiff,
+  parseFileDiff,
+  parseFileNumStat,
   parseStatus,
 } from "../../domain/services.js";
 import { DiffGitRunner } from "../git-runner.js";
@@ -11,51 +14,110 @@ import { DiffGitRunner } from "../git-runner.js";
 export class GetRepoDiff {
   constructor(
     private readonly eventEmitter: IEventEmitter,
-    private readonly gitRunner: DiffGitRunner,
+    private readonly filesRepository: FilesRepository,
+    private readonly diffGitRunner: DiffGitRunner,
+    private readonly repositoryGitRunner: RepositoryGitRunner,
   ) {}
-  async execute(
-    repositoryPath: string,
-  ): Promise<(DiffFile & { staged: boolean })[]> {
-    const unstagedDiffLines = await safeGit(
-      this.gitRunner.getRepoDiff(repositoryPath, false),
+  async execute(repositoryPath: string): Promise<File[]> {
+    const statusLines = await safeGit(
+      this.diffGitRunner.getRepoStatus(repositoryPath),
       this.eventEmitter,
     );
-    // console.log({ unstagedDiffLines });
-    const unstagedChangedFiles = parseDiff(unstagedDiffLines);
+    const statusEntries = parseStatus(statusLines);
+    const files = [];
+    const currentBranch =
+      await this.repositoryGitRunner.getCurrentBranch(repositoryPath);
+    const currentRemote =
+      await this.repositoryGitRunner.getCurrentRemote(repositoryPath);
 
-    const stagedDiffLines = await safeGit(
-      this.gitRunner.getRepoDiff(repositoryPath, true),
-      this.eventEmitter,
-    );
-    let stagedChangedFiles = parseDiff(stagedDiffLines);
-    const unstagedFileNames = unstagedChangedFiles.map((file) =>
-      file.displayPaths.join(","),
-    );
-    stagedChangedFiles = stagedChangedFiles.filter((file) => {
-      const fileName = file.displayPaths.join(",");
-      return !unstagedFileNames.includes(fileName);
-    });
+    for (let i = 0; i < statusEntries.length; i++) {
+      const statusEntry = statusEntries[i];
+      let oldLineCount: number = 0;
+      let newLineCount: number = 0;
+      let removedLines: number;
+      let addedLines: number;
 
-    const repoStatusLines = await this.gitRunner.getRepoStatus(repositoryPath);
-    const addedFiles = parseStatus(repoStatusLines);
-    const addedFileDiffs = [];
+      if (statusEntry.status !== "ADDED") {
+        oldLineCount = parseInt(
+          await safeGit(
+            this.diffGitRunner.getHeadFileLinecount(
+              repositoryPath,
+              statusEntry.path,
+            ),
+            this.eventEmitter,
+          ),
+        );
+      }
 
-    for (let i = 0; i < addedFiles.length; i++) {
-      const addedFileDiffLines = await this.gitRunner.getAddedFileDiff(
-        repositoryPath,
-        addedFiles[i],
-      );
-      addedFileDiffs.push(parseNewFileDiff(addedFileDiffLines));
+      if (statusEntry.status !== "REMOVED") {
+        newLineCount = await this.filesRepository.countLines(
+          `${repositoryPath}/${statusEntry.path}`,
+        );
+      }
+
+      if (statusEntry.status === "MODIFIED") {
+        const numStatLine = await safeGit(
+          this.diffGitRunner.getFileNumStats(
+            repositoryPath,
+            statusEntry.path,
+            statusEntry.staged,
+          ),
+          this.eventEmitter,
+        );
+        [addedLines, removedLines] = parseFileNumStat(numStatLine);
+      } else if (statusEntry.status === "ADDED") {
+        removedLines = 0;
+        addedLines = newLineCount!;
+      } else if (statusEntry.status === "REMOVED") {
+        addedLines = 0;
+        removedLines = oldLineCount!;
+      } else {
+        console.warn("CONTINUE");
+        continue;
+      }
+
+      const fileInfos = {
+        addedLines,
+        newLineCount,
+        oldLineCount,
+        path: statusEntry.path,
+        removedLines,
+        staged: statusEntry.staged,
+        status: statusEntry.status,
+      };
+
+      let fileContents: string;
+      switch (statusEntry.status) {
+        case "MODIFIED":
+          const rawFileDiff = await safeGit(
+            this.diffGitRunner.getFileDiff(
+              repositoryPath,
+              statusEntry.path,
+              statusEntry.staged,
+            ),
+            this.eventEmitter,
+          );
+          files.push(parseFileDiff(rawFileDiff, fileInfos));
+          break;
+        case "ADDED":
+          fileContents = await this.filesRepository.readFile(statusEntry.path);
+          files.push(getOneSidedDiff(fileContents, fileInfos, "ADDED"));
+          break;
+        case "REMOVED":
+          fileContents = await safeGit(
+            this.diffGitRunner.getHeadFileContents(
+              currentBranch,
+              currentRemote.name,
+              repositoryPath,
+              statusEntry.path,
+            ),
+            this.eventEmitter,
+          );
+          files.push(getOneSidedDiff(fileContents, fileInfos, "REMOVED"));
+          break;
+      }
     }
 
-    const changedFiles = [
-      ...stagedChangedFiles,
-      ...unstagedChangedFiles,
-      ...addedFileDiffs,
-    ].map((file) => ({ ...file, staged: stagedChangedFiles.includes(file) }));
-
-    return changedFiles.sort((a, b) =>
-      a.displayPaths[0].localeCompare(b.displayPaths[0]),
-    );
+    return files;
   }
 }

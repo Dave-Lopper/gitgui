@@ -32,11 +32,14 @@ export const bootstrap = async (window: BrowserWindow) => {
   );
   const localFilePathSelector = new ElectronLocalFilePathSelector(window);
   const repoGitRunner = new RepositoryGitCliRunner(commandRunner);
+  const filesRepository = new FsFilesRepository();
+
   const repoDiffService = new GetRepoDiff(
     eventEmitter,
+    filesRepository,
     new DiffCliGitRunner(commandRunner),
+    repoGitRunner,
   );
-  const filesRepository = new FsFilesRepository();
 
   return {
     authenticate: new Authenticate(eventEmitter, repoGitRunner),

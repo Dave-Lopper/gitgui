@@ -1,338 +1,497 @@
 import {
-  DiffFile,
-  DiffFileStatus,
-  DiffHunk,
-  DiffLine,
-  DiffLinePart,
-} from "./entities.js";
+  ChangedLineStatus,
+  File,
+  FileInfos,
+  FileStatus,
+  Hunk,
+  LinePart,
+  StatusEntry,
+} from "./entities";
+
+type PartialChangedLine = {
+  type?: ChangedLineStatus;
+  n?: number;
+  parts: LinePart[];
+};
 
 type PartialFile = {
-  status?: DiffFileStatus;
+  status?: FileStatus;
   displayPaths: string[];
   oldPath?: string | null;
   newPath?: string | null;
-  hunks: DiffHunk[];
+  hunks: Hunk[];
 };
 
-type PartialHunk = {
-  enclosingBlock?: string;
-  oldLineCount?: number;
-  oldStart?: number;
-  newLineCount?: number;
-  newStart?: number;
-  beforeDiff: DiffLine[];
-  afterDiff: DiffLine[];
-  lines: DiffLine[];
-};
+// function getFileInfos(oldPath: string, newPath: string): FileInfos {
+//   let status: FileStatus;
+//   let parsedOldPath: string | null = null;
+//   let parsedNewPath: string | null = null;
 
-type PartialLine = {
-  parts: DiffLinePart[];
-  oldN?: number;
-  newN?: number;
-};
+//   if (oldPath === "dev/null") {
+//     status = "ADDED";
+//   } else if (newPath == "dev/null") {
+//     status = "REMOVED";
+//   } else if (oldPath === newPath) {
+//     status = "MODIFIED";
+//     parsedNewPath = newPath;
+//     parsedOldPath = oldPath;
+//   } else {
+//     status = "MOVED";
+//     parsedNewPath = newPath;
+//     parsedOldPath = oldPath;
+//   }
 
-function createEmptyFile(): PartialFile {
-  return {
-    displayPaths: [],
-    hunks: [],
-  };
+//   let displayPaths: string[] = [];
+//   if (status === "ADDED") {
+//     if (!newPath) {
+//       throw new Error("New path unexpectedly falsish on ADDED file");
+//     }
+//     displayPaths = [newPath];
+//   } else if (status === "REMOVED") {
+//     if (!oldPath) {
+//       throw new Error("Old path unexpectedly falsish on REMOVED file");
+//     }
+//     displayPaths = [oldPath];
+//   } else if (!oldPath || !newPath) {
+//     throw new Error(
+//       "Old path or New path unexpectedly falsish on MOVED/MODIFIED file",
+//     );
+//   } else if (status === "MOVED") {
+//     displayPaths = [oldPath, newPath];
+//   } else {
+//     displayPaths = [newPath];
+//   }
+
+//   return {
+//     // displayPaths,
+//     // oldPath: parsedOldPath,
+//     path: parsedNewPath!,
+//     status,
+//   };
+// }
+
+// export function getFileInfosFromDiff(diff: string): FileInfos[] {
+//   const splitFilesResult = diff.split(/(^diff --git a\/.+? b\/.+$)/m).slice(1);
+//   const fileInfos: FileInfos[] = [];
+
+//   for (let i = 0; i < splitFilesResult.length; i += 2) {
+//     const file = splitFilesResult[i];
+//     const fileMatch = file.match(/diff --git a\/(.+?) b\/(.+$)/);
+//     if (!fileMatch) {
+//       throw new Error(`Diff file line unexpectedly formed: ${file}`);
+//     }
+
+//     const [, oldPath, newPath] = fileMatch;
+//     fileInfos.push(getFileInfos(oldPath, newPath));
+//   }
+
+//   return fileInfos;
+// }
+
+// export function parseDiff(diff: string, contextLinesCount: number = 3): File[] {
+//   const splitFilesResult = diff.split(/(^diff --git a\/.+? b\/.+$)/m).slice(1);
+//   const files: File[] = [];
+
+//   for (let i = 0; i < splitFilesResult.length; i += 2) {
+//     const file = splitFilesResult[i];
+//     const diff = splitFilesResult[i + 1];
+
+//     const fileMatch = file.match(/diff --git a\/(.+?) b\/(.+$)/);
+//     if (!fileMatch) {
+//       throw new Error(`Diff file line unexpectedly formed: ${file}`);
+//     }
+
+//     const [, oldPath, newPath] = fileMatch;
+//     const fileInfos = getFileInfos(oldPath, newPath);
+//     const currentFile: File = {
+//       ...fileInfos,
+//       hunks: [],
+//       displayPaths: [],
+//     };
+//     const splitHunksResult = diff
+//       .split(/(^@@ -\d+,\d+ \+\d+,\d+ @@)/m)
+//       .slice(1);
+
+//     for (let j = 0; j < splitHunksResult.length; j += 2) {
+//       const hunk = splitHunksResult[j];
+//       const hunkDiff = splitHunksResult[j + 1];
+//       let currentAddedLine: PartialChangedLine = { parts: [] };
+//       let currentRemovedLine: PartialChangedLine = { parts: [] };
+
+//       const hunkMatch = hunk.match(/@@ -(\d+),(\d+) \+(\d+),(\d+) @@/);
+//       if (!hunkMatch) {
+//         throw new Error(`Diff hunk line unexpectedly formed: ${hunk}`);
+//       }
+
+//       const [
+//         ,
+//         rawOldLineStart,
+//         rawOldLineCount,
+//         rawNewLineStart,
+//         rawNewLineCount,
+//       ] = hunkMatch;
+
+//       const oldLineStart = parseInt(rawOldLineStart);
+//       const oldLineCount = parseInt(rawOldLineCount);
+//       const newLineStart = parseInt(rawNewLineStart);
+//       const newLineCount = parseInt(rawNewLineCount);
+
+//       const currentHunk: Hunk = {
+//         oldLineCount,
+//         oldLineStart,
+//         newLineCount,
+//         newLineStart,
+//         lines: [],
+//       };
+
+//       const hunkDiffLines = hunkDiff.split("~");
+//       for (let k = 0; k < hunkDiffLines.length; k++) {
+//         const diffLine = hunkDiffLines[k];
+//         // TODO check starting line and substract to contextLinesCount (eg startLine = 2, then can't expect 3 context lines here, same for trailing context (need to find a way to have old len and new len))
+
+//         if (
+//           k < contextLinesCount ||
+//           k > hunkDiffLines.length - contextLinesCount
+//         ) {
+//           currentHunk.lines.push({
+//             type: "CONTEXT",
+//             content: diffLine.slice(1),
+//             oldN: oldLineStart + k,
+//             newN: newLineStart + k,
+//           });
+//         } else {
+//           const diffLineParts = diffLine.split("\n");
+//           let hasRemovedPart = false;
+//           let hasAddedPart = false;
+
+//           for (let l = 0; l < diffLineParts.length; l++) {
+//             if (diffLineParts[l].startsWith("+")) {
+//               hasAddedPart = true;
+//             } else if (diffLineParts[l].startsWith("-")) {
+//               hasRemovedPart = true;
+//             }
+//           }
+
+//           for (let l = 0; l < diffLineParts.length; l++) {
+//             const linePart = diffLineParts[l];
+
+//             if (linePart.startsWith("+")) {
+//               currentAddedLine.parts.push({
+//                 type: "DIFF",
+//                 content: linePart.slice(1),
+//               });
+//             } else if (linePart.startsWith("-")) {
+//               currentRemovedLine.parts.push({
+//                 type: "DIFF",
+//                 content: linePart.slice(1),
+//               });
+//             } else {
+//               if (hasAddedPart) {
+//                 currentAddedLine.parts.push({
+//                   type: "CONTEXT",
+//                   content: linePart,
+//                 });
+//               }
+//               if (hasRemovedPart) {
+//                 currentRemovedLine.parts.push({
+//                   type: "CONTEXT",
+//                   content: linePart,
+//                 });
+//               }
+//             }
+//           }
+//           if (currentRemovedLine.parts.length > 0) {
+//             currentHunk.lines.push({
+//               type: "REMOVED",
+//               n: oldLineStart + k,
+//               parts: currentRemovedLine.parts,
+//             });
+//             currentRemovedLine = { parts: [] };
+//           }
+//           if (currentAddedLine.parts.length > 0) {
+//             currentHunk.lines.push({
+//               type: "ADDED",
+//               n: newLineStart + k,
+//               parts: currentAddedLine.parts,
+//             });
+//             currentAddedLine = { parts: [] };
+//           }
+//         }
+//       }
+//       currentFile.hunks.push(currentHunk);
+//     }
+//     files.push(currentFile);
+//   }
+
+//   return files;
+// }
+
+// export function parseNewFileDiff(diffLines: string[]): File {
+//   const plusLine = diffLines.find((line) => line.startsWith("+++"));
+//   const minusLine = diffLines.find((line) => line.startsWith("---"));
+
+//   if (!plusLine || minusLine) {
+//     const partialFile: PartialFile = {
+//       status: "ADDED",
+//       displayPaths: [],
+//       hunks: [],
+//     };
+//     const diffLine = diffLines.find((line) => line.startsWith("diff --git a/"));
+//     if (!diffLine) {
+//       throw new Error("Neither +++/--- lines nor diff line in added file diff");
+//     }
+//     const fileName = diffLine.split("b/").slice(1).join("b/");
+//     partialFile.oldPath = null;
+//     partialFile.newPath = fileName;
+//     partialFile.displayPaths = [fileName];
+//     partialFile.hunks = [];
+//     const fileInfos = getFileInfos("dev/null", fileName);
+
+//     return {
+//       displayPaths: fileInfos.displayPaths,
+//       hunks: partialFile.hunks,
+//       oldPath: fileInfos.oldPath,
+//       newPath: fileInfos.newPath,
+//       status: fileInfos.status,
+//     };
+//   }
+
+//   return parseDiff(diffLines.join("\n"))[0];
+// }
+
+type ChangedFileStatus =
+  | "REMOVED"
+  | "MODIFIED"
+  | "UNTRACKED"
+  | "MOVED"
+  | "ADDED";
+
+export function parseStatus(statusLines: string[]): StatusEntry[] {
+  const files: Record<string, StatusEntry> = {};
+  for (let i = 0; i < statusLines.length; i++) {
+    const line = statusLines[i];
+    let staged = false;
+    let modType: ChangedFileStatus;
+    const indexStatus = line.charAt(0);
+    const treeStatus = line.charAt(1);
+
+    if (treeStatus === " ") {
+      staged = true;
+    }
+
+    if (indexStatus === "A") {
+      if (treeStatus !== "D") {
+        modType = "ADDED";
+      } else {
+        // File added in the staging area
+        // but removed in the tree, not displaying the diff
+        continue;
+      }
+    } else if (indexStatus === "?" && treeStatus === "?") {
+      modType = "UNTRACKED";
+    } else if (indexStatus === "D" || treeStatus === "D") {
+      modType = "REMOVED";
+    } else if (treeStatus === "M" || indexStatus === "M") {
+      modType = "MODIFIED";
+    } else if (treeStatus === "R" || indexStatus === "R") {
+      modType = "MOVED";
+    } else if (treeStatus === "C" || indexStatus === "C") {
+      modType = "MOVED";
+    } else {
+      console.warn(`Unexpected staging/tree on status line: ${line}`);
+      continue;
+    }
+
+    const path = line.slice(3).trim();
+    if (path in files) {
+      if (modType === "UNTRACKED" && files[path].status === "REMOVED") {
+        // Removed in the staging area but re-added in the tree
+        files[path].status = "MODIFIED";
+      }
+    } else {
+      files[path] = {
+        path,
+        status: modType === "UNTRACKED" ? "ADDED" : modType,
+        staged,
+      };
+    }
+  }
+  return Object.values(files);
 }
 
-function finalizeFile(file: PartialFile): DiffFile {
-  let status: DiffFileStatus;
+export function parseFileNumStat(line: string): number[] {
+  const matches = line.trimEnd().match(/^([\d-]+)\s+([\d-]+)\s+(.+)$/);
+  if (!matches) {
+    console.log({ line });
+    throw new Error(`Numstat line unexpectedly formed: ${line}`);
+  }
+
+  const [, added, removed, _] = matches;
+  return [parseInt(added), parseInt(removed)];
+}
+
+export function parseFileDiff(
+  diff: string,
+  file: FileInfos,
+  contextLinesCount: number = 3,
+): File {
+  const fileMatch = diff.match(/diff --git a\/(.+?) b\/(.+$)/m);
+  if (!fileMatch) {
+    throw new Error(`Diff file line unexpectedly formed: ${diff}`);
+  }
+  const hunks: Hunk[] = [];
+  const [, oldPath, newPath] = fileMatch;
+  const rawHunks = diff.split(/(^@@ -\d+,\d+ \+\d+,\d+ @@)/m).slice(1);
+
+  for (let i = 0; i < rawHunks.length; i += 2) {
+    const rawHunk = rawHunks[i];
+    const rawHunkDiff = rawHunks[i + 1];
+    const hunkMatch = rawHunk.match(/@@ -(\d+),(\d+) \+(\d+),(\d+) @@/m);
+    if (!hunkMatch) {
+      throw new Error(`Diff hunk line unexpectedly formed: ${rawHunk}`);
+    }
+
+    const [
+      ,
+      rawOldLineStart,
+      rawOldLineCount,
+      rawNewLineStart,
+      rawNewLineCount,
+    ] = hunkMatch;
+
+    const oldLineStart = parseInt(rawOldLineStart);
+    const oldLineCount = parseInt(rawOldLineCount);
+    const newLineStart = parseInt(rawNewLineStart);
+    const newLineCount = parseInt(rawNewLineCount);
+
+    const currentHunk: Hunk = {
+      oldLineCount,
+      oldLineStart,
+      newLineCount,
+      newLineStart,
+      lines: [],
+    };
+
+    let currentAddedLine: PartialChangedLine = { parts: [] };
+    let currentRemovedLine: PartialChangedLine = { parts: [] };
+
+    const rawLines = rawHunkDiff.split("~");
+    for (let k = 0; k < rawLines.length; k++) {
+      const diffLine = rawLines[k];
+      const oldLineEnd = oldLineStart + oldLineCount;
+      const newLineEnd = newLineStart + newLineCount;
+      const hasLeadingSpaceForContext =
+        oldLineStart > contextLinesCount && newLineStart > contextLinesCount;
+      const hasTrailingSpaceForContext =
+        newLineEnd < file.newLineCount - contextLinesCount &&
+        oldLineEnd < file.oldLineCount - contextLinesCount;
+
+      if (
+        (k < contextLinesCount && hasLeadingSpaceForContext) ||
+        (k > rawLines.length - contextLinesCount && hasTrailingSpaceForContext)
+      ) {
+        currentHunk.lines.push({
+          type: "CONTEXT",
+          content: diffLine.slice(1),
+          oldN: oldLineStart + k,
+          newN: newLineStart + k,
+        });
+      } else {
+        const diffLineParts = diffLine.split("\n");
+        let hasRemovedPart = false;
+        let hasAddedPart = false;
+
+        for (let l = 0; l < diffLineParts.length; l++) {
+          if (diffLineParts[l].startsWith("+")) {
+            hasAddedPart = true;
+          } else if (diffLineParts[l].startsWith("-")) {
+            hasRemovedPart = true;
+          }
+        }
+
+        for (let l = 0; l < diffLineParts.length; l++) {
+          const linePart = diffLineParts[l];
+
+          if (linePart.startsWith("+")) {
+            currentAddedLine.parts.push({
+              type: "DIFF",
+              content: linePart.slice(1),
+            });
+          } else if (linePart.startsWith("-")) {
+            currentRemovedLine.parts.push({
+              type: "DIFF",
+              content: linePart.slice(1),
+            });
+          } else {
+            if (hasAddedPart) {
+              currentAddedLine.parts.push({
+                type: "CONTEXT",
+                content: linePart,
+              });
+            }
+            if (hasRemovedPart) {
+              currentRemovedLine.parts.push({
+                type: "CONTEXT",
+                content: linePart,
+              });
+            }
+          }
+        }
+        if (currentRemovedLine.parts.length > 0) {
+          currentHunk.lines.push({
+            type: "REMOVED",
+            n: oldLineStart + k,
+            parts: currentRemovedLine.parts,
+          });
+          currentRemovedLine = { parts: [] };
+        }
+        if (currentAddedLine.parts.length > 0) {
+          currentHunk.lines.push({
+            type: "ADDED",
+            n: newLineStart + k,
+            parts: currentAddedLine.parts,
+          });
+          currentAddedLine = { parts: [] };
+        }
+      }
+    }
+    hunks.push(currentHunk);
+  }
+
   let displayPaths: string[];
-
-  if (file.oldPath === undefined || file.newPath === undefined) {
-    throw new Error("Unexpectedly incomplete PartialFile");
-  }
-
-  if (file.oldPath === null) {
-    status = "ADDED";
-    displayPaths = [file.newPath!];
-  } else if (file.newPath === null) {
-    status = "REMOVED";
-    displayPaths = [file.oldPath];
-  } else if (file.oldPath === file.newPath) {
-    status = "MODIFIED";
-    displayPaths = [file.newPath];
+  if (file.status === "ADDED") {
+    displayPaths = [newPath];
+  } else if (file.status === "REMOVED") {
+    displayPaths = [oldPath];
+  } else if (file.status === "MOVED") {
+    displayPaths = [oldPath, newPath];
   } else {
-    status = "MOVED";
-    displayPaths = [file.oldPath, file.newPath];
+    displayPaths = [newPath];
   }
-
-  return {
-    status,
-    displayPaths,
-    oldPath: file.oldPath!,
-    newPath: file.newPath!,
-    hunks: file.hunks,
-  };
+  return { ...file, hunks, displayPaths };
 }
 
-function createEmptyHunk(): PartialHunk {
-  return {
-    beforeDiff: [],
-    afterDiff: [],
+export function getOneSidedDiff(
+  fileContents: string,
+  file: FileInfos,
+  status: "ADDED" | "REMOVED",
+): File {
+  const lines = fileContents.split("\n");
+  const hunk: Hunk = {
+    oldLineCount: 0,
+    oldLineStart: 0,
+    newLineCount: lines.length,
+    newLineStart: 1,
     lines: [],
   };
-}
-
-function createEmptyLine(n: number): DiffLine {
-  return {
-    n,
-    parts: [],
-  };
-}
-
-function finalizeHunk(hunk: PartialHunk): DiffHunk {
-  let addedPartsCount = 0;
-  for (const addedLine of hunk.afterDiff) {
-    for (const addedLinePart of addedLine.parts) {
-      if (addedLinePart.status === "ADDED") {
-        addedPartsCount += 1;
-        break;
-      }
-      if (addedPartsCount > 0) {
-        break;
-      }
-    }
-  }
-  if (addedPartsCount === 0) {
-    hunk.afterDiff = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    hunk.lines.push({
+      type: status,
+      n: i + 1,
+      parts: [{ type: "DIFF", content: line }],
+    });
   }
 
-  let removedPartsCount = 0;
-  for (const removedLine of hunk.beforeDiff) {
-    for (const removedLinePart of removedLine.parts) {
-      if (removedLinePart.status === "REMOVED") {
-        removedPartsCount += 1;
-        break;
-      }
-      if (removedPartsCount > 0) {
-        break;
-      }
-    }
-  }
-  if (removedPartsCount === 0) {
-    hunk.beforeDiff = [];
-  }
-
-  return {
-    enclosingBlock: hunk.enclosingBlock,
-    oldLineCount: hunk.oldLineCount!,
-    oldLineStart: hunk.oldStart!,
-    newLineCount: hunk.newLineCount!,
-    newLineStart: hunk.newStart!,
-    beforeDiff: hunk.beforeDiff,
-    afterDiff: hunk.afterDiff,
-  };
-}
-
-export function parseDiff(diffLines: string[]): DiffFile[] {
-  const files: DiffFile[] = [];
-
-  let currentFile: PartialFile | undefined;
-  let currentHunk: PartialHunk | undefined;
-  let currentAfterLine: DiffLine | undefined;
-  let currentBeforeLine: DiffLine | undefined;
-  let currentAfterLineNumber: number | undefined;
-  let currentBeforeLineNumber: number | undefined;
-  let processedLineParts: Set<"REMOVED" | "ADDED" | "UNCHANGED"> = new Set();
-
-  const flushLine = (lineType: "AFTER" | "BEFORE") => {
-    if (lineType === "AFTER" && currentAfterLine && currentHunk) {
-      currentAfterLineNumber = currentAfterLine.n;
-      currentHunk.afterDiff.push(currentAfterLine);
-      currentAfterLine = createEmptyLine(currentAfterLineNumber + 1);
-    } else if (lineType === "BEFORE" && currentBeforeLine && currentHunk) {
-      currentBeforeLineNumber = currentBeforeLine.n;
-      currentHunk.beforeDiff.push(currentBeforeLine);
-      currentBeforeLine = createEmptyLine(currentBeforeLineNumber + 1);
-    }
-  };
-
-  const flushHunk = () => {
-    flushLine("BEFORE");
-    flushLine("AFTER");
-    if (currentHunk && currentFile) {
-      currentFile.hunks.push(finalizeHunk(currentHunk));
-      currentHunk = undefined;
-    }
-  };
-
-  const flushFile = () => {
-    flushHunk();
-    if (currentFile) {
-      files.push(finalizeFile(currentFile));
-      currentFile = undefined;
-    }
-  };
-
-  for (let i = 0; i < diffLines.length; i++) {
-    const currentDiffLine = diffLines[i];
-
-    // New file
-    if (currentDiffLine.startsWith("diff --git")) {
-      flushFile();
-
-      currentFile = createEmptyFile();
-      const diffLineParts = currentDiffLine.split(" ");
-      const oldPath = diffLineParts[2].slice(2);
-      const newPath = diffLineParts[3].slice(2);
-      currentFile.oldPath = oldPath === "/dev/null" ? null : oldPath;
-      currentFile.newPath = newPath === "/dev/null" ? null : newPath;
-    } else if (currentDiffLine.startsWith("index ")) {
-      continue;
-    }
-    // New hunk
-    else if (currentDiffLine.startsWith("@@")) {
-      flushHunk();
-      currentHunk = createEmptyHunk();
-
-      const lineParts = currentDiffLine.split("@@");
-      const hunkInfos = lineParts[1].trim();
-      const [beforeLines, afterLines] = hunkInfos.split(" ");
-
-      if (beforeLines.includes(",")) {
-        currentHunk.oldStart = parseInt(beforeLines.split(",")[0].slice(1));
-        currentHunk.oldLineCount = parseInt(beforeLines.split(",")[1]);
-      } else {
-        currentHunk.oldStart = parseInt(beforeLines.split(",")[0].slice(1));
-        currentHunk.oldLineCount = 1;
-      }
-
-      if (afterLines.includes(",")) {
-        currentHunk.newStart = parseInt(afterLines.split(",")[0].slice(1));
-        currentHunk.newLineCount = parseInt(afterLines.split(",")[1]);
-      } else {
-        currentHunk.newStart = parseInt(afterLines.split(",")[0].slice(1));
-        currentHunk.newLineCount = 1;
-      }
-
-      if (lineParts[2].trim() !== "") {
-        currentHunk.enclosingBlock = lineParts[2].trim();
-      }
-
-      currentBeforeLine = createEmptyLine(currentHunk.oldStart);
-      currentAfterLine = createEmptyLine(currentHunk.newStart);
-    }
-    // New line
-    else if (currentDiffLine === "~") {
-      const lastDiffLine = diffLines[i - 1];
-      const nextDiffLine = diffLines[i + 1];
-
-      if (lastDiffLine?.startsWith("-")) {
-        flushLine("BEFORE");
-      }
-
-      if (lastDiffLine?.startsWith("+")) {
-        flushLine("AFTER");
-      }
-
-      if (lastDiffLine?.startsWith(" ")) {
-        flushLine("BEFORE");
-        flushLine("AFTER");
-      }
-
-      if (nextDiffLine?.startsWith(" ")) {
-        flushLine("BEFORE");
-        flushLine("AFTER");
-      }
-
-      processedLineParts = new Set();
-      continue;
-    }
-    // Removed line part
-    else if (currentDiffLine.startsWith("-")) {
-      if (currentBeforeLine) {
-        const content = currentDiffLine.slice(1);
-        processedLineParts.add("REMOVED");
-        currentBeforeLine.parts.push({
-          content,
-          status: "REMOVED",
-        });
-      }
-    }
-    // Added line part
-    else if (currentDiffLine.startsWith("+")) {
-      if (currentAfterLine) {
-        const content = currentDiffLine.slice(1);
-        processedLineParts.add("ADDED");
-        currentAfterLine.parts.push({
-          content,
-          status: "ADDED",
-        });
-      }
-    }
-    // Unchanged line part
-    else {
-      processedLineParts.add("UNCHANGED");
-      if (currentBeforeLine) {
-        currentBeforeLine.parts.push({
-          content: currentDiffLine.slice(1),
-          status: "UNCHANGED",
-        });
-      }
-      if (currentAfterLine) {
-        currentAfterLine.parts.push({
-          content: currentDiffLine.slice(1),
-          status: "UNCHANGED",
-        });
-      }
-    }
-  }
-
-  flushFile();
-  return files;
-}
-
-export function getDiffFilePath(file: DiffFile): string {
-  if (["ADDED", "MOVED", "MODIFIED"].includes(file.status)) {
-    if (!file.newPath) {
-      throw new Error("newPath unexpectedly null on ADDED/MOVED/MODIFIED file");
-    }
-    return file.newPath;
-  } else {
-    if (!file.oldPath) {
-      throw new Error("oldPath unexpectedly null on REMOVED file");
-    }
-    return file.oldPath;
-  }
-}
-
-export function parseStatus(statusLines: string[]): string[] {
-  const addedFiles = [];
-
-  for (let i = 0; i < statusLines.length; i++) {
-    if (statusLines[i].startsWith("??")) {
-      addedFiles.push(statusLines[i].split(" ").slice(1).join(" "));
-    }
-  }
-
-  return addedFiles;
-}
-
-export function parseNewFileDiff(diffLines: string[]): DiffFile {
-  const plusLine = diffLines.find((line) => line.startsWith("+++"));
-  const minusLine = diffLines.find((line) => line.startsWith("---"));
-
-  if (!plusLine || minusLine) {
-    const partialFile: PartialFile = {
-      status: "ADDED",
-      displayPaths: [],
-      hunks: [],
-    };
-    const diffLine = diffLines.find((line) => line.startsWith("diff --git a/"));
-    if (!diffLine) {
-      throw new Error("Neither +++/--- lines not diff line in added file diff");
-    }
-    const fileName = diffLine.split("b/").slice(1).join("b/");
-    partialFile.oldPath = null;
-    partialFile.newPath = fileName;
-    partialFile.displayPaths = [fileName];
-    partialFile.hunks = [];
-    return finalizeFile(partialFile);
-  }
-
-  return parseDiff(diffLines)[0];
+  return { ...file, displayPaths: [file.path], hunks: [hunk] };
 }

@@ -1,7 +1,7 @@
 import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
-import { DiffFile } from "../../../diff/domain/entities.js";
-import { parseDiff } from "../../../diff/domain/services.js";
+import { File } from "../../../diff/domain/entities.js";
+// import { parseDiff } from "../../../diff/domain/services-2.js";
 import { Commit } from "../../domain/entities.js";
 import { parseHistory } from "../../domain/services.js";
 import { HistoryPaginationDto } from "../../dto/history-pagination.js";
@@ -41,7 +41,7 @@ export class GetHistory {
       this.eventEmitter,
     );
     const history = parseHistory(logLines);
-    const commitsWithDiff: (Commit & { diff: DiffFile[] })[] = [];
+    const commitsWithDiff: (Commit & { diff: File[] })[] = [];
 
     for (let i = 0; i < history.length; i++) {
       const commit = history[i];
@@ -50,8 +50,8 @@ export class GetHistory {
         repositoryPath,
         commit.hash,
       );
-      const commitDiffFiles = parseDiff(commitDiffLines.slice(6));
-      commitsWithDiff.push({ ...commit, diff: commitDiffFiles });
+      // const commitDiffFiles = parseDiff(commitDiffLines.slice(6).join("\n"));
+      // commitsWithDiff.push({ ...commit, diff: commitDiffFiles });
     }
 
     return {

@@ -1,4 +1,4 @@
-import { DiffFile, getFilePath } from "../../domain/diff";
+import { File } from "../../domain/diff";
 import { RepositorySelectionDto } from "../../dto/repo-selection";
 import { IEventBus } from "../i-event-bus";
 import { IGitService } from "../i-git-service";
@@ -11,13 +11,11 @@ export class ToggleFileStaged {
 
   async execute(
     repositoryPath: string,
-    file: DiffFile,
+    file: File,
     fileIndex: number,
     repositorySelection: RepositorySelectionDto,
   ): Promise<void> {
-    await this.gitService.toggleFilesStaged(repositoryPath, [
-      getFilePath(file),
-    ]);
+    await this.gitService.toggleFilesStaged(repositoryPath, [file.path]);
     const dto = await this.gitService.selectRepoFromSaved(repositoryPath);
     const previousStaging = repositorySelection.diff[fileIndex].staged;
     repositorySelection.diff[fileIndex].staged = !previousStaging;

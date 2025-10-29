@@ -1,4 +1,4 @@
-import { Branch, ChangedFile } from "../domain/entities.js";
+import { Branch } from "../domain/entities.js";
 import { RepositoryReferences } from "../dto/reference.js";
 import { Remote } from "../dto/remote.js";
 
@@ -16,8 +16,6 @@ export interface RepositoryGitRunner {
   getCurrentRemote(path: string): Promise<Remote>;
 
   getCurrentBranch(path: string): Promise<string>;
-
-  getModifiedFiles(path: string): Promise<ChangedFile[]>;
 
   isValidRepository(path: string): Promise<boolean>;
 

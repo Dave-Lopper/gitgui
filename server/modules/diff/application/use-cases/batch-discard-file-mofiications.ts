@@ -15,10 +15,13 @@ export class BatchDiscardFileModifications {
 
   async execute(repositoryPath: string, filePaths: string[]): Promise<void> {
     const repoStatusLines = await this.gitRunner.getRepoStatus(repositoryPath);
-    const addedUntrackedFiles = parseStatus(repoStatusLines);
+    const statusEntries = parseStatus(repoStatusLines);
+    const addedUntrackedEntries = statusEntries
+      .filter((entry) => entry.status === "ADDED")
+      .map((entry) => entry.path);
 
     for (let i = 0; i < filePaths.length; i++) {
-      if (addedUntrackedFiles.includes(filePaths[i])) {
+      if (addedUntrackedEntries.includes(filePaths[i])) {
         await this.filesRepository.removeFile(
           path.join(repositoryPath, filePaths[i]),
         );

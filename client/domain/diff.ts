@@ -1,53 +1,46 @@
-const diffFileStatuses = ["ADDED", "REMOVED", "MODIFIED", "MOVED"] as const;
-export type DiffFileStatus = (typeof diffFileStatuses)[number];
-
-const diffLinePartStatus = ["ADDED", "REMOVED", "UNCHANGED"] as const;
-export type DiffLinePartStatus = (typeof diffLinePartStatus)[number];
-
-export type DiffLinePart = {
+export type LinePart = {
+  type: "DIFF" | "CONTEXT";
   content: string;
-  status: DiffLinePartStatus;
 };
 
-export type DiffLine = {
+export type ContextLine = {
   oldN: number;
   newN: number;
-  parts: DiffLinePart[];
+  content: string;
+  type: "CONTEXT";
 };
 
-export type DiffHunk = {
+const lineStatuses = ["ADDED", "REMOVED"] as const;
+export type ChangedLineStatus = (typeof lineStatuses)[number];
+
+export type ChangedLine = {
+  type: ChangedLineStatus;
+  n: number;
+  parts: LinePart[];
+};
+
+export type Hunk = {
   enclosingBlock?: string;
-  oldLineStart: number;
   oldLineCount: number;
-  newLineStart: number;
+  oldLineStart: number;
   newLineCount: number;
-  beforeDiff: DiffLine[];
-  afterDiff: DiffLine[];
+  newLineStart: number;
+  lines: (ChangedLine | ContextLine)[];
 };
 
-export type DiffFile = {
-  oldPath: string | null;
-  newPath: string | null;
-  status: DiffFileStatus;
-  displayPaths: string[];
-  hunks: DiffHunk[];
+const fileStatuses = ["ADDED", "REMOVED", "MODIFIED", "MOVED"] as const;
+export type FileStatus = (typeof fileStatuses)[number];
+
+export type File = {
+  addedLines: number;
+  newLineCount: number;
+  oldLineCount: number;
+  path: string;
+  removedLines: number;
   staged: boolean;
+  status: FileStatus;
+  hunks: Hunk[];
+  displayPaths: string[];
 };
 
-export function getFilePath(file: DiffFile): string {
-  if (["ADDED", "MODIFIED", "MOVED"].includes(file.status)) {
-    if (!file.newPath) {
-      throw new Error(
-        "Unexepctedly missing newPath on an ADDED/MODIFIED/MOVED file",
-      );
-    }
-    return file.newPath;
-  } else {
-    if (!file.newPath) {
-      throw new Error("Unexepctedly missing oldPath on an REMOVED file");
-    }
-    return file.oldPath!;
-  }
-}
-
-export type PastDiffFile = DiffFile & { staged: boolean };
+export type PastDiffFile = File & { staged: boolean };

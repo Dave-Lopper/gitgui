@@ -1,33 +1,53 @@
-const diffFileStatuses = ["ADDED", "REMOVED", "MODIFIED", "MOVED"] as const;
-export type DiffFileStatus = (typeof diffFileStatuses)[number];
-
-const diffLinePartStatus = ["ADDED", "REMOVED", "UNCHANGED"] as const;
-export type DiffLinePartStatus = (typeof diffLinePartStatus)[number];
-
-export type DiffLinePart = {
+export type LinePart = {
+  type: "DIFF" | "CONTEXT";
   content: string;
-  status: DiffLinePartStatus;
 };
 
-export type DiffLine = {
+export type ContextLine = {
+  oldN: number;
+  newN: number;
+  content: string;
+  type: "CONTEXT";
+};
+
+const lineStatuses = ["ADDED", "REMOVED"] as const;
+export type ChangedLineStatus = (typeof lineStatuses)[number];
+
+export type ChangedLine = {
+  type: ChangedLineStatus;
   n: number;
-  parts: DiffLinePart[];
+  parts: LinePart[];
 };
 
-export type DiffHunk = {
+export type Hunk = {
   enclosingBlock?: string;
-  oldLineStart: number;
   oldLineCount: number;
-  newLineStart: number;
+  oldLineStart: number;
   newLineCount: number;
-  beforeDiff: DiffLine[];
-  afterDiff: DiffLine[];
+  newLineStart: number;
+  lines: (ChangedLine | ContextLine)[];
 };
 
-export type DiffFile = {
-  oldPath: string | null;
-  newPath: string | null;
-  status: DiffFileStatus;
+const fileStatuses = ["ADDED", "REMOVED", "MODIFIED", "MOVED"] as const;
+export type FileStatus = (typeof fileStatuses)[number];
+
+export type StatusEntry = {
+  path: string;
+  status: FileStatus;
+  staged: boolean;
+};
+
+export type FileInfos = {
+  addedLines: number;
+  newLineCount: number;
+  oldLineCount: number;
+  path: string;
+  removedLines: number;
+  staged: boolean;
+  status: FileStatus;
+};
+
+export type File = FileInfos & {
+  hunks: Hunk[];
   displayPaths: string[];
-  hunks: DiffHunk[];
 };
