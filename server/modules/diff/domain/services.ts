@@ -1,5 +1,7 @@
 import {
+  ChangedLine,
   ChangedLineStatus,
+  ContextLine,
   File,
   FileInfos,
   FileStatus,
@@ -322,7 +324,6 @@ export function parseStatus(statusLines: string[]): StatusEntry[] {
 export function parseFileNumStat(line: string): number[] {
   const matches = line.trimEnd().match(/^([\d-]+)\s+([\d-]+)\s+(.+)$/);
   if (!matches) {
-    console.log({ line });
     throw new Error(`Numstat line unexpectedly formed: ${line}`);
   }
 
@@ -375,7 +376,23 @@ export function parseFileDiff(
     let currentAddedLine: PartialChangedLine = { parts: [] };
     let currentRemovedLine: PartialChangedLine = { parts: [] };
 
-    const rawLines = rawHunkDiff.split("~");
+    const flushLine = (type: "ADDED" | "REMOVED", n: number) => {
+      currentHunk.lines.push({
+        type,
+        n,
+        parts:
+          type === "REMOVED"
+            ? currentRemovedLine.parts
+            : currentAddedLine.parts,
+      });
+      if (type === "REMOVED") {
+        currentRemovedLine = { parts: [] };
+      } else {
+        currentAddedLine = { parts: [] };
+      }
+    };
+
+    const rawLines = rawHunkDiff.split("~").slice(1);
     for (let k = 0; k < rawLines.length; k++) {
       const diffLine = rawLines[k];
       const oldLineEnd = oldLineStart + oldLineCount;
@@ -397,7 +414,7 @@ export function parseFileDiff(
           newN: newLineStart + k,
         });
       } else {
-        const diffLineParts = diffLine.split("\n");
+        const diffLineParts = diffLine.split("\n").filter((part) => part);
         let hasRemovedPart = false;
         let hasAddedPart = false;
 
@@ -437,21 +454,267 @@ export function parseFileDiff(
             }
           }
         }
-        if (currentRemovedLine.parts.length > 0) {
-          currentHunk.lines.push({
-            type: "REMOVED",
-            n: oldLineStart + k,
-            parts: currentRemovedLine.parts,
-          });
-          currentRemovedLine = { parts: [] };
+
+        const prevLineParts = rawLines[k - 1]
+          ?.split("\n")
+          .filter((part) => part.length > 0);
+
+        if (currentRemovedLine.parts.length > 0 && hasRemovedPart) {
+          flushLine("REMOVED", oldLineStart + k);
         }
-        if (currentAddedLine.parts.length > 0) {
-          currentHunk.lines.push({
-            type: "ADDED",
-            n: newLineStart + k,
-            parts: currentAddedLine.parts,
+        if (currentAddedLine.parts.length > 0 && hasAddedPart) {
+          flushLine("ADDED", newLineStart + k);
+        }
+      }
+    }
+    hunks.push(currentHunk);
+  }
+
+  let displayPaths: string[];
+  if (file.status === "ADDED") {
+    displayPaths = [newPath];
+  } else if (file.status === "REMOVED") {
+    displayPaths = [oldPath];
+  } else if (file.status === "MOVED") {
+    displayPaths = [oldPath, newPath];
+  } else {
+    displayPaths = [newPath];
+  }
+  return { ...file, hunks, displayPaths };
+}
+
+type HunkPart = {
+  addedLines: ChangedLine[];
+  removedLines: ChangedLine[];
+  trailingContext: ContextLine[];
+};
+
+export function parseFileDiff2(
+  diff: string,
+  file: FileInfos,
+  contextLinesCount: number = 3,
+): File {
+  const fileMatch = diff.match(/diff --git a\/(.+?) b\/(.+$)/m);
+  if (!fileMatch) {
+    throw new Error(`Diff file line unexpectedly formed: ${diff}`);
+  }
+  const hunks: Hunk[] = [];
+  const [, oldPath, newPath] = fileMatch;
+  const rawHunks = diff.split(/(^@@ -\d+,\d+ \+\d+,\d+ @@)/m).slice(1);
+
+  for (let i = 0; i < rawHunks.length; i += 2) {
+    const rawHunk = rawHunks[i];
+    const rawHunkDiff = rawHunks[i + 1];
+    const hunkMatch = rawHunk.match(/@@ -(\d+),(\d+) \+(\d+),(\d+) @@/m);
+    if (!hunkMatch) {
+      throw new Error(`Diff hunk line unexpectedly formed: ${rawHunk}`);
+    }
+
+    const [
+      ,
+      rawOldLineStart,
+      rawOldLineCount,
+      rawNewLineStart,
+      rawNewLineCount,
+    ] = hunkMatch;
+
+    const oldLineStart = parseInt(rawOldLineStart);
+    const oldLineCount = parseInt(rawOldLineCount);
+    const newLineStart = parseInt(rawNewLineStart);
+    const newLineCount = parseInt(rawNewLineCount);
+
+    const currentHunk: Hunk = {
+      oldLineCount,
+      oldLineStart,
+      newLineCount,
+      newLineStart,
+      lines: [],
+    };
+    let currentHunkPart: HunkPart = {
+      addedLines: [],
+      removedLines: [],
+      trailingContext: [],
+    };
+
+    const flushHunkPart = () => {
+      // console.log(
+      //   "FLUSHING HUNK PART",
+      //   "ADDED",
+      //   currentHunkPart.addedLines,
+      //   "REMOVED",
+      //   currentHunkPart.removedLines,
+      //   "CONTEXT",
+      //   currentHunkPart.trailingContext,
+      // );
+      currentHunk.lines = [
+        ...currentHunk.lines,
+        ...currentHunkPart.removedLines,
+        ...currentHunkPart.addedLines,
+        ...currentHunkPart.trailingContext,
+      ];
+
+      currentHunkPart = {
+        addedLines: [],
+        removedLines: [],
+        trailingContext: [],
+      };
+    };
+
+    const addLinePart = (
+      mode: "ADDED" | "REMOVED",
+      partType: "CONTEXT" | "DIFF",
+      n: number,
+      content: string,
+    ) => {
+      if (mode === "ADDED") {
+        const addedLineIndex =
+          currentHunkPart.addedLines.length > 0
+            ? currentHunkPart.addedLines.length - 1
+            : 0;
+
+        if (currentHunkPart.addedLines[addedLineIndex]) {
+          currentHunkPart.addedLines[addedLineIndex].parts.push({
+            type: partType,
+            content,
           });
-          currentAddedLine = { parts: [] };
+        } else {
+          currentHunkPart.addedLines[addedLineIndex] = {
+            type: "ADDED",
+            n,
+            parts: [
+              {
+                type: partType,
+                content,
+              },
+            ],
+          };
+        }
+      } else {
+        const removedLineIndex =
+          currentHunkPart.removedLines.length > 0
+            ? currentHunkPart.removedLines.length - 1
+            : 0;
+
+        if (currentHunkPart.removedLines[removedLineIndex]) {
+          currentHunkPart.removedLines[removedLineIndex].parts.push({
+            type: partType,
+            content,
+          });
+        } else {
+          currentHunkPart.removedLines[removedLineIndex] = {
+            type: "REMOVED",
+            n,
+            parts: [
+              {
+                type: partType,
+                content,
+              },
+            ],
+          };
+        }
+      }
+    };
+
+    const rawLines = rawHunkDiff.split("~").slice(1);
+    for (let k = 0; k < rawLines.length; k++) {
+      const diffLine = rawLines[k];
+      const oldLineEnd = oldLineStart + oldLineCount;
+      const newLineEnd = newLineStart + newLineCount;
+      const hasLeadingSpaceForContext =
+        oldLineStart > contextLinesCount && newLineStart > contextLinesCount;
+      const hasTrailingSpaceForContext =
+        newLineEnd < file.newLineCount - contextLinesCount &&
+        oldLineEnd < file.oldLineCount - contextLinesCount;
+
+      if (
+        (k < contextLinesCount && hasLeadingSpaceForContext) ||
+        (k > rawLines.length - contextLinesCount && hasTrailingSpaceForContext)
+      ) {
+        currentHunk.lines.push({
+          type: "CONTEXT",
+          content: diffLine.slice(1),
+          oldN: oldLineStart + k,
+          newN: newLineStart + k,
+        });
+      } else {
+        const diffLineParts = diffLine.split("\n").filter((part) => part);
+        const nextRawLine = rawLines[k + 1];
+        const nextRawLineParts = nextRawLine
+          ?.split("\n")
+          .filter((part) => part);
+
+        let hasRemovedPart = false;
+        let hasAddedPart = false;
+
+        for (let l = 0; l < diffLineParts.length; l++) {
+          if (diffLineParts[l].startsWith("+")) {
+            hasAddedPart = true;
+          } else if (diffLineParts[l].startsWith("-")) {
+            hasRemovedPart = true;
+          }
+        }
+
+        for (let l = 0; l < diffLineParts.length; l++) {
+          const linePart = diffLineParts[l];
+
+          if (hasAddedPart || hasRemovedPart) {
+            if (linePart.startsWith("+")) {
+              addLinePart("ADDED", "DIFF", newLineStart + k, linePart.slice(1));
+            } else if (linePart.startsWith("-")) {
+              addLinePart(
+                "REMOVED",
+                "DIFF",
+                oldLineStart + k,
+                linePart.slice(1),
+              );
+            } else {
+              addLinePart(
+                "ADDED",
+                "CONTEXT",
+                newLineStart + k,
+                linePart.slice(1),
+              );
+              addLinePart(
+                "REMOVED",
+                "CONTEXT",
+                oldLineStart + k,
+                linePart.slice(1),
+              );
+            }
+          } else {
+            currentHunkPart.trailingContext.push({
+              type: "CONTEXT",
+              content: linePart.slice(1),
+              oldN: oldLineStart + k,
+              newN: newLineStart + k,
+            });
+          }
+        }
+
+        const lastLinePartIndex =
+          diffLineParts.length > 0 ? diffLineParts.length - 1 : 0;
+        if (diffLineParts[lastLinePartIndex]?.startsWith("+")) {
+          currentHunkPart.addedLines.push({
+            type: "ADDED",
+            parts: [],
+            n: newLineStart + k + 1,
+          });
+        }
+        if (diffLineParts[lastLinePartIndex]?.startsWith("-")) {
+          currentHunkPart.removedLines.push({
+            type: "REMOVED",
+            parts: [],
+            n: oldLineStart + k + 1,
+          });
+        }
+
+        if (
+          nextRawLineParts?.length > 0 &&
+          !nextRawLineParts?.some(
+            (part) => part.startsWith("+") || part.startsWith("-"),
+          )
+        ) {
+          flushHunkPart();
         }
       }
     }

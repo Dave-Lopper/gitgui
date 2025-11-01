@@ -9,6 +9,8 @@ export interface FilesRepository {
 
   getLastModifiedTime(filePath: string): Promise<Date>;
 
+  isFile(path: string): Promise<boolean>;
+
   pathExists(path: string): Promise<boolean>;
 
   pathsExist(paths: string[]): Promise<boolean>;

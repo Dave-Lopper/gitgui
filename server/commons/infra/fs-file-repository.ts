@@ -22,6 +22,11 @@ export class FsFilesRepository implements FilesRepository {
     return fileContent.split("\n").length;
   }
 
+  async isFile(path: string): Promise<boolean> {
+    const stats = await fs.stat(path);
+    return stats.isFile();
+  }
+
   async endsWithNewLine(path: string): Promise<boolean> {
     const stats = await fs.stat(path);
     if (stats.size === 0) {

@@ -19,13 +19,13 @@ export default function DiffViewer({ diff }: { diff: File }) {
   );
 
   return (
-    <div className="m-0 flex h-full w-full flex-col items-start justify-start p-4 bg-white select-text overflow-auto">
-      <div className="mt-2 flex flex-col items-start justify-start">
-        <div className="mt-4 flex flex-col items-start">
-          <div className="mt-2 flex flex-col items-start">
+    <div className="m-0 flex h-full w-full flex-col items-start justify-start bg-white select-text overflow-auto font-[consolas]">
+      <div className="flex flex-col items-start justify-start w-full">
+        <div className=" flex flex-col items-start w-full">
+          <div className="flex flex-col items-start w-full">
             {diff.hunks.map((hunk) => (
-              <div className="mt-2 flex flex-col items-start">
-                <div className="text-black">
+              <div className="mb-2 flex flex-col items-start w-full">
+                <div className="text-black bg-retro retro-borders border-2 px-2 py-[2px] w-full font-retro">
                   @@ {hunk.oldLineStart},{hunk.oldLineStart + hunk.oldLineCount}{" "}
                   -&gt; {hunk.newLineStart},
                   {hunk.newLineStart + hunk.newLineCount} @@
@@ -33,22 +33,26 @@ export default function DiffViewer({ diff }: { diff: File }) {
                 {hunk.enclosingBlock && (
                   <span className="text-black">{hunk.enclosingBlock}</span>
                 )}
-                <div className="flex flex-col items-start mb-2">
+                <div className="flex flex-col items-start mb-2 w-full">
                   {hunk.lines.map((line) => (
-                    <div className="flex items-start font-semibold text-white LINE">
+                    <div className="flex items-start font-semibold text-white LINE w-full">
                       {line.type === "CONTEXT" ? (
                         <span className="whitespace-pre text-black">
                           {line.content}
                         </span>
                       ) : (
-                        <div className={`flex ${diffColors[line.type].bg}`}>
+                        <div
+                          className={`flex w-full ${diffColors[line.type].bg}`}
+                        >
                           {line.parts.map((part) => (
                             <span
-                              className={
-                                part.type === "DIFF"
-                                  ? diffColors[line.type].highlight
-                                  : ""
-                              }
+                              className={`
+                                ${
+                                  part.type === "DIFF"
+                                    ? diffColors[line.type].highlight
+                                    : ""
+                                } whitespace-pre
+                              `}
                             >
                               {part.content}
                             </span>
@@ -73,32 +77,6 @@ export default function DiffViewer({ diff }: { diff: File }) {
                         })} */}
                     </div>
                   ))}
-                </div>
-
-                <div className="flex flex-col items-start flex-center bg-emerald-400 mb-2">
-                  {/* {hunk.afterDiff &&
-                    hunk.afterDiff.map((line) => (
-                      <div className="flex items-start font-semibold text-white LINE">
-                        <div className="flex">
-                          {line.parts.map((part: any) => {
-                            if (part.status === "UNCHANGED") {
-                              return (
-                                <span className="whitespace-pre-wrap">
-                                  {part.content}
-                                </span>
-                              );
-                            }
-                            if (part.status === "ADDED") {
-                              return (
-                                <span className="bg-green-600 whitespace-pre-wrap">
-                                  {part.content}
-                                </span>
-                              );
-                            }
-                          })}
-                        </div>
-                      </div>
-                    ))} */}
                 </div>
               </div>
             ))}

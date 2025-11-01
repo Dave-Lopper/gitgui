@@ -63,7 +63,6 @@ export class GitCliRunner implements GitRunner {
       splitLines: validatedSplitLines,
       ...options,
     });
-
     if (!validatedExpectedCodes.includes(res.exitCode)) {
       throw new GitError(
         res.exitCode,

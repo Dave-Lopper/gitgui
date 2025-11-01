@@ -55,6 +55,7 @@ export class DiffCliGitRunner extends GitCliRunner implements DiffGitRunner {
       args.push("--cached");
     }
     args.push(filePath);
+
     const result = await this.safeRun(
       "git",
       args,
