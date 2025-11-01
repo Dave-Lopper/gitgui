@@ -5,7 +5,21 @@ export interface CommitGitRunner {
 
   getCommitDiff(repositoryPath: string, commitHash: string): Promise<string[]>;
 
-  getCommitStatus(repositoryPath: string): Promise<string[]>;
+  getCommitFileDiff(
+    repositoryPath: string,
+    commitHash: string,
+    filePath: string,
+  ): Promise<string>;
+
+  getCommitFileStats(
+    repositoryPath: string,
+    commitHash: string,
+    filePath: string,
+  ): Promise<string>;
+
+  getCommitFiles(repositoryPath: string, commitHash: string): Promise<string[]>;
+
+  getTreeStatus(repositoryPath: string): Promise<string[]>;
 
   getCommitsCount(repositoryPath: string): Promise<string[]>;
 

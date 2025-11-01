@@ -35,7 +35,52 @@ export class CommitGitCliRunner
     );
   }
 
-  async getCommitStatus(repositoryPath: string): Promise<string[]> {
+  async getCommitFileStats(
+    repositoryPath: string,
+    commitHash: string,
+    filePath: string,
+  ): Promise<string> {
+    return await this.safeRun(
+      "git",
+      ["--no-pager", "show", "--numstat", commitHash, "--", filePath],
+      { cwd: repositoryPath },
+      false,
+    );
+  }
+
+  async getCommitFileDiff(
+    repositoryPath: string,
+    commitHash: string,
+    filePath: string,
+  ): Promise<string> {
+    return await this.safeRun(
+      "git",
+      [
+        "--no-pager",
+        "show",
+        commitHash,
+        "--no-color",
+        "--word-diff=porcelain",
+        "--",
+        filePath,
+      ],
+      { cwd: repositoryPath },
+      false,
+    );
+  }
+
+  async getCommitFiles(
+    repositoryPath: string,
+    commitHash: string,
+  ): Promise<string[]> {
+    return await this.safeRun(
+      "git",
+      ["--no-pager", "show", "--no-color", "--name-status", commitHash],
+      { cwd: repositoryPath },
+    );
+  }
+
+  async getTreeStatus(repositoryPath: string): Promise<string[]> {
     return await this.safeRun(
       "git",
       ["--no-pager", "status", "-sb", "--porcelain"],

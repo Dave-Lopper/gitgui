@@ -1,3 +1,4 @@
+import { StatusEntry } from "../../diff/domain/entities.js";
 import { CommitStatusDto } from "../dto/commit-status.js";
 import { Commit } from "./entities.js";
 
@@ -20,7 +21,7 @@ export function parseHistory(lines: string[]): Commit[] {
   return commits;
 }
 
-export function parseCommitStatus(lines: string[]): CommitStatusDto {
+export function parseTreeStatus(lines: string[]): CommitStatusDto {
   const line = lines[0];
 
   if (!line.includes("...")) {
@@ -53,4 +54,31 @@ export function parseCommitStatus(lines: string[]): CommitStatusDto {
     localUnpushed: unpushed,
     remoteUnpulled: unpulled,
   };
+}
+
+export function parseCommitStatus(statusLines: string[]): StatusEntry[] {
+  const entries: StatusEntry[] = [];
+
+  for (let i = 0; i < statusLines.length; i++) {
+    const line = statusLines[i];
+    const rawStatus = line.charAt(0);
+    let status: StatusEntry["status"];
+
+    if (rawStatus === "M") {
+      status = "MODIFIED";
+    } else if (rawStatus === "A") {
+      status = "ADDED";
+    } else if (rawStatus === "D") {
+      status = "REMOVED";
+    } else if (rawStatus === "R" || rawStatus === "C") {
+      status = "MOVED";
+    } else {
+      console.warn(`Unexpected diff status line status: ${line}`);
+      continue;
+    }
+    const path = line.slice(2).trim();
+    entries.push({ status, staged: true, path });
+  }
+
+  return entries;
 }

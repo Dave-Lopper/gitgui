@@ -1,0 +1,5 @@
+Lighten the diff process:
+
+- Check if oldLineCount and newLineCount are really needed now that the parser is okay
+- Work of the commit/tree diff instead of per-file diff
+- See it we can get commit/tree numstat instead of per-file (probably)

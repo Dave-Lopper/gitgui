@@ -268,7 +268,9 @@ type ChangedFileStatus =
   | "MOVED"
   | "ADDED";
 
-export function parseStatus(statusLines: string[]): StatusEntry[] {
+export function parseStatus(
+  statusLines: string[]
+): StatusEntry[] {
   const files: Record<string, StatusEntry> = {};
   for (let i = 0; i < statusLines.length; i++) {
     const line = statusLines[i];
