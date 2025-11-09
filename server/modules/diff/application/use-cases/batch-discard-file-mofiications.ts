@@ -3,7 +3,7 @@ import * as path from "path";
 import { FilesRepository } from "../../../../commons/application/files-repository.js";
 import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
-import { parseStatus } from "../../domain/services.js";
+import { RepoStatusService } from "../../../status/application/services/repo-status.js";
 import { DiffGitRunner } from "../git-runner.js";
 
 export class BatchDiscardFileModifications {
@@ -11,11 +11,11 @@ export class BatchDiscardFileModifications {
     private readonly eventEmitter: IEventEmitter,
     private readonly filesRepository: FilesRepository,
     private readonly gitRunner: DiffGitRunner,
+    private readonly repoStatusService: RepoStatusService,
   ) {}
 
   async execute(repositoryPath: string, filePaths: string[]): Promise<void> {
-    const repoStatusLines = await this.gitRunner.getRepoStatus(repositoryPath);
-    const statusEntries = parseStatus(repoStatusLines);
+    const statusEntries = await this.repoStatusService.execute(repositoryPath);
     const addedUntrackedEntries = statusEntries
       .filter((entry) => entry.status === "ADDED")
       .map((entry) => entry.path);

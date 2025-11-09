@@ -5,10 +5,10 @@ import { ElectronLocalFilePathSelector } from "../../commons/infra/electron-loca
 import { FsFilesRepository } from "../../commons/infra/fs-file-repository.js";
 import { GITENV } from "../../commons/infra/git-env.js";
 import { ShellRunner } from "../../commons/infra/shell-command-runner.js";
-import { GetCommitStatus } from "../commit/application/services/get-commit-status.js";
-import { CommitGitCliRunner } from "../commit/infra/commit-cli-git-runner.js";
 import { GetRepoDiff } from "../diff/application/services/repo-diff.js";
 import { DiffCliGitRunner } from "../diff/infra/diff-git-cli-runner.js";
+import { RepoStatusService } from "../status/application/services/repo-status.js";
+import { GitStatusCliRunner } from "../status/infra/git-cli-runner.js";
 import { Authenticate } from "./application/use-cases/authenticate.js";
 import { CheckoutBranch } from "./application/use-cases/checkout-branch.js";
 import { CloneRepository } from "./application/use-cases/clone-repository.js";
@@ -26,9 +26,9 @@ export const bootstrap = async (window: BrowserWindow) => {
   const eventEmitter = new ElectronEventEmitter(window);
   const repoStore = await SqliteRepositoryStore.create();
   const commandRunner = new ShellRunner({ ...process.env, ...GITENV });
-  const commitStatusService = new GetCommitStatus(
+  const repoStatusService = new RepoStatusService(
     eventEmitter,
-    new CommitGitCliRunner(commandRunner),
+    new GitStatusCliRunner(commandRunner),
   );
   const localFilePathSelector = new ElectronLocalFilePathSelector(window);
   const repoGitRunner = new RepositoryGitCliRunner(commandRunner);
@@ -39,6 +39,7 @@ export const bootstrap = async (window: BrowserWindow) => {
     filesRepository,
     new DiffCliGitRunner(commandRunner),
     repoGitRunner,
+    repoStatusService,
   );
 
   return {
@@ -53,7 +54,7 @@ export const bootstrap = async (window: BrowserWindow) => {
       filesRepository,
       repoGitRunner,
       localFilePathSelector,
-      repoDiffService,
+      repoStatusService,
       repoStore,
     ),
     getBranchesForRepository: new GetBranchesForRepository(
@@ -65,22 +66,20 @@ export const bootstrap = async (window: BrowserWindow) => {
       repoGitRunner,
       repoStore,
     ),
-    fetch: new Fetch(commitStatusService, eventEmitter, repoGitRunner),
+    fetch: new Fetch(eventEmitter, repoGitRunner, repoStatusService),
     pull: new Pull(eventEmitter, repoGitRunner),
     push: new Push(eventEmitter, repoGitRunner),
     selectRepositoryFromDisk: new SelectRepositoryFromDisk(
-      commitStatusService,
       eventEmitter,
       repoGitRunner,
       localFilePathSelector,
-      repoDiffService,
+      repoStatusService,
       repoStore,
     ),
     selectRepositoryFromSaved: new SelectRepositoryFromSaved(
-      commitStatusService,
       eventEmitter,
       repoGitRunner,
-      repoDiffService,
+      repoStatusService,
     ),
   };
 };

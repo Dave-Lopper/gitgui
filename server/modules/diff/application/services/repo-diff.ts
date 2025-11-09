@@ -1,16 +1,14 @@
-import { writeFileSync } from "fs";
-
 import { FilesRepository } from "../../../../commons/application/files-repository.js";
 import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
 import { RepositoryGitRunner } from "../../../repository/application/git-runner.js";
-import { File, StatusEntry } from "../../domain/entities.js";
+import { RepoStatusService } from "../../../status/application/services/repo-status.js";
+import { StatusEntry } from "../../../status/domain/entities.js";
+import { File, Hunk } from "../../domain/entities.js";
 import {
   getOneSidedDiff,
   parseFileDiff,
-  parseFileDiff2,
   parseFileNumStat,
-  parseStatus,
 } from "../../domain/services.js";
 import { DiffGitRunner } from "../git-runner.js";
 
@@ -20,6 +18,7 @@ export class GetRepoDiff {
     private readonly filesRepository: FilesRepository,
     private readonly diffGitRunner: DiffGitRunner,
     private readonly repositoryGitRunner: RepositoryGitRunner,
+    private readonly repoStatusService: RepoStatusService,
   ) {}
 
   async processFile(
@@ -27,29 +26,11 @@ export class GetRepoDiff {
     currentRemoteName: string,
     repositoryPath: string,
     statusEntry: StatusEntry,
-  ): Promise<File | undefined> {
-    let oldLineCount: number = 0;
-    let newLineCount: number = 0;
+  ): Promise<
+    { addedLines: number; hunks: Hunk[]; removedLines: number } | undefined
+  > {
     let removedLines: number;
     let addedLines: number;
-
-    if (statusEntry.status !== "ADDED") {
-      oldLineCount = parseInt(
-        await safeGit(
-          this.diffGitRunner.getHeadFileLinecount(
-            repositoryPath,
-            statusEntry.path,
-          ),
-          this.eventEmitter,
-        ),
-      );
-    }
-
-    if (statusEntry.status !== "REMOVED") {
-      newLineCount = await this.filesRepository.countLines(
-        `${repositoryPath}/${statusEntry.path}`,
-      );
-    }
 
     if (statusEntry.status === "MODIFIED") {
       const numStatLine = await safeGit(
@@ -64,24 +45,14 @@ export class GetRepoDiff {
       [addedLines, removedLines] = parseFileNumStat(numStatLine);
     } else if (statusEntry.status === "ADDED") {
       removedLines = 0;
-      addedLines = newLineCount!;
+      addedLines = 1;
     } else if (statusEntry.status === "REMOVED") {
       addedLines = 0;
-      removedLines = oldLineCount!;
+      removedLines = 1;
     } else {
       console.warn("CONTINUE");
       return;
     }
-
-    const fileInfos = {
-      addedLines,
-      newLineCount,
-      oldLineCount,
-      path: statusEntry.path,
-      removedLines,
-      staged: statusEntry.staged,
-      status: statusEntry.status,
-    };
 
     let fileContents: string;
     switch (statusEntry.status) {
@@ -94,11 +65,14 @@ export class GetRepoDiff {
           ),
           this.eventEmitter,
         );
-        // writeFileSync("rawdiff.txt", rawFileDiff);
-        return parseFileDiff2(rawFileDiff, fileInfos);
+        return { addedLines, hunks: parseFileDiff(rawFileDiff), removedLines };
       case "ADDED":
         fileContents = await this.filesRepository.readFile(statusEntry.path);
-        return getOneSidedDiff(fileContents, fileInfos, "ADDED");
+        return {
+          addedLines,
+          hunks: [getOneSidedDiff(fileContents, "ADDED")],
+          removedLines,
+        };
       case "REMOVED":
         fileContents = await safeGit(
           this.diffGitRunner.getHeadFileContents(
@@ -109,36 +83,25 @@ export class GetRepoDiff {
           ),
           this.eventEmitter,
         );
-        return getOneSidedDiff(fileContents, fileInfos, "REMOVED");
+        return {
+          addedLines,
+          hunks: [getOneSidedDiff(fileContents, "REMOVED")],
+          removedLines,
+        };
     }
   }
 
   async execute(repositoryPath: string): Promise<File[]> {
-    const statusLines = await safeGit(
-      this.diffGitRunner.getRepoStatus(repositoryPath),
-      this.eventEmitter,
-    );
-    const statusEntries = parseStatus(statusLines);
+    const treeStatus = await this.repoStatusService.execute(repositoryPath);
+    for (let i = 0; i < treeStatus.entries.length; i++) {}
     const currentBranch =
       await this.repositoryGitRunner.getCurrentBranch(repositoryPath);
     const currentRemote =
       await this.repositoryGitRunner.getCurrentRemote(repositoryPath);
 
-    // const fileProcesses = statusEntries.map((statusEntry) =>
-    //   this.processFile(
-    //     currentBranch,
-    //     currentRemote.name,
-    //     repositoryPath,
-    //     statusEntry,
-    //   ),
-    // );
-    // const files = (await Promise.all(fileProcesses)).filter(
-    //   (file) => file !== undefined,
-    // );
-
     const files = [];
-    for (let i = 0; i < statusEntries.length; i++) {
-      const statusEntry = statusEntries[i];
+    for (let i = 0; i < treeStatus.entries.length; i++) {
+      const statusEntry = treeStatus.entries[i];
       const isFile = await this.filesRepository.isFile(
         `${repositoryPath}/${statusEntry.path}`,
       );
@@ -147,13 +110,19 @@ export class GetRepoDiff {
         continue;
       }
 
-      const file = await this.processFile(
+      const fileResults = await this.processFile(
         currentBranch,
         currentRemote.name,
         repositoryPath,
         statusEntry,
       );
-      files.push(file);
+      if (fileResults) {
+        const file = {
+          ...statusEntry,
+          ...fileResults,
+        };
+        files.push(file);
+      }
     }
 
     return files.filter((file) => file !== undefined);

@@ -1,9 +1,9 @@
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 
 import { Event } from "../../../application/i-event-bus";
-import { useCases } from "../../../bootstrap";
 import { RepositorySelectionDto } from "../../../dto/repo-selection";
 import { useEventSubscription } from "../../../infra/react-bus-helper";
+import { RepoTabsContext } from "../../contexts/repo-tabs";
 
 export function useRepositorySelection(listenStaging: boolean = false) {
   const [repositorySelection, setRepositorySelection] =
@@ -14,6 +14,8 @@ export function useRepositorySelection(listenStaging: boolean = false) {
     [],
   );
 
+  const { emptyFileSelection } = useContext(RepoTabsContext);
+
   let event: string | string[];
   if (listenStaging) {
     event = ["RepositorySelected", "FileStaged"];
@@ -22,6 +24,9 @@ export function useRepositorySelection(listenStaging: boolean = false) {
   }
 
   useEventSubscription(event, handler, [handler]);
+  useEventSubscription("RepositorySelected", () => emptyFileSelection(), [
+    handler,
+  ]);
 
   return { repositorySelection };
 }

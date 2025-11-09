@@ -1,22 +1,18 @@
 import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
-import { CommitStatusService } from "../../../commit/application/commit-status-service.js";
-import { CommitStatusDto } from "../../../commit/dto/commit-status.js";
+import { RepoStatusService } from "../../../status/application/services/repo-status.js";
+import { TreeStatus } from "../../../status/domain/entities.js";
 import { RepositoryGitRunner } from "../git-runner.js";
 
 export class Fetch {
   constructor(
-    private readonly commitStatusService: CommitStatusService,
     private readonly eventEmitter: IEventEmitter,
     private readonly gitRunner: RepositoryGitRunner,
+    private readonly repoStatusService: RepoStatusService,
   ) {}
 
-  async execute(repositoryPath: string): Promise<CommitStatusDto> {
+  async execute(repositoryPath: string): Promise<TreeStatus> {
     await safeGit(this.gitRunner.fetch(repositoryPath), this.eventEmitter);
-    const dto = await this.commitStatusService.execute(
-      repositoryPath,
-      this.eventEmitter,
-    );
-    return dto;
+    return await this.repoStatusService.execute(repositoryPath);
   }
 }

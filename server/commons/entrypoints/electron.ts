@@ -2,7 +2,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import { BrowserWindow, app, ipcMain, screen } from "electron";
-import { eventNames } from "process";
 
 import { bootstrap as commitBootstrap } from "../../modules/commit/bootstrap.js";
 import { bootstrap as diffBootstrap } from "../../modules/diff/bootstrap.js";
@@ -152,6 +151,16 @@ async function createWindow() {
       );
     },
   );
+
+  ipcMain.handle("diff:getTreeFileDiff", async (event, message) => {
+    const parsedMessage = JSON.parse(message);
+    return await diffUseCases.getTreeFileDiff.execute(
+      parsedMessage.repositoryPath,
+      parsedMessage.filePath,
+      parsedMessage.staged,
+      parsedMessage.status,
+    );
+  });
 
   ipcMain.handle(
     "diff:stageAndStash",

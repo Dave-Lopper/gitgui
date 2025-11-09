@@ -1,3 +1,5 @@
+import { FileStatus } from "../../../client/domain/diff";
+
 const electron = require("electron");
 
 electron.contextBridge.exposeInMainWorld("electronAPI", {
@@ -51,6 +53,16 @@ electron.contextBridge.exposeInMainWorld("electronAPI", {
     ),
   getSavedRepositories: () =>
     electron.ipcRenderer.invoke("repositories:getSaved"),
+  getTreeFileDiff: (
+    repositoryPath: string,
+    filePath: string,
+    staged: boolean,
+    status: FileStatus,
+  ) =>
+    electron.ipcRenderer.invoke(
+      "diff:getTreeFileDiff",
+      JSON.stringify({ repositoryPath, filePath, staged, status }),
+    ),
   selectRepositoryFromDisk: () =>
     electron.ipcRenderer.invoke("repositories:selectFromDisk"),
   selectRepositoryFromSaved: (path: string) =>

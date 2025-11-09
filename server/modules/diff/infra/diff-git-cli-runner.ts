@@ -97,25 +97,6 @@ export class DiffCliGitRunner extends GitCliRunner implements DiffGitRunner {
     );
   }
 
-  async getHeadFileLinecount(
-    repositoryPath: string,
-    filePath: string,
-  ): Promise<string> {
-    const result = await this.cmdRunner.pipe(
-      {
-        cmd: "git",
-        args: ["show", `HEAD:${filePath}`],
-        options: { cwd: repositoryPath, splitLines: false },
-      },
-      {
-        cmd: "wc",
-        args: ["-l"],
-        options: { cwd: repositoryPath, splitLines: false },
-      },
-    );
-    return result.stdout as string;
-  }
-
   async getRepoDiff(repositoryPath: string, staged: boolean): Promise<string> {
     const args = ["diff", "--no-color", "--word-diff=porcelain"];
     if (staged) {

@@ -4,8 +4,7 @@ import { IEventEmitter } from "../../../../commons/application/i-event-emitter.j
 import { ILocalFilePathSelector } from "../../../../commons/application/i-file-selector.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
 import { ActionResponse } from "../../../../commons/dto/action.js";
-import { CommitStatusService } from "../../../commit/application/commit-status-service.js";
-import { RepoDiffService } from "../../../diff/application/repo-diff-service.js";
+import { RepoStatusService } from "../../../status/application/services/repo-status.js";
 import { Repository } from "../../domain/entities.js";
 import { dedupRefs } from "../../domain/services.js";
 import { RepositorySelectionDto } from "../../dto/repository-selection.js";
@@ -19,11 +18,10 @@ export type SelectRepositoryFromDiskStatus =
 
 export class SelectRepositoryFromDisk {
   constructor(
-    private readonly commitStatusService: CommitStatusService,
     private readonly eventEmitter: IEventEmitter,
     private readonly gitRunner: RepositoryGitRunner,
     private readonly localFilePathSelector: ILocalFilePathSelector,
-    private readonly repoDiffService: RepoDiffService,
+    private readonly repoStatusService: RepoStatusService,
     private readonly store: RepositoryStore,
   ) {}
 
@@ -69,16 +67,13 @@ export class SelectRepositoryFromDisk {
       this.eventEmitter,
     );
     const branches = dedupRefs(branchName, refs);
-    const diff = await this.repoDiffService.execute(repositoryPath);
+    const treeStatus = await this.repoStatusService.execute(repositoryPath);
 
     void (async () => {
       try {
         await safeGit(this.gitRunner.fetch(repositoryPath), this.eventEmitter);
-        const commitStatus = await this.commitStatusService.execute(
-          repositoryPath,
-          this.eventEmitter,
-        );
-        this.eventEmitter.send("repository:fetched", commitStatus);
+        const treeStatus = await this.repoStatusService.execute(repositoryPath);
+        this.eventEmitter.send("repository:fetched", treeStatus);
       } catch (err) {
         console.error(`Error while fetching and getting commit status: ${err}`);
       }
@@ -93,7 +88,7 @@ export class SelectRepositoryFromDisk {
       action: "selectRepositoryFromDisk",
       status: "success",
       success: true,
-      data: { repository, branches, diff },
+      data: { repository, branches, treeStatus },
     };
   }
 }

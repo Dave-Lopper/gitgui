@@ -1,14 +1,10 @@
 import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
 import { File } from "../../../diff/domain/entities.js";
-import {
-  parseFileDiff2,
-  parseFileNumStat,
-  parseStatus,
-} from "../../../diff/domain/services.js";
-// import { parseDiff } from "../../../diff/domain/services-2.js";
+import { parseFileNumStat } from "../../../diff/domain/services.js";
+import { CommitStatusService } from "../../../status/application/services/commit-status.js";
 import { Commit } from "../../domain/entities.js";
-import { parseCommitStatus, parseHistory } from "../../domain/services.js";
+import { parseHistory } from "../../domain/services.js";
 import { HistoryPaginationDto } from "../../dto/history-pagination.js";
 import { CommitGitRunner } from "../git-runner.js";
 
@@ -16,6 +12,7 @@ export class GetHistory {
   constructor(
     private readonly eventEmitter: IEventEmitter,
     private readonly gitRunner: CommitGitRunner,
+    private readonly commitStatusService: CommitStatusService,
   ) {}
 
   async execute(
@@ -45,25 +42,20 @@ export class GetHistory {
       this.gitRunner.getHistory(repositoryPath, page, pageSize),
       this.eventEmitter,
     );
-    // console.log({ logLines });
     const history = parseHistory(logLines);
-    // console.log({ history });
     const commitsWithDiff: (Commit & { diff: File[] })[] = [];
 
     for (let i = 0; i < history.length; i++) {
       const commit = history[i];
 
-      const rawCommitFiles = await this.gitRunner.getCommitFiles(
+      const commitFiles = await this.commitStatusService.execute(
         repositoryPath,
         commit.hash,
       );
-      console.log({ rawCommitFiles });
-      const commitFiles = parseCommitStatus(rawCommitFiles);
       const commitFileDiffs = [];
 
       for (let j = 0; j < commitFiles.length; j++) {
         const commitFile = commitFiles[j];
-        console.log(commitFile.path);
         const rawCommitFileDiff = await this.gitRunner.getCommitFileDiff(
           repositoryPath,
           commit.hash,

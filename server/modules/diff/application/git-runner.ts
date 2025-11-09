@@ -24,11 +24,6 @@ export interface DiffGitRunner {
     filePath: string,
   ): Promise<string>;
 
-  getHeadFileLinecount(
-    repositoryPath: string,
-    filePath: string,
-  ): Promise<string>;
-
   getRepoDiff(repositoryPath: string, staged: boolean): Promise<string>;
 
   getRepoStatus(repositoryPath: string): Promise<string[]>;
