@@ -8,7 +8,7 @@ import {
 } from "react";
 
 import { useCases } from "../../bootstrap";
-import { File } from "../../domain/diff";
+import { StatusEntry } from "../../domain/status";
 import { RepositorySelectionDto } from "../../dto/repo-selection";
 import { RepoTabsContext } from "../contexts/repo-tabs";
 import {
@@ -22,7 +22,7 @@ export type ThemedFileOptionProps = {
   onClick: (e: MouseEvent<HTMLDivElement>) => void;
   onContextMenu: (e: MouseEvent<HTMLDivElement>) => void;
   toggleStaging: () => Promise<void>;
-  file: File;
+  file: StatusEntry;
 };
 
 export default function ModifiedFilesList({
@@ -52,7 +52,7 @@ export default function ModifiedFilesList({
   >(null);
 
   const clickHandler = useCallback(
-    (e: MouseEvent<HTMLDivElement>, file: File, idx: number) => {
+    (e: MouseEvent<HTMLDivElement>, file: StatusEntry, idx: number) => {
       if (rightClickMenuPosition !== null) {
         setRightClickMenuPosition(null);
       }
@@ -84,7 +84,7 @@ export default function ModifiedFilesList({
   );
 
   const rightClickHandler = useCallback(
-    (e: MouseEvent<HTMLDivElement>, file: File, idx: number) => {
+    (e: MouseEvent<HTMLDivElement>, file: StatusEntry, idx: number) => {
       if (!isFileSelected(file)) {
         emptyFileSelection();
         toggleFileSelection({ ...file, index: idx });
@@ -99,7 +99,7 @@ export default function ModifiedFilesList({
       if ((e.metaKey || e.ctrlKey) && e.code === "KeyA") {
         emptyFileSelection();
         selectFiles(
-          repositorySelection.diff.map((file, idx) => ({
+          repositorySelection.treeStatus.entries.map((file, idx) => ({
             ...file,
             index: idx,
           })),
@@ -118,14 +118,17 @@ export default function ModifiedFilesList({
         if (!(e.metaKey || e.ctrlKey)) {
           emptyFileSelection();
         }
-        if (maxSelectedIndex < repositorySelection.diff.length - 1) {
+        if (
+          maxSelectedIndex <
+          repositorySelection.treeStatus.entries.length - 1
+        ) {
           selectFile({
-            ...repositorySelection.diff[maxSelectedIndex + 1],
+            ...repositorySelection.treeStatus.entries[maxSelectedIndex + 1],
             index: maxSelectedIndex + 1,
           });
         } else if (!(e.metaKey || e.ctrlKey)) {
           selectFile({
-            ...repositorySelection.diff[0],
+            ...repositorySelection.treeStatus.entries[0],
             index: 0,
           });
         }
@@ -139,13 +142,15 @@ export default function ModifiedFilesList({
         }
         if (minSelectedIndex > 0) {
           selectFile({
-            ...repositorySelection.diff[minSelectedIndex - 1],
+            ...repositorySelection.treeStatus.entries[minSelectedIndex - 1],
             index: minSelectedIndex - 1,
           });
         } else if (!e.metaKey && !e.ctrlKey) {
           selectFile({
-            ...repositorySelection.diff[repositorySelection.diff.length - 1],
-            index: repositorySelection.diff.length - 1,
+            ...repositorySelection.treeStatus.entries[
+              repositorySelection.treeStatus.entries.length - 1
+            ],
+            index: repositorySelection.treeStatus.entries.length - 1,
           });
         }
       }
@@ -170,9 +175,9 @@ export default function ModifiedFilesList({
         position={rightClickMenuPosition}
         selectedFilesCounter={RightClickMenuFilesCounter}
       />
-      {repositorySelection?.diff.map((file, idx) => (
+      {repositorySelection?.treeStatus.entries.map((file, idx) => (
         <ThemedFileOption
-          key={file.displayPaths.join(",")}
+          key={file.path}
           onClick={(e: MouseEvent<HTMLDivElement>) =>
             clickHandler(e, file, idx)
           }

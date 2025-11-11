@@ -1,22 +1,24 @@
 import { Dispatch, SetStateAction, createContext } from "react";
 
-import { File } from "../../../domain/diff";
+import { DiffEntry } from "../../../domain/diff";
+import { StatusEntry } from "../../../domain/status";
 
 const REPOTABS = ["DIFF", "HISTORY"] as const;
 export type RepoTab = (typeof REPOTABS)[number];
-export type DiffFileWithIndex = File & { index: number };
+export type StatusEntryWithIndex = StatusEntry & { index: number };
 
 export type RepoTabs = {
   currentTab: RepoTab;
-  selectedFiles: Set<DiffFileWithIndex>;
+  selectedDiff: DiffEntry | undefined;
+  selectedFiles: Set<StatusEntryWithIndex>;
 
-  deselectFile: (file: DiffFileWithIndex) => void;
+  deselectFile: (file: StatusEntryWithIndex) => void;
   emptyFileSelection: () => void;
-  isFileSelected: (file: File) => boolean;
-  selectFile: (file: DiffFileWithIndex) => void;
-  selectFiles: (files: DiffFileWithIndex[]) => void;
+  isFileSelected: (file: StatusEntry) => boolean;
+  selectFile: (file: StatusEntryWithIndex) => void;
+  selectFiles: (files: StatusEntryWithIndex[]) => void;
   setCurrentTab: Dispatch<SetStateAction<RepoTab>>;
-  toggleFileSelection: (file: DiffFileWithIndex) => void;
+  toggleFileSelection: (file: StatusEntryWithIndex) => void;
 };
 
 export const defaultTab = "DIFF";

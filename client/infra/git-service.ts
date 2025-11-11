@@ -1,6 +1,7 @@
 import { IGitService } from "../application/i-git-service";
 import { Branch } from "../domain/branch";
 import { Commit, CommitStatus } from "../domain/commit";
+import { DiffEntry } from "../domain/diff";
 import { HistoryPaginationDto } from "../dto/history-pagination";
 import { RepositorySelectionDto } from "../dto/repo-selection";
 
@@ -85,6 +86,18 @@ export class GitService implements IGitService {
       page,
       pageSize,
       repositoryPath,
+    );
+  }
+
+  async getTreeFileDiff(
+    repositoryPath: string,
+    filePath: string,
+    staged: boolean,
+  ): Promise<DiffEntry> {
+    return await window.electronAPI.getTreeFileDiff(
+      repositoryPath,
+      filePath,
+      staged,
     );
   }
 

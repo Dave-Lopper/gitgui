@@ -9,7 +9,7 @@ export function useCommitForm() {
 
   const stagedFiles = useMemo(() => {
     return repositorySelection
-      ? repositorySelection.diff.filter((file) => file.staged)
+      ? repositorySelection.treeStatus.entries.filter((file) => file.staged)
       : [];
   }, [repositorySelection]);
 

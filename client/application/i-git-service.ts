@@ -1,5 +1,6 @@
 import { Branch } from "../domain/branch";
 import { Commit, CommitStatus } from "../domain/commit";
+import { DiffEntry } from "../domain/diff";
 import { HistoryPaginationDto } from "../dto/history-pagination";
 import { RepositorySelectionDto } from "../dto/repo-selection";
 
@@ -36,6 +37,12 @@ export interface IGitService {
     pageSize: number,
     repositoryPath: string,
   ): Promise<HistoryPaginationDto>;
+
+  getTreeFileDiff(
+    repositoryPath: string,
+    filePath: string,
+    staged: boolean,
+  ): Promise<DiffEntry>;
 
   pull(repositoryPath: string): Promise<void>;
 

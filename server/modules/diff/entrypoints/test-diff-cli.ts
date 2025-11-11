@@ -5,6 +5,8 @@ import { DummyEventEmitter } from "../../../commons/infra/dummy-event-emitter.js
 import { FsFilesRepository } from "../../../commons/infra/fs-file-repository.js";
 import { ShellRunner } from "../../../commons/infra/shell-command-runner.js";
 import { RepositoryGitCliRunner } from "../../repository/infra/repo-git-cli-runner.js";
+import { RepoStatusService } from "../../status/application/services/repo-status.js";
+import { GitStatusCliRunner } from "../../status/infra/git-cli-runner.js";
 import { GetRepoDiff } from "../application/services/repo-diff.js";
 import { DiffCliGitRunner } from "../infra/diff-git-cli-runner.js";
 
@@ -14,11 +16,17 @@ async function main() {
 
   const shellRunner = new ShellRunner();
   const repoGitRunner = new RepositoryGitCliRunner(shellRunner);
+  const eventEmitter = new DummyEventEmitter();
+  const repoStatusService = new RepoStatusService(
+    eventEmitter,
+    new GitStatusCliRunner(shellRunner),
+  );
   const service = new GetRepoDiff(
-    new DummyEventEmitter(),
+    eventEmitter,
     new FsFilesRepository(),
     new DiffCliGitRunner(shellRunner),
     repoGitRunner,
+    repoStatusService,
   );
 
   const currentBranchName = await repoGitRunner.getCurrentBranch(

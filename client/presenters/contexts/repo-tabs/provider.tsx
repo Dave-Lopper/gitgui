@@ -1,21 +1,27 @@
-import { ReactNode, useCallback, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 
-import { File } from "../../../domain/diff";
+import { useCases } from "../../../bootstrap";
+import { DiffEntry } from "../../../domain/diff";
+import { StatusEntry } from "../../../domain/status";
+import { useEventSubscription } from "../../../infra/react-bus-helper";
+import { useRepositorySelection } from "../../headless";
 import {
-  DiffFileWithIndex,
   RepoTab,
   RepoTabsContext,
+  StatusEntryWithIndex,
   defaultTab,
 } from "./context";
 
 export function RepoTabsContextProvider({ children }: { children: ReactNode }) {
   const [currentTab, setCurrentTab] = useState<RepoTab>(defaultTab);
-  const [selectedFiles, setSelectedFiles] = useState<Set<DiffFileWithIndex>>(
+  const [selectedFiles, setSelectedFiles] = useState<Set<StatusEntryWithIndex>>(
     new Set(),
   );
+  const [selectedDiff, setSelectedDiff] = useState<DiffEntry>();
+  const { repositorySelection } = useRepositorySelection(true);
 
   const deselectFile = useCallback(
-    (file: DiffFileWithIndex) =>
+    (file: StatusEntryWithIndex) =>
       setSelectedFiles((files) => {
         const newFiles = new Set(files);
         newFiles.delete(file);
@@ -27,7 +33,7 @@ export function RepoTabsContextProvider({ children }: { children: ReactNode }) {
   const emptyFileSelection = useCallback(() => setSelectedFiles(new Set()), []);
 
   const selectFile = useCallback(
-    (file: DiffFileWithIndex) =>
+    (file: StatusEntryWithIndex) =>
       setSelectedFiles((files) => {
         const newFiles = new Set(files);
         newFiles.add(file);
@@ -37,16 +43,14 @@ export function RepoTabsContextProvider({ children }: { children: ReactNode }) {
   );
 
   const isFileSelected = useCallback(
-    (file: File) => {
-      const selectedFileNames = Array.from(selectedFiles, (file) =>
-        file.displayPaths.join(","),
-      );
-      return selectedFileNames.includes(file.displayPaths.join(","));
+    (file: StatusEntry) => {
+      const selectedFileNames = Array.from(selectedFiles, (file) => file.path);
+      return selectedFileNames.includes(file.path);
     },
     [selectedFiles],
   );
 
-  const selectFiles = useCallback((files: DiffFileWithIndex[]) => {
+  const selectFiles = useCallback((files: StatusEntryWithIndex[]) => {
     setSelectedFiles((currentFiles) => {
       const newFiles = new Set(currentFiles);
       files.forEach((file) => newFiles.add(file));
@@ -55,7 +59,7 @@ export function RepoTabsContextProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const toggleFileSelection = useCallback(
-    (file: DiffFileWithIndex) => {
+    (file: StatusEntryWithIndex) => {
       setSelectedFiles((files) => {
         let newFiles;
         if (isFileSelected(file)) {
@@ -73,6 +77,31 @@ export function RepoTabsContextProvider({ children }: { children: ReactNode }) {
     [selectedFiles],
   );
 
+  useEffect(() => {
+    console.log("Running effect", { selectedFilesSize: selectedFiles.size });
+    if (selectedFiles.size === 1) {
+      const fetchSelectedDiff = async () => {
+        console.log("Running async fetched", { repositorySelection });
+        if (!repositorySelection) {
+          return;
+        }
+        await useCases.getTreeFileDiff.execute(
+          repositorySelection.repository.localPath,
+          selectedFiles.values().next().value!,
+        );
+      };
+      fetchSelectedDiff();
+    } else {
+      setSelectedDiff(undefined);
+    }
+  }, [repositorySelection, selectedFiles]);
+
+  useEventSubscription(
+    "FileDiffConsulted",
+    (event) => setSelectedDiff(event.payload),
+    [],
+  );
+
   return (
     <RepoTabsContext.Provider
       value={{
@@ -80,6 +109,7 @@ export function RepoTabsContextProvider({ children }: { children: ReactNode }) {
         deselectFile,
         emptyFileSelection,
         isFileSelected,
+        selectedDiff,
         selectedFiles,
         selectFile,
         selectFiles,

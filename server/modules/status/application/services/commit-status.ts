@@ -19,6 +19,6 @@ export class CommitStatusService {
       this.eventEmitter,
     );
     const statusEntries = parseRepoStatus(statusLines);
-    return statusEntries;
+    return statusEntries.entries;
   }
 }

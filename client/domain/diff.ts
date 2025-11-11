@@ -44,3 +44,9 @@ export type File = {
 };
 
 export type PastDiffFile = File & { staged: boolean };
+
+export type DiffEntry = {
+  addedLines: number;
+  removedLines: number;
+  hunks: Hunk[];
+};

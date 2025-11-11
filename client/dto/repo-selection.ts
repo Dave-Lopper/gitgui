@@ -1,9 +1,9 @@
 import { Branch } from "../domain/branch";
-import { File } from "../domain/diff";
 import { Repository } from "../domain/repository";
+import { TreeStatus } from "../domain/status";
 
 export type RepositorySelectionDto = {
   branches: Branch[];
-  diff: File[];
+  treeStatus: TreeStatus;
   repository: Repository;
 };

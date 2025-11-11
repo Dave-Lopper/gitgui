@@ -1,7 +1,7 @@
 import { IpcRendererEvent } from "electron";
 
 import { Commit, CommitStatus } from "./domain/commit";
-import { DiffFile } from "./domain/diff";
+import { DiffEntry, DiffFile } from "./domain/diff";
 import { Branch, Repository } from "./domain/repository";
 import { ActionResponse } from "./dto/action";
 import { HistoryPaginationDto } from "./dto/history-pagination";
@@ -55,6 +55,11 @@ declare global {
         repositoryPath: string,
       ) => Promise<HistoryPaginationDto>;
       getSavedRepositories: () => Promise<ActionResponse<Repository[]>>;
+      getTreeFileDiff: (
+        repositoryPath: string,
+        filePath: string,
+        staged: boolean,
+      ) => Promise<DiffEntry>;
       pull: (repositoryPath: string) => Promise<void>;
       push: (repositoryPath: string) => Promise<void>;
       selectRepositoryFromDisk: () => Promise<

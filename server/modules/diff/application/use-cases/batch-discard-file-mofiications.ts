@@ -15,8 +15,8 @@ export class BatchDiscardFileModifications {
   ) {}
 
   async execute(repositoryPath: string, filePaths: string[]): Promise<void> {
-    const statusEntries = await this.repoStatusService.execute(repositoryPath);
-    const addedUntrackedEntries = statusEntries
+    const treeStatus = await this.repoStatusService.execute(repositoryPath);
+    const addedUntrackedEntries = treeStatus.entries
       .filter((entry) => entry.status === "ADDED")
       .map((entry) => entry.path);
 

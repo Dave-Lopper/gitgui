@@ -1,4 +1,4 @@
-import { File } from "../../domain/diff";
+import { StatusEntry } from "../../domain/status";
 import { RepositorySelectionDto } from "../../dto/repo-selection";
 import { IEventBus } from "../i-event-bus";
 import { IGitService } from "../i-git-service";
@@ -11,14 +11,15 @@ export class ToggleFileStaged {
 
   async execute(
     repositoryPath: string,
-    file: File,
+    file: StatusEntry,
     fileIndex: number,
     repositorySelection: RepositorySelectionDto,
   ): Promise<void> {
     await this.gitService.toggleFilesStaged(repositoryPath, [file.path]);
     const dto = await this.gitService.selectRepoFromSaved(repositoryPath);
-    const previousStaging = repositorySelection.diff[fileIndex].staged;
-    repositorySelection.diff[fileIndex].staged = !previousStaging;
+    const previousStaging =
+      repositorySelection.treeStatus.entries[fileIndex].staged;
+    repositorySelection.treeStatus.entries[fileIndex].staged = !previousStaging;
     this.eventBus.emit({ type: "FileStaged", payload: dto });
   }
 }

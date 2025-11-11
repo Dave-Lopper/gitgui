@@ -44,7 +44,8 @@ import RetroRepositoryTab from "./themed/retro/RepositoryTab";
 
 export default function AppLayout() {
   const { theme } = useContext(UiSettingsContext);
-  const { currentTab, selectedFiles } = useContext(RepoTabsContext);
+  const { currentTab, selectedDiff, selectedFiles } =
+    useContext(RepoTabsContext);
   const { repositorySelection } = useRepositorySelection(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
@@ -128,7 +129,7 @@ export default function AppLayout() {
               {currentTab === "DIFF" ? (
                 <div className="flex flex-col">
                   <ModifiedFilesCounter
-                    count={repositorySelection.diff.length}
+                    count={repositorySelection.treeStatus.entries.length}
                   />
                   <div className="flex flex-col bg-white">
                     <ModifiedFilesList
@@ -152,8 +153,8 @@ export default function AppLayout() {
           }
           leftPaneClassName="bg-red h-full"
           rightPane={
-            selectedFiles.size === 1 ? (
-              <DiffViewer diff={selectedFiles.values().next().value!} />
+            selectedDiff ? (
+              <DiffViewer diff={selectedDiff} />
             ) : (
               <>Some right pane</>
             )

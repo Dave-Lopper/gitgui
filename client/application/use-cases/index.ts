@@ -11,6 +11,7 @@ export { CopyRelativeFilePath } from "./copy-relative-file-path";
 export { Fetch } from "./fetch";
 export { GetCommitHistory } from "./get-history";
 export { GetSavedRepositories } from "./get-saved-repositories";
+export { GetTreeFileDiff } from "./get-tree-file-diff";
 export { Pull } from "./pull";
 export { Push } from "./push";
 export { RepositoryFetched } from "./repository-fetched";

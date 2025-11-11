@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 
-import { ChangedLineStatus, File } from "../../domain/diff";
+import { ChangedLineStatus, DiffEntry, File } from "../../domain/diff";
 
 // import "./App.css";
 
-export default function DiffViewer({ diff }: { diff: File }) {
+export default function DiffViewer({ diff }: { diff: DiffEntry }) {
   console.log({ diff });
 
   const diffColors = useMemo<{

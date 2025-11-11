@@ -158,7 +158,6 @@ async function createWindow() {
       parsedMessage.repositoryPath,
       parsedMessage.filePath,
       parsedMessage.staged,
-      parsedMessage.status,
     );
   });
 

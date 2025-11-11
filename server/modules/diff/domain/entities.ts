@@ -42,3 +42,9 @@ export type FileInfos = {
 export type File = FileInfos & {
   hunks: Hunk[];
 };
+
+export type DiffEntry = {
+  addedLines: number;
+  removedLines: number;
+  hunks: Hunk[];
+};

@@ -37,7 +37,7 @@ export default function RetroDiffFileOption({
         ></span>
       </span>
 
-      {file.displayPaths.join("->")}
+      {file.path}
     </div>
   );
 }
