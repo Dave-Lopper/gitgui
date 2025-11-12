@@ -5,8 +5,6 @@ import { ElectronLocalFilePathSelector } from "../../commons/infra/electron-loca
 import { FsFilesRepository } from "../../commons/infra/fs-file-repository.js";
 import { GITENV } from "../../commons/infra/git-env.js";
 import { ShellRunner } from "../../commons/infra/shell-command-runner.js";
-import { GetRepoDiff } from "../diff/application/services/repo-diff.js";
-import { DiffCliGitRunner } from "../diff/infra/diff-git-cli-runner.js";
 import { RepoStatusService } from "../status/application/services/repo-status.js";
 import { GitStatusCliRunner } from "../status/infra/git-cli-runner.js";
 import { Authenticate } from "./application/use-cases/authenticate.js";
@@ -26,28 +24,21 @@ export const bootstrap = async (window: BrowserWindow) => {
   const eventEmitter = new ElectronEventEmitter(window);
   const repoStore = await SqliteRepositoryStore.create();
   const commandRunner = new ShellRunner({ ...process.env, ...GITENV });
+  const statusGitRunner = new GitStatusCliRunner(commandRunner);
   const repoStatusService = new RepoStatusService(
     eventEmitter,
-    new GitStatusCliRunner(commandRunner),
+    statusGitRunner,
   );
   const localFilePathSelector = new ElectronLocalFilePathSelector(window);
   const repoGitRunner = new RepositoryGitCliRunner(commandRunner);
   const filesRepository = new FsFilesRepository();
-
-  const repoDiffService = new GetRepoDiff(
-    eventEmitter,
-    filesRepository,
-    new DiffCliGitRunner(commandRunner),
-    repoGitRunner,
-    repoStatusService,
-  );
 
   return {
     authenticate: new Authenticate(eventEmitter, repoGitRunner),
     checkoutBranch: new CheckoutBranch(
       eventEmitter,
       repoGitRunner,
-      repoDiffService,
+      statusGitRunner,
     ),
     cloneRepository: new CloneRepository(
       eventEmitter,

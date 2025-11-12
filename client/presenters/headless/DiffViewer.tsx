@@ -1,8 +1,6 @@
 import { useMemo } from "react";
 
-import { ChangedLineStatus, DiffEntry, File } from "../../domain/diff";
-
-// import "./App.css";
+import { DiffEntry } from "../../domain/diff";
 
 export default function DiffViewer({ diff }: { diff: DiffEntry }) {
   console.log({ diff });

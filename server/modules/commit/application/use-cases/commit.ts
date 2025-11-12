@@ -1,7 +1,5 @@
 import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
-import { File } from "../../../diff/domain/entities.js";
-// import { parseDiff } from "../../../diff/domain/services-2.js";
 import { Commit } from "../../domain/entities.js";
 import { parseHistory } from "../../domain/services.js";
 import { CommitGitRunner } from "../git-runner.js";
@@ -16,7 +14,7 @@ export class CommitUseCase {
     repositoryPath: string,
     message: string,
     description?: string,
-  ): Promise<Commit & { diff: File[] }> {
+  ): Promise<Commit> {
     const finalizedMessage = description
       ? `${message}\n\n${description}`
       : message;
@@ -26,22 +24,11 @@ export class CommitUseCase {
       this.eventEmitter,
     );
 
-    const commitHashes = await safeGit(
-      this.gitRunner.getHeadHashes(repositoryPath),
-      this.eventEmitter,
-    );
-    const commitDiffLines = await safeGit(
-      this.gitRunner.getCommitDiff(repositoryPath, commitHashes.hash),
-      this.eventEmitter,
-    );
-    // const commitDiff = parseDiff(commitDiffLines.join("\n"));
     const historyLines = await safeGit(
       this.gitRunner.getHistory(repositoryPath, 1, 1),
       this.eventEmitter,
     );
     const commit = parseHistory(historyLines)[0];
-
-    // return { ...commit, diff: commitDiff };
-    return { ...commit, diff: [] };
+    return commit;
   }
 }

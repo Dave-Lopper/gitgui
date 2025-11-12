@@ -28,21 +28,6 @@ export type Hunk = {
   lines: (ChangedLine | ContextLine)[];
 };
 
-const fileStatuses = ["ADDED", "REMOVED", "MODIFIED", "MOVED"] as const;
-export type FileStatus = (typeof fileStatuses)[number];
-
-export type FileInfos = {
-  addedLines: number;
-  path: string;
-  removedLines: number;
-  staged: boolean;
-  status: FileStatus;
-};
-
-export type File = FileInfos & {
-  hunks: Hunk[];
-};
-
 export type DiffEntry = {
   addedLines: number;
   removedLines: number;

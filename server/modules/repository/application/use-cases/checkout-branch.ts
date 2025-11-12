@@ -1,13 +1,14 @@
 import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
-import { RepoDiffService } from "../../../diff/application/repo-diff-service.js";
+import { GitStatusRunner } from "../../../status/application/git-runner.js";
+import { parseRepoStatus } from "../../../status/domain/services.js";
 import { RepositoryGitRunner } from "../git-runner.js";
 
 export class CheckoutBranch {
   constructor(
     private readonly eventEmitter: IEventEmitter,
     private readonly gitRunner: RepositoryGitRunner,
-    private readonly repoDiffService: RepoDiffService,
+    private readonly statusGitRunner: GitStatusRunner,
   ) {}
 
   async execute(
@@ -15,8 +16,11 @@ export class CheckoutBranch {
     branchName: string,
     remoteName?: string,
   ): Promise<boolean> {
-    const diff = await this.repoDiffService.execute(repositoryPath);
-    if (diff.length > 0) {
+    const statusLines =
+      await this.statusGitRunner.getRepoStatus(repositoryPath);
+    const status = parseRepoStatus(statusLines);
+
+    if (status.entries.length > 0) {
       return false;
     }
 
