@@ -31,20 +31,6 @@ export type Hunk = {
 const fileStatuses = ["ADDED", "REMOVED", "MODIFIED", "MOVED"] as const;
 export type FileStatus = (typeof fileStatuses)[number];
 
-export type File = {
-  addedLines: number;
-  newLineCount: number;
-  oldLineCount: number;
-  path: string;
-  removedLines: number;
-  staged: boolean;
-  status: FileStatus;
-  hunks: Hunk[];
-  displayPaths: string[];
-};
-
-export type PastDiffFile = File & { staged: boolean };
-
 export type DiffEntry = {
   addedLines: number;
   removedLines: number;

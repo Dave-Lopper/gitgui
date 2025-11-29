@@ -17,7 +17,7 @@ export class GetTreeFileDiff {
       statusEntry.path,
       statusEntry.staged,
     );
-    this.eventBus.emit({
+    await this.eventBus.emit({
       type: "FileDiffConsulted",
       payload: diffEntry,
     });

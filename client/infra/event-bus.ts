@@ -9,7 +9,7 @@ export class ObservableEventBus implements IEventBus {
   private subscriptions: Map<EventType, Subscriber[]> = new Map();
   private lastEvents: Map<EventType, Event> = new Map();
 
-  emit(event: Event | Event[]): void {
+  async emit(event: Event | Event[]): Promise<void> {
     if (Array.isArray(event)) {
       for (let i = 0; i < event.length; i++) {
         this.lastEvents.set(event[i].type, event[i]);
@@ -19,7 +19,7 @@ export class ObservableEventBus implements IEventBus {
           continue;
         }
         for (let j = 0; j < subs.length; j++) {
-          subs[j](event[i]);
+          await subs[j](event[i]);
         }
       }
     } else {
@@ -30,16 +30,16 @@ export class ObservableEventBus implements IEventBus {
         return;
       }
       for (let i = 0; i < subs.length; i++) {
-        subs[i](event);
+        await subs[i](event);
       }
     }
   }
 
-  subscribe(
+  async subscribe(
     eventType: EventType,
     subscriber: Subscriber,
     getLastEvent: boolean = true,
-  ): void {
+  ): Promise<void> {
     const currentSubs = this.subscriptions.get(eventType);
     if (currentSubs === undefined) {
       this.subscriptions.set(eventType, [subscriber]);
@@ -49,7 +49,7 @@ export class ObservableEventBus implements IEventBus {
 
     const lastEvent = this.lastEvents.get(eventType);
     if (lastEvent && getLastEvent) {
-      subscriber(lastEvent);
+      await subscriber(lastEvent);
     }
   }
 

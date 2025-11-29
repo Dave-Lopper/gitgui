@@ -9,16 +9,8 @@ export type StatusEntryWithIndex = StatusEntry & { index: number };
 
 export type RepoTabs = {
   currentTab: RepoTab;
-  selectedDiff: DiffEntry | undefined;
-  selectedFiles: Set<StatusEntryWithIndex>;
 
-  deselectFile: (file: StatusEntryWithIndex) => void;
-  emptyFileSelection: () => void;
-  isFileSelected: (file: StatusEntry) => boolean;
-  selectFile: (file: StatusEntryWithIndex) => void;
-  selectFiles: (files: StatusEntryWithIndex[]) => void;
   setCurrentTab: Dispatch<SetStateAction<RepoTab>>;
-  toggleFileSelection: (file: StatusEntryWithIndex) => void;
 };
 
 export const defaultTab = "DIFF";

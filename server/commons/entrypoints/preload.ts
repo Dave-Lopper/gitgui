@@ -49,6 +49,20 @@ electron.contextBridge.exposeInMainWorld("electronAPI", {
       "commits:getHistory",
       JSON.stringify({ page, pageSize, repositoryPath }),
     ),
+  getCommitFileDiff: (
+    repositoryPath: string,
+    commitHash: string,
+    filePath: string,
+  ) =>
+    electron.ipcRenderer.invoke(
+      "commits:getCommitFileDiff",
+      JSON.stringify({ repositoryPath, commitHash, filePath }),
+    ),
+  getCommitStatus: (repositoryPath: string, commitHash: string) =>
+    electron.ipcRenderer.invoke(
+      "commits:getCommitStatus",
+      JSON.stringify({ repositoryPath, commitHash }),
+    ),
   getSavedRepositories: () =>
     electron.ipcRenderer.invoke("repositories:getSaved"),
   getTreeFileDiff: (

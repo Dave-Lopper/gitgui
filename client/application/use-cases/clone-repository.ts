@@ -9,6 +9,6 @@ export class CloneRepository {
 
   async execute(url: string): Promise<void> {
     const dto = await this.gitService.clone(url);
-    this.eventBus.emit({ type: "RepositoryCloned", payload: dto });
+    await this .eventBus.emit({ type: "RepositoryCloned", payload: dto });
   }
 }

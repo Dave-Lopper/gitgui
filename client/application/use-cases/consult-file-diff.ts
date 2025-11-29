@@ -4,6 +4,6 @@ export class ConsultFileDiff {
   constructor(private readonly eventBus: IEventBus) {}
 
   async execute(filePath: string): Promise<void> {
-    this.eventBus.emit({ type: "FileDiffConsulted", payload: filePath });
+    await this.eventBus.emit({ type: "FileDiffConsulted", payload: filePath });
   }
 }

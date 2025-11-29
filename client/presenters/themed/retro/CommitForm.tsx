@@ -14,7 +14,7 @@ export default function CommitForm() {
   } = useCommitForm();
 
   return (
-    <div className="flex flex-col absolute bottom-0 w-full">
+    <div className="flex flex-col w-full h-48">
       <TextInput
         placeholder="Commit message"
         value={commitMessage}

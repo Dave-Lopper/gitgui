@@ -18,13 +18,13 @@ export function useContextualMenu() {
 
   useEventSubscription(
     "RepositorySelected",
-    (event) => setIsFetchLoading(true),
+    async (event) => setIsFetchLoading(true),
     [],
   );
 
   useEventSubscription(
     "RepositoryFetched",
-    (event) => {
+    async (event) => {
       setIsFetchLoading(false);
       setCommitStatus(event.payload);
     },

@@ -13,7 +13,7 @@ export class BatchDiscardFileModifications {
       filePaths,
     );
     const dto = await this.gitService.selectRepoFromSaved(repositoryPath);
-    this.eventBus.emit({
+    await this.eventBus.emit({
       type: "RepositorySelected",
       payload: dto,
     });

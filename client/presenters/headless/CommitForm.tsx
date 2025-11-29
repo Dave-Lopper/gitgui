@@ -47,7 +47,7 @@ export default function CommitForm({
     );
   }, [repositorySelection]);
 
-  useEventSubscription("Commited", () => setIsCommitLoading(false), []);
+  useEventSubscription("Commited", async () => setIsCommitLoading(false), []);
 
   return (
     <div

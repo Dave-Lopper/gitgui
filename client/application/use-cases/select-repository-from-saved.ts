@@ -9,6 +9,6 @@ export class SelectRepositoryFromSaved {
 
   async execute(repositoryPath: string): Promise<void> {
     const dto = await this.gitService.selectRepoFromSaved(repositoryPath);
-    this.eventBus.emit({ type: "RepositorySelected", payload: dto });
+    await this.eventBus.emit({ type: "RepositorySelected", payload: dto });
   }
 }

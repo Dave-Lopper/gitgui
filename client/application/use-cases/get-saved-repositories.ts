@@ -9,7 +9,7 @@ export class GetSavedRepositories {
 
   async execute(): Promise<void> {
     const repositories = await this.repositoryStore.getRepositories();
-    this.eventBus.emit({
+    await this.eventBus.emit({
       type: "SavedRepositoriesFetched",
       payload: repositories,
     });

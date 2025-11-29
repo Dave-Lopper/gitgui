@@ -7,7 +7,7 @@ import { ShellRunner } from "../../../commons/infra/shell-command-runner.js";
 import { RepositoryGitCliRunner } from "../../repository/infra/repo-git-cli-runner.js";
 import { RepoStatusService } from "../../status/application/services/repo-status.js";
 import { GitStatusCliRunner } from "../../status/infra/git-cli-runner.js";
-import { GetRepoDiff } from "../application/services/repo-diff.js";
+// import { GetRepoDiff } from "../application/services/repo-diff.js";
 import { DiffCliGitRunner } from "../infra/diff-git-cli-runner.js";
 
 async function main() {
@@ -21,13 +21,13 @@ async function main() {
     eventEmitter,
     new GitStatusCliRunner(shellRunner),
   );
-  const service = new GetRepoDiff(
-    eventEmitter,
-    new FsFilesRepository(),
-    new DiffCliGitRunner(shellRunner),
-    repoGitRunner,
-    repoStatusService,
-  );
+  // const service = new GetRepoDiff(
+  //   eventEmitter,
+  //   new FsFilesRepository(),
+  //   new DiffCliGitRunner(shellRunner),
+  //   repoGitRunner,
+  //   repoStatusService,
+  // );
 
   const currentBranchName = await repoGitRunner.getCurrentBranch(
     repositoryPath as string,
@@ -36,13 +36,13 @@ async function main() {
     repositoryPath as string,
   );
 
-  const diff = await service.processFile(
-    currentBranchName,
-    currentRemote.name,
-    repositoryPath as string,
-    { path: filePath as string, status: "MODIFIED", staged: false },
-  );
-  writeFileSync("diff.json", JSON.stringify(diff));
+  // const diff = await service.processFile(
+  //   currentBranchName,
+  //   currentRemote.name,
+  //   repositoryPath as string,
+  //   { path: filePath as string, status: "MODIFIED", staged: false },
+  // );
+  // writeFileSync("diff.json", JSON.stringify(diff));
 }
 
 main();

@@ -9,6 +9,6 @@ export class Pull {
 
   async execute(repositoryPath: string): Promise<void> {
     await this.gitService.pull(repositoryPath);
-    this.eventBus.emit({ type: "Pulled", payload: {} });
+    await this.eventBus.emit({ type: "Pulled", payload: {} });
   }
 }

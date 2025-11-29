@@ -9,6 +9,6 @@ export class Push {
 
   async execute(repositoryPath: string): Promise<void> {
     await this.gitService.push(repositoryPath);
-    this.eventBus.emit({ type: "Pushed", payload: {} });
+    await this.eventBus.emit({ type: "Pushed", payload: {} });
   }
 }

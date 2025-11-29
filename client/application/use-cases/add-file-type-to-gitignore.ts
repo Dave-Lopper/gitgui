@@ -13,7 +13,7 @@ export class AddFileTypeToGitignore {
     const extension = pathParts[pathParts.length - 1];
     await this.gitService.batchAddToGitignore(repositoryPath, extension);
     const dto = await this.gitService.selectRepoFromSaved(repositoryPath);
-    this.eventBus.emit({
+    await this.eventBus.emit({
       type: "RepositorySelected",
       payload: dto,
     });

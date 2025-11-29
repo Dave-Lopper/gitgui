@@ -1,5 +1,7 @@
 import { ChangeEvent, ReactNode } from "react";
 
+import { Commit } from "../../domain/commit";
+
 export type CheckboxProps = {
   className?: string;
   isChecked: boolean;
@@ -39,4 +41,9 @@ export type ModalProps = {
   close: () => void;
   modalClassname?: string;
   title: string;
+};
+
+export type CurrentCommitProps = {
+  commit?: Commit;
+  close: () => Promise<void>;
 };

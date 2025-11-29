@@ -34,6 +34,8 @@ async function createWindow() {
     },
   });
 
+  console.log("NODE ENV", process.env.NODE_ENV);
+
   if (process.env.NODE_ENV === "development") {
     window.loadURL("http://localhost:5173");
     window.webContents.session.clearCache();
@@ -122,6 +124,23 @@ async function createWindow() {
       parsedMessage.page,
       parsedMessage.pageSize,
       parsedMessage.repositoryPath,
+    );
+  });
+
+  ipcMain.handle("commits:getCommitFileDiff", async (event, message) => {
+    const parsedMessage = JSON.parse(message);
+    return await commitUseCases.getCommitFileDiff.execute(
+      parsedMessage.repositoryPath,
+      parsedMessage.commitHash,
+      parsedMessage.filePath,
+    );
+  });
+
+  ipcMain.handle("commits:getCommitStatus", async (event, message) => {
+    const parsedMessage = JSON.parse(message);
+    return await commitUseCases.getCommitStatus.execute(
+      parsedMessage.repositoryPath,
+      parsedMessage.commitHash,
     );
   });
 

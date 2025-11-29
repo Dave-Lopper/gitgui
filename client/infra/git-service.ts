@@ -2,6 +2,7 @@ import { IGitService } from "../application/i-git-service";
 import { Branch } from "../domain/branch";
 import { Commit, CommitStatus } from "../domain/commit";
 import { DiffEntry } from "../domain/diff";
+import { StatusEntry } from "../domain/status";
 import { HistoryPaginationDto } from "../dto/history-pagination";
 import { RepositorySelectionDto } from "../dto/repo-selection";
 
@@ -75,6 +76,25 @@ export class GitService implements IGitService {
 
   async fetch(repositoryPath: string): Promise<CommitStatus> {
     return await window.electronAPI.fetch(repositoryPath);
+  }
+
+  async getCommitFileDiff(
+    repositoryPath: string,
+    commitHash: string,
+    filePath: string,
+  ): Promise<DiffEntry> {
+    return await window.electronAPI.getCommitFileDiff(
+      repositoryPath,
+      commitHash,
+      filePath,
+    );
+  }
+
+  async getCommitStatus(
+    repositoryPath: string,
+    commitHash: string,
+  ): Promise<StatusEntry[]> {
+    return await window.electronAPI.getCommitStatus(repositoryPath, commitHash);
   }
 
   async getHistory(

@@ -39,12 +39,11 @@ export class CommitGitCliRunner
     repositoryPath: string,
     commitHash: string,
     filePath: string,
-  ): Promise<string> {
+  ): Promise<string[]> {
     return await this.safeRun(
       "git",
       ["--no-pager", "show", "--numstat", commitHash, "--", filePath],
       { cwd: repositoryPath },
-      false,
     );
   }
 

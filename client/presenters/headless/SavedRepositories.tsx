@@ -27,7 +27,7 @@ export default function SavedRepositories({
   const [repositories, setRepositories] = useState<Repository[]>([]);
   useEventSubscription(
     "SavedRepositoriesFetched",
-    (event) => setRepositories(event.payload),
+    async (event) => setRepositories(event.payload),
     [],
   );
 

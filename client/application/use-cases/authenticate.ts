@@ -17,7 +17,7 @@ export class Authenticate {
       repositoryPath,
       username,
     );
-    this.eventBus.emit({
+    await this.eventBus.emit({
       type: "Authenticated",
       payload: { success: result },
     });

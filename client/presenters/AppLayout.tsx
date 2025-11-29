@@ -1,6 +1,16 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+  use,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import { useCases } from "../bootstrap";
+import { StatusEntry } from "../domain/status";
+import RetroCloseIcon from "../icons/retro/Close";
+import { useEventSubscription } from "../infra/react-bus-helper";
 import { RepoTabsContext } from "./contexts/repo-tabs";
 import { UiSettingsContext } from "./contexts/ui-settings/context";
 import {
@@ -9,16 +19,14 @@ import {
   SplitPane,
   useRepositorySelection,
 } from "./headless";
-import CommitForm from "./headless/CommitForm";
 import DiffViewer from "./headless/DiffViewer";
-import RepositoryTabs from "./headless/RepositoryTabs";
+import { CurrentCommitProps } from "./headless/types";
 import {
   ModernBranchDropdown,
   ModernDivider,
   ModernModifiedFilesCounter,
   ModernRepositoryDropdown,
   ModernRepositorySelectionMenu,
-  ModernRepositoryTab,
   ModernSettingsMenu,
 } from "./themed/modern";
 import {
@@ -29,23 +37,53 @@ import {
   RetroDiffFileOption,
   RetroDiffFileOptionRightClickFilesCounter,
   RetroDivider,
-  RetroLabel,
-  RetroModal,
   RetroModifiedFilesCounter,
   RetroRepositoryDropdown,
   RetroRepositorySelectionMenu,
   RetroSettingsMenu,
-  RetroSubmitButton,
-  RetroTextInput,
+  RetroSubHeader,
 } from "./themed/retro";
 import RetroDiffFileListRightClickMenuOption from "./themed/retro/DiffFileListRightClickMenuOption";
 import History from "./themed/retro/History";
-import RetroRepositoryTab from "./themed/retro/RepositoryTab";
+import { truncateString } from "./utils";
+
+function RetroCurrentCommit({ commit, close }: CurrentCommitProps) {
+  const { repositorySelection } = useRepositorySelection();
+
+  if (!repositorySelection) {
+    return (
+      <div className="h-full w-full flex border-[2px] border-b-white border-l-0 border-r-0"></div>
+    );
+  }
+
+  return (
+    <div className="h-full flex justify-between font-retro items-center text-black text-sm relative">
+      {commit ? (
+        <>
+          <div className="flex flex-col pl-8">
+            <span className="text-left font-bold">Viewed commit</span>
+            <span className="text-left">
+              {commit.shortHash}: {truncateString(commit.subject, 30)}
+            </span>
+          </div>
+          <span onClick={close}>
+            <RetroCloseIcon
+              size={14}
+              color="#000"
+              className="absolute top-[10px] right-[10px] cursor-pointer"
+            />
+          </span>
+        </>
+      ) : (
+        <span className="px-8">Working tree</span>
+      )}
+    </div>
+  );
+}
 
 export default function AppLayout() {
   const { theme } = useContext(UiSettingsContext);
-  const { currentTab, selectedDiff, selectedFiles } =
-    useContext(RepoTabsContext);
+  const { currentTab } = useContext(RepoTabsContext);
   const { repositorySelection } = useRepositorySelection(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
@@ -57,6 +95,25 @@ export default function AppLayout() {
   useEffect(() => {
     startupCallback();
   }, [startupCallback]);
+
+  const [viewedCommit, setViewedCommit] = useState<
+    { hash: string; entries: StatusEntry[] } | undefined
+  >(undefined);
+  useEventSubscription(
+    "CommitViewed",
+    async (event) => {
+      if (event.payload) {
+        console.log({ VIEWEDCOMMITEVENT: event });
+        setViewedCommit({
+          hash: event.payload.commit.hash,
+          entries: event.payload.status,
+        });
+      } else {
+        setViewedCommit(undefined);
+      }
+    },
+    [],
+  );
 
   const branchDropdown = useMemo(
     () =>
@@ -96,11 +153,6 @@ export default function AppLayout() {
     [repositorySelection, theme],
   );
 
-  const repositoryTab = useMemo(
-    () => (theme === "MODERN" ? ModernRepositoryTab : RetroRepositoryTab),
-    [repositorySelection, theme],
-  );
-
   const settingsMenu = useMemo(
     () => (theme === "MODERN" ? <ModernSettingsMenu /> : <RetroSettingsMenu />),
     [theme],
@@ -113,11 +165,13 @@ export default function AppLayout() {
       )}
       <Header
         className={theme === "RETRO" ? "max-h-13" : "max-h-24"}
+        currentCommit={RetroCurrentCommit}
         branchDropdown={branchDropdown}
         contextualMenu={<RetroContextualMenu />}
         repositoryDropdown={repositoryDropdown}
         uiSettings={settingsMenu}
       />
+      {repositorySelection && theme === "RETRO" && <RetroSubHeader />}
 
       {repositorySelection && (
         <SplitPane
@@ -125,26 +179,40 @@ export default function AppLayout() {
             <div
               className={`${theme === "MODERN" ? "bg-modern-dark-ter" : "bg-retro-desktop"} relative flex h-full flex-col max-h-full`}
             >
-              <RepositoryTabs tab={repositoryTab} />
               {currentTab === "DIFF" ? (
-                <div className="flex flex-col">
+                <div className="flex flex-col h-full">
                   <ModifiedFilesCounter
                     count={repositorySelection.treeStatus.entries.length}
                   />
-                  <div className="flex flex-col bg-white">
-                    <ModifiedFilesList
-                      repositorySelection={repositorySelection}
-                      themedFileOption={ModifiedFileOption}
-                      rightClickMenuClassname="bg-retro font-retro retro-borders absolute w-[300px] border-[2px] text-black"
-                      rightClickMenuOption={
-                        RetroDiffFileListRightClickMenuOption
-                      }
-                      rightClickMenuFilesCounter={
-                        RetroDiffFileOptionRightClickFilesCounter
-                      }
-                    />
-                    <RetroCommitForm />
-                  </div>
+                  <ModifiedFilesList
+                    containerClassname="overflow-auto retro-scrollbar"
+                    repositorySelection={repositorySelection}
+                    themedFileOption={ModifiedFileOption}
+                    rightClickMenuClassname="bg-retro font-retro retro-borders absolute w-[300px] border-[2px] text-black"
+                    rightClickMenuOption={RetroDiffFileListRightClickMenuOption}
+                    rightClickMenuFilesCounter={
+                      RetroDiffFileOptionRightClickFilesCounter
+                    }
+                    statusEntries={repositorySelection.treeStatus.entries}
+                    commitHash={undefined}
+                  />
+                  <RetroCommitForm />
+                </div>
+              ) : viewedCommit ? (
+                <div className="flex flex-col h-full">
+                  <ModifiedFilesCounter count={viewedCommit.entries.length} />
+                  <ModifiedFilesList
+                    repositorySelection={repositorySelection}
+                    themedFileOption={ModifiedFileOption}
+                    rightClickMenuClassname="bg-retro font-retro retro-borders absolute w-[300px] border-[2px] text-black"
+                    rightClickMenuOption={RetroDiffFileListRightClickMenuOption}
+                    rightClickMenuFilesCounter={
+                      RetroDiffFileOptionRightClickFilesCounter
+                    }
+                    statusEntries={viewedCommit.entries}
+                    commitHash={viewedCommit.hash}
+                  />
+                  <RetroCommitForm />
                 </div>
               ) : (
                 <History />
@@ -152,13 +220,7 @@ export default function AppLayout() {
             </div>
           }
           leftPaneClassName="bg-red h-full"
-          rightPane={
-            selectedDiff ? (
-              <DiffViewer diff={selectedDiff} />
-            ) : (
-              <>Some right pane</>
-            )
-          }
+          rightPane={<DiffViewer />}
           divider={divider}
         />
       )}

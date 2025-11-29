@@ -1,47 +1,108 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import { DiffEntry } from "../../domain/diff";
+import { useEventSubscription } from "../../infra/react-bus-helper";
+import { StatusEntryWithIndex } from "../contexts/repo-tabs/context";
 
-export default function DiffViewer({ diff }: { diff: DiffEntry }) {
-  console.log({ diff });
+export default function DiffViewer() {
+  const [fileSelection, setFileSelection] = useState<StatusEntryWithIndex[]>();
+  const [viewedDiff, setViewedDiff] = useState<DiffEntry | undefined>();
+
+  // useEventSubscription(
+  //   "DiffSelectionModified",
+  //   async (event) => {
+  //     setFileSelection(event.payload);
+  //     if (event.payload.length === 1) {
+  //       setViewedDiff(event.payload[0]);
+  //       console.log({ diff: event.payload[0] });
+  //     } else {
+  //       setViewedDiff(undefined);
+  //     }
+  //   },
+  //   [],
+  // );
+
+  useEventSubscription(
+    "DiffViewed",
+    async (event) => {
+      setViewedDiff(event.payload);
+    },
+    [],
+  );
 
   const diffColors = useMemo<{
-    ADDED: { bg: string; highlight: string };
-    REMOVED: { bg: string; highlight: string };
+    ADDED: { bg: string; highlight: string; hover: string };
+    REMOVED: { bg: string; highlight: string; hover: string };
   }>(
     () => ({
-      ADDED: { bg: "bg-emerald-400", highlight: "bg-green-600" },
-      REMOVED: { bg: "bg-red-400", highlight: "bg-red-600" },
+      ADDED: {
+        bg: "bg-emerald-400",
+        highlight: "bg-green-600",
+        hover: "hover:bg-green-600",
+      },
+      REMOVED: {
+        bg: "bg-red-400",
+        highlight: "bg-red-600",
+        hover: "hover:bg-red-600",
+      },
     }),
     [],
   );
 
+  if (!viewedDiff && fileSelection && fileSelection.length > 1) {
+    return <div>{fileSelection.length} files selected</div>;
+  } else if (!viewedDiff && (!fileSelection || fileSelection.length === 0)) {
+    return <div>No file selected</div>;
+  }
+
   return (
-    <div className="m-0 flex h-full w-full flex-col items-start justify-start bg-white select-text overflow-auto font-[consolas]">
+    <div className="m-0 flex h-full w-full flex-col items-start justify-start bg-retro-desktop select-text overflow-auto font-[consolas] retro-scrollbar">
       <div className="flex flex-col items-start justify-start w-full">
         <div className=" flex flex-col items-start w-full">
           <div className="flex flex-col items-start w-full">
-            {diff.hunks.map((hunk) => (
-              <div className="mb-2 flex flex-col items-start w-full">
-                <div className="text-black bg-retro retro-borders border-2 px-2 py-[2px] w-full font-retro">
+            {viewedDiff?.hunks.map((hunk) => (
+              <div className=" flex flex-col items-start w-full">
+                <div className="text-black bg-retro retro-borders border-2 px-2 py-[2px] w-full font-retro flex justify-start">
                   @@ {hunk.oldLineStart},{hunk.oldLineStart + hunk.oldLineCount}{" "}
                   -&gt; {hunk.newLineStart},
                   {hunk.newLineStart + hunk.newLineCount} @@
+                  {hunk.enclosingBlock && (
+                    <span className="text-black ml-5">
+                      {hunk.enclosingBlock}
+                    </span>
+                  )}
                 </div>
-                {hunk.enclosingBlock && (
-                  <span className="text-black">{hunk.enclosingBlock}</span>
-                )}
-                <div className="flex flex-col items-start mb-2 w-full">
+
+                <div className="flex flex-col items-start w-full border-retro border-b-1">
                   {hunk.lines.map((line) => (
-                    <div className="flex items-start font-semibold text-white LINE w-full">
+                    <div className="flex items-start font-semibold text-white LINE w-full cursor-pointer">
                       {line.type === "CONTEXT" ? (
-                        <span className="whitespace-pre text-black">
-                          {line.content}
-                        </span>
+                        <div className="flex item-start justify-start hover:bg-retro-pressed w-full bg-white">
+                          <span className="bg-retro border-black font-retro text-black font-thin flex text-xs">
+                            <span className="border-r-[1px]  w-6 h-6 flex justify-center items-center ">
+                              {line.oldN}
+                            </span>
+                            <span className="border-r-[1px] w-6 h-6 flex justify-center items-center ">
+                              {line.newN}
+                            </span>
+                          </span>
+
+                          <span className="whitespace-pre text-black">
+                            {line.content}
+                          </span>
+                        </div>
                       ) : (
                         <div
-                          className={`flex w-full ${diffColors[line.type].bg}`}
+                          className={`flex w-full ${diffColors[line.type].hover} ${diffColors[line.type].bg} cursor-pointer`}
                         >
+                          <span className="bg-retro border-black font-retro text-black font-thin flex text-xs">
+                            <span className="border-r-[1px]  w-6 h-6 flex justify-center items-center ">
+                              {line.type === "ADDED" && line.n}
+                            </span>
+                            <span className="border-r-[1px] w-6 h-6 flex justify-center items-center ">
+                              {line.type === "REMOVED" && line.n}
+                            </span>
+                          </span>
                           {line.parts.map((part) => (
                             <span
                               className={`

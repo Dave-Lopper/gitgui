@@ -7,6 +7,7 @@ export default function RetroDiffFileOption({
   isSelected,
   onClick,
   onContextMenu,
+  showStaged,
   toggleStaging,
 }: ThemedFileOptionProps) {
   const colors: { [K in FileStatus]: string[] } = {
@@ -23,11 +24,13 @@ export default function RetroDiffFileOption({
       onContextMenu={onContextMenu}
       data-file-option="true"
     >
-      <RetroCheckbox
-        isChecked={file.staged}
-        onClick={toggleStaging}
-        className="mr-2"
-      />
+      {showStaged && (
+        <RetroCheckbox
+          isChecked={file.staged}
+          onClick={toggleStaging}
+          className="mr-2"
+        />
+      )}
 
       <span
         className={`h-[20px] w-[20px] border-[2px] ${colors[file.status][0]} flex items-center justify-center mr-3 ml-1`}

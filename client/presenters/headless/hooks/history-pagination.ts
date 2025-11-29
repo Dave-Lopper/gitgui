@@ -31,8 +31,7 @@ export function useHistoryPagination(pageSize: number) {
 
   useEventSubscription(
     "CommitHistoryFetched",
-    (event) => {
-      console.log("HISTORY", { event });
+    async (event) => {
       setHistory(event.payload.history);
       setCurrentPage(event.payload.page);
       setTotalPages(event.payload.totalPages);

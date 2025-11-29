@@ -13,7 +13,7 @@ export class StageStashAndCheckout {
     const result = await this.gitService.checkoutBranch(repositoryPath, branch);
     if (result) {
       const dto = await this.gitService.selectRepoFromSaved(repositoryPath);
-      this.eventBus.emit({ type: "RepositorySelected", payload: dto });
+      await this.eventBus.emit({ type: "RepositorySelected", payload: dto });
     } else {
       console.error(
         "Unexpectedly failed to checkout after staging and stashing",

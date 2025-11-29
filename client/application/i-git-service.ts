@@ -1,6 +1,7 @@
 import { Branch } from "../domain/branch";
 import { Commit, CommitStatus } from "../domain/commit";
 import { DiffEntry } from "../domain/diff";
+import { StatusEntry } from "../domain/status";
 import { HistoryPaginationDto } from "../dto/history-pagination";
 import { RepositorySelectionDto } from "../dto/repo-selection";
 
@@ -31,6 +32,17 @@ export interface IGitService {
   clone(url: string): Promise<RepositorySelectionDto>;
 
   fetch(repositoryPath: string): Promise<CommitStatus>;
+
+  getCommitFileDiff(
+    repositoryPath: string,
+    commitHash: string,
+    filePath: string,
+  ): Promise<DiffEntry>;
+
+  getCommitStatus(
+    repositoryPath: string,
+    commitHash: string,
+  ): Promise<StatusEntry[]>;
 
   getHistory(
     page: number,

@@ -1,9 +1,9 @@
 import { ComponentType, ReactNode } from "react";
-
-import { useDropdown } from "./hooks/dropdown";
-import { useEventSubscription } from "../../infra/react-bus-helper";
-import { EventType } from "../../application/i-event-bus";
 import { set } from "zod";
+
+import { EventType } from "../../application/i-event-bus";
+import { useEventSubscription } from "../../infra/react-bus-helper";
+import { useDropdown } from "./hooks/dropdown";
 
 export type DropdownProps = {
   animate: boolean;
@@ -34,7 +34,7 @@ export default function Dropdown({
   } = useDropdown();
 
   if (closeEvent) {
-    useEventSubscription(closeEvent, () => setIsExpanded(false), []);
+    useEventSubscription(closeEvent, async () => setIsExpanded(false), []);
   }
 
   return (

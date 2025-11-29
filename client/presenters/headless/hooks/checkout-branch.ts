@@ -41,7 +41,7 @@ export function useCheckoutBranch() {
 
   useEventSubscription(
     "CheckedOutBranchFailed",
-    (event) => {
+    async (event) => {
       errorSoundEffect.play();
       setCheckoutLoading(false);
       setFailedCheckoutBranch(event.payload.branch);
@@ -52,7 +52,7 @@ export function useCheckoutBranch() {
 
   useEventSubscription(
     "RepositorySelected",
-    (event) => {
+    async (event) => {
       setCheckoutLoading(false);
       setFailedCheckoutBranch(undefined);
     },

@@ -4,8 +4,8 @@ import {
   HourglassRetroIcon,
   RefreshRetroIcon,
 } from "../../../icons/retro";
+import { useRepositorySelection } from "../../headless";
 import { useContextualMenu } from "../../headless/hooks/contextual-menu";
-import { ThemedContextualMenuProps } from "../../headless/types";
 import Button from "./Button";
 import "./styles/Rotating.css";
 
@@ -20,11 +20,18 @@ export default function ContextualMenu() {
     push,
     refetch,
   } = useContextualMenu();
+  const { repositorySelection } = useRepositorySelection();
+
+  if (!repositorySelection) {
+    return (
+      <div className="h-full w-full flex border-[2px] border-b-white border-l-0 border-r-0"></div>
+    );
+  }
 
   return (
     <div className="h-full w-full flex">
       <Button
-        className="flex h-full flex-col items-center justify-center px-3 py-1 text-xs"
+        className="flex h-full flex-col items-center justify-center px-3 py-1 text-xs w-1/3"
         isActive={isFetchLoading}
         sound
         disabled={contextualAction !== "REFRESH"}
@@ -40,7 +47,7 @@ export default function ContextualMenu() {
         {isFetchLoading ? "Fetching" : "Fetch"}
       </Button>
       <Button
-        className="flex h-full flex-col items-center justify-between px-3 py-1 text-xs"
+        className="flex h-full flex-col items-center justify-between px-3 py-1 text-xs w-1/3"
         sound
         disabled={contextualAction !== "PULL"}
         isActive={isPullLoading}
@@ -60,7 +67,7 @@ export default function ContextualMenu() {
             : "Pull"}
       </Button>
       <Button
-        className="flex h-full flex-col items-center justify-between px-3 py-1 text-xs"
+        className="flex h-full flex-col items-center justify-between px-3 py-1 text-xs w-1/3"
         sound
         disabled={contextualAction !== "PUSH"}
         isActive={isPushLoading}

@@ -10,6 +10,6 @@ export class Fetch {
 
   async execute(repositoryPath: string): Promise<void> {
     const dto = await this.gitService.fetch(repositoryPath);
-    this.eventBus.emit({ type: "RepositoryFetched", payload: dto });
+    await this.eventBus.emit({ type: "RepositoryFetched", payload: dto });
   }
 }

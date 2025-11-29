@@ -4,7 +4,7 @@ import { IEventBus } from "../i-event-bus";
 export class RepositoryFetched {
   constructor(private readonly eventBus: IEventBus) {}
 
-  execute(dto: CommitStatus): void {
-    this.eventBus.emit({ type: "RepositoryFetched", payload: dto });
+  async execute(dto: CommitStatus): Promise<void> {
+    await this.eventBus.emit({ type: "RepositoryFetched", payload: dto });
   }
 }

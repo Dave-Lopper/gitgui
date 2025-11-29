@@ -1,7 +1,9 @@
-import { ComponentType, useCallback, useContext, useMemo } from "react";
+import { ComponentType, useCallback, useMemo, useState } from "react";
 
 import { useCases } from "../../bootstrap";
-import { RepoTabsContext } from "../contexts/repo-tabs";
+import { StatusEntry } from "../../domain/status";
+import { useEventSubscription } from "../../infra/react-bus-helper";
+import { StatusEntryWithIndex } from "../contexts/repo-tabs/context";
 import { useRepositorySelection } from "./hooks/repository-selection";
 
 export type RightClickMenuOptionProps = {
@@ -27,31 +29,37 @@ export default function DiffFileOptionRightClickMenu({
   selectedFilesCounter: SelectedFilesCounter,
 }: DiffFileOptionRightClickMenuProps) {
   const { repositorySelection } = useRepositorySelection();
-  const { selectedFiles } = useContext(RepoTabsContext);
+  const [fileSelection, setFileSelection] = useState<StatusEntryWithIndex[]>(
+    [],
+  );
+
+  useEventSubscription(
+    "DiffSelectionModified",
+    async (event) => setFileSelection(event.payload),
+    [],
+  );
 
   const addFileTypeToGitignore = useCallback(async () => {
     if (!repositorySelection) {
       return;
     }
 
-    const [selectedFile] = selectedFiles;
     await useCases.addFileTypeToGitignore.execute(
       repositorySelection.repository.localPath,
-      selectedFile,
+      fileSelection[0],
     );
-  }, [repositorySelection, selectedFiles]);
+  }, [repositorySelection, fileSelection]);
 
   const selectedFileExtension = useMemo(() => {
-    if (selectedFiles.size !== 1) {
+    if (fileSelection.length !== 1) {
       return null;
     }
 
-    const [selectedFile] = selectedFiles;
-    const filePathParts = selectedFile.path.split(".");
+    const filePathParts = fileSelection[0].path.split(".");
     const extension = filePathParts[filePathParts.length - 1];
 
     return `.${extension}`;
-  }, [selectedFiles]);
+  }, [fileSelection]);
 
   const addToGitignore = useCallback(async () => {
     if (!repositorySelection) {
@@ -60,33 +68,31 @@ export default function DiffFileOptionRightClickMenu({
 
     await useCases.addToGitignore.execute(
       repositorySelection.repository.localPath,
-      Array.from(selectedFiles).map((file) => file.path),
+      fileSelection.map((file) => file.path),
     );
-  }, [repositorySelection, selectedFiles]);
+  }, [repositorySelection, fileSelection]);
 
   const copyAbsoluteFilePath = useCallback(async () => {
     if (!repositorySelection) {
       return;
     }
 
-    const [selectedFile] = selectedFiles;
     await useCases.copyAbsoluteFilePath.execute(
       repositorySelection?.repository.localPath,
-      selectedFile.path,
+      fileSelection[0].path,
     );
-  }, [repositorySelection, selectedFiles]);
+  }, [repositorySelection, fileSelection]);
 
   const copyRelativeFilePath = useCallback(async () => {
     if (!repositorySelection) {
       return;
     }
 
-    const [selectedFile] = selectedFiles;
     await useCases.copyRelativeFilePath.execute(
       repositorySelection?.repository.localPath,
-      selectedFile.path,
+      fileSelection[0].path,
     );
-  }, [repositorySelection, selectedFiles]);
+  }, [repositorySelection, fileSelection]);
 
   const discardChanges = useCallback(async () => {
     if (!repositorySelection) {
@@ -95,9 +101,9 @@ export default function DiffFileOptionRightClickMenu({
 
     await useCases.batchDiscardFileModifications.execute(
       repositorySelection.repository.localPath,
-      Array.from(selectedFiles).map((file) => file.path),
+      fileSelection.map((file) => file.path),
     );
-  }, [repositorySelection, selectedFiles]);
+  }, [repositorySelection, fileSelection]);
 
   return (
     <div
@@ -108,10 +114,10 @@ export default function DiffFileOptionRightClickMenu({
           : { display: "none" }
       }
     >
-      <SelectedFilesCounter count={selectedFiles.size} />
+      <SelectedFilesCounter count={fileSelection.length} />
       <MenuOption text="Discard changes" onClick={discardChanges} />
       <MenuOption text="Add to gitignore" onClick={addToGitignore} />
-      {selectedFiles.size === 1 && (
+      {fileSelection.length === 1 && (
         <>
           <MenuOption
             text={`Add all ${selectedFileExtension} files to gitignore`}

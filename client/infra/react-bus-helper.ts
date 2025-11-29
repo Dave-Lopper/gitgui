@@ -10,12 +10,20 @@ export function useEventSubscription(
   getLastEvent: boolean = true,
 ) {
   useEffect(() => {
+    const subscribe = async (
+      event: string,
+      subscriber: Subscriber,
+      getLastEvent: boolean,
+    ) => {
+      await eventBus.subscribe(event, subscriber, getLastEvent);
+    };
+
     if (Array.isArray(event)) {
       for (let i = 0; i < event.length; i++) {
-        eventBus.subscribe(event[i], subscriber, getLastEvent);
+        subscribe(event[i], subscriber, getLastEvent);
       }
     } else {
-      eventBus.subscribe(event, subscriber, getLastEvent);
+      subscribe(event, subscriber, getLastEvent);
     }
 
     return () => {

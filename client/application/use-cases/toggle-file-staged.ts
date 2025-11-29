@@ -20,6 +20,6 @@ export class ToggleFileStaged {
     const previousStaging =
       repositorySelection.treeStatus.entries[fileIndex].staged;
     repositorySelection.treeStatus.entries[fileIndex].staged = !previousStaging;
-    this.eventBus.emit({ type: "FileStaged", payload: dto });
+    await this.eventBus.emit({ type: "FileStaged", payload: dto });
   }
 }

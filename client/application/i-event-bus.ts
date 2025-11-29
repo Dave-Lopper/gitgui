@@ -3,14 +3,14 @@ export type Event = {
   type: EventType;
   payload?: any;
 };
-export type Subscriber = (event: Event) => void;
+export type Subscriber = (event: Event) => Promise<void>;
 
 export interface IEventBus {
   subscribe(
     eventType: EventType,
     subscriber: Subscriber,
     getLastEvent?: boolean,
-  ): void;
+  ): Promise<void>;
   unsubscribe(eventType: EventType, subscriber: Subscriber): void;
-  emit(event: Event | Event[]): void;
+  emit(event: Event | Event[]): Promise<void>;
 }

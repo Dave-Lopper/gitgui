@@ -9,6 +9,6 @@ export class SelectRepositoryFromDisk {
 
   async execute(): Promise<void> {
     const dto = await this.gitService.selectRepoFromDisk();
-    this.eventBus.emit({ type: "RepositorySelected", payload: dto });
+    await this.eventBus.emit({ type: "RepositorySelected", payload: dto });
   }
 }

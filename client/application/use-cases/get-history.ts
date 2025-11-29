@@ -17,7 +17,7 @@ export class GetCommitHistory {
       pageSize,
       repositoryPath,
     );
-    this.eventBus.emit({
+    await this.eventBus.emit({
       type: "CommitHistoryFetched",
       payload: dto,
     });

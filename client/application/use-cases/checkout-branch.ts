@@ -24,13 +24,13 @@ export class CheckoutBranch {
     );
 
     if (!success) {
-      this.eventBus.emit({
+      await this.eventBus.emit({
         type: "CheckedOutBranchFailed",
         payload: { branch },
       });
     } else {
       const dto = await this.gitService.selectRepoFromSaved(repositoryPath);
-      this.eventBus.emit({ type: "RepositorySelected", payload: dto });
+      await this.eventBus.emit({ type: "RepositorySelected", payload: dto });
     }
   }
 }

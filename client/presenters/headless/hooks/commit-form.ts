@@ -38,7 +38,7 @@ export function useCommitForm() {
     );
   }, [commitDescription, commitMessage, isSubmitDisabled, repositorySelection]);
 
-  useEventSubscription("Commited", () => setIsCommitLoading(false), []);
+  useEventSubscription("Commited", async () => setIsCommitLoading(false), []);
 
   return {
     commit,

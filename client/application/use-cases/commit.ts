@@ -17,10 +17,10 @@ export class Commit {
       commitMessage,
       commitDescription,
     );
-    this.eventBus.emit({ type: "Commited", payload: commit });
+    await this.eventBus.emit({ type: "Commited", payload: commit });
     const dto = await this.gitService.selectRepoFromSaved(repositoryPath);
-    this.eventBus.emit({
-      type: "RepositorySelected", 
+    await this.eventBus.emit({
+      type: "RepositorySelected",
       payload: dto,
     });
   }

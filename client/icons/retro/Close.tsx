@@ -3,6 +3,7 @@ import { IconProps, iconDefaultProps } from "../types";
 export default function RetroCloseIcon(props: IconProps = iconDefaultProps) {
   return (
     <svg
+      className={props.className}
       width={`${props.size}px`}
       height={`${props.size}px`}
       viewBox="0 -0.5 21 21"
