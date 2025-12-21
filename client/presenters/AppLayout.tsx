@@ -212,7 +212,6 @@ export default function AppLayout() {
                     statusEntries={viewedCommit.entries}
                     commitHash={viewedCommit.hash}
                   />
-                  <RetroCommitForm />
                 </div>
               ) : (
                 <History />
