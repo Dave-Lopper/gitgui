@@ -83,6 +83,24 @@ export class DiffCliGitRunner extends GitCliRunner implements DiffGitRunner {
     );
   }
 
+  async getFilePatch(
+    repositoryPath: string,
+    filePath: string,
+    staged: boolean,
+  ): Promise<string> {
+    const args = ["--no-pager", "diff", "--no-color", "--patch-with-raw"];
+    if (staged) {
+      args.push("--cached");
+    }
+    args.push(filePath);
+    return await this.safeRun(
+      "git",
+      args,
+      { cwd: repositoryPath, trimOutput: false },
+      false,
+    );
+  }
+
   async getHeadFileContents(
     branchName: string,
     remoteName: string,

@@ -4,6 +4,7 @@ import { DiffEntry } from "../../../diff/domain/entities.js";
 import {
   parseFileDiff,
   parseFileNumStat,
+  parseFilePatch,
 } from "../../../diff/domain/services.js";
 import { CommitGitRunner } from "../git-runner.js";
 
@@ -18,22 +19,21 @@ export class GetCommitFileDiff {
     commitHash: string,
     filePath: string,
   ): Promise<DiffEntry> {
-    const rawDiff = await safeGit(
-      this.gitRunner.getCommitFileDiff(repositoryPath, commitHash, filePath),
+    // const rawDiff = await safeGit(
+    //   this.gitRunner.getCommitFileDiff(repositoryPath, commitHash, filePath),
+    //   this.eventEmitter,
+    // );
+    const rawPatch = await safeGit(
+      this.gitRunner.getCommitfilePatch(repositoryPath, commitHash, filePath),
       this.eventEmitter,
     );
-    const hunks = parseFileDiff(rawDiff);
+    const hunks = parseFilePatch(rawPatch);
     const rawNumStats = await safeGit(
       this.gitRunner.getCommitFileStats(repositoryPath, commitHash, filePath),
       this.eventEmitter,
     );
     let numstats: number[];
     if (rawNumStats.length >= 5) {
-      console.log({
-        RAWNUMSTAT: rawNumStats[4],
-        len: rawNumStats.length,
-        rawNumStats,
-      });
       numstats = parseFileNumStat(rawNumStats[4]);
     } else {
       numstats = [0, 0];

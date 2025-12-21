@@ -1,75 +1,55 @@
-commit 5c1690b731c61f2718beb0c5d1a15247b1aef8a3
+commit 2ea7d65f2d1f040947a3af7c7351b2a4be3ce307
 Author: Alexis Haim <alexishaim@outlook.fr>
-Date:   Thu Oct 23 09:15:47 2025 +0700
+Date:   Mon Oct 13 07:38:03 2025 +0700
 
-    With fixed diff parser
+    With functional branch checkout
 
-diff --git a/client/presenters/AppLayout.tsx b/client/presenters/AppLayout.tsx
-index c4b00f8..922ce97 100644
---- a/client/presenters/AppLayout.tsx
-+++ b/client/presenters/AppLayout.tsx
-@@ -10,6 +10,7 @@ import {
-   useRepositorySelection,
+diff --git a/server/modules/repository/application/use-cases/checkout-branch.ts b/server/modules/repository/application/use-cases/checkout-branch.ts
+index 6c8c3c3..579d1a6 100644
+--- a/server/modules/repository/application/use-cases/checkout-branch.ts
++++ b/server/modules/repository/application/use-cases/checkout-branch.ts
+@@ -10,14 +10,18 @@ export class CheckoutBranch {
+     private readonly repoDiffService: RepoDiffService,
 ~
- } from "./headless";
-~
- import CommitForm from "./headless/CommitForm";
-~
-+import DiffViewer from "./headless/DiffViewer";
-~
- import RepositoryTabs from "./headless/RepositoryTabs";
-~
- import {
-~
-   ModernBranchDropdown,
-~
-@@ -43,7 +44,7 @@ import RetroRepositoryTab from "./themed/retro/RepositoryTab";
- 
-~
- export default function AppLayout() {
-~
-   const { theme } = useContext(UiSettingsContext);
-~
-   const { 
--currentTab
-+currentTab, selectedFiles
-  } = useContext(RepoTabsContext);
-~
-   const { repositorySelection } = useRepositorySelection(true);
-~
-   const [showAuthModal, setShowAuthModal] = useState(false);
+   ) {}
 ~
  
 ~
-@@ -150,7 +151,13 @@ export default function AppLayout() {
-             </div>
+   async 
+-execute(repositoryPath:
++execute(
 ~
-           }
++    repositoryPath:
+  string,
 ~
-           leftPaneClassName="bg-red h-full"
+     branchName: 
+-string):
++string,
 ~
-           
--rightPane={<>Some
-+rightPane={
++    remoteName?: string,
 ~
-+            selectedFiles.size === 1 ? (
++  ):
+  Promise<boolean> {
 ~
-+              <DiffViewer diff={selectedFiles.values().next().value!} />
+     const diff = await this.repoDiffService.execute(repositoryPath);
 ~
-+            ) : (
+     if (diff.length > 0) {
 ~
-+              <>Some
-  right 
--pane</>}
-+pane</>
+       return false;
 ~
-+            )
+     }
 ~
-+          }
+ 
 ~
-           divider={divider}
+     await safeGit(
 ~
-         />
+       this.gitRunner.checkoutBranch(branchName, 
+-repositoryPath),
++repositoryPath, remoteName),
 ~
-       )}
+       this.eventEmitter,
+~
+     );
+~
+     return true;
 ~

@@ -11,6 +11,12 @@ export interface CommitGitRunner {
     filePath: string,
   ): Promise<string>;
 
+  getCommitfilePatch(
+    repositoryPath: string,
+    commitHash: string,
+    filePath: string,
+  ): Promise<string>;
+
   getCommitFileStats(
     repositoryPath: string,
     commitHash: string,

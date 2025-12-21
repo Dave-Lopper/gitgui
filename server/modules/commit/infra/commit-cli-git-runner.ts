@@ -68,6 +68,27 @@ export class CommitGitCliRunner
     );
   }
 
+  async getCommitfilePatch(
+    repositoryPath: string,
+    commitHash: string,
+    filePath: string,
+  ): Promise<string> {
+    return await this.safeRun(
+      "git",
+      [
+        "--no-pager",
+        "show",
+        "--no-color",
+        "--patch-with-raw",
+        commitHash,
+        "--",
+        filePath,
+      ],
+      { cwd: repositoryPath },
+      false,
+    );
+  }
+
   async getCommitFiles(
     repositoryPath: string,
     commitHash: string,

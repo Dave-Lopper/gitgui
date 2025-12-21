@@ -11,6 +11,12 @@ export interface DiffGitRunner {
     staged: boolean,
   ): Promise<string>;
 
+  getFilePatch(
+    repositoryPath: string,
+    filePath: string,
+    staged: boolean,
+  ): Promise<string>;
+
   getFileNumStats(
     repositoryPath: string,
     filePath: string,

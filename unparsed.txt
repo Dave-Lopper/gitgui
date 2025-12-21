@@ -1,21 +1,110 @@
-diff --git a/client/application/use-cases/authenticate.ts b/client/application/use-cases/authenticate.ts
-index defd5df..eb860d1 100644
---- a/client/application/use-cases/authenticate.ts
-+++ b/client/application/use-cases/authenticate.ts
-@@ -17,7 +17,7 @@ export class Authenticate {
-       repositoryPath,
+commit 2ea7d65f2d1f040947a3af7c7351b2a4be3ce307
+Author: Alexis Haim <alexishaim@outlook.fr>
+Date:   Mon Oct 13 07:38:03 2025 +0700
+
+    With functional branch checkout
+
+diff --git a/server/modules/repository/application/use-cases/checkout-branch.ts b/server/modules/repository/application/use-cases/checkout-branch.ts
+index 6c8c3c3..579d1a6 100644
+--- a/server/modules/repository/application/use-cases/checkout-branch.ts
++++ b/server/modules/repository/application/use-cases/checkout-branch.ts
+@@ -10,14 +10,18 @@ export class CheckoutBranch {
+     private readonly repoDiffService: RepoDiffService,
 ~
-       username,
+   ) {}
+~
+ 
+~
+   async 
+-execute(repositoryPath:
++execute(
+~
++    repositoryPath:
+  string,
+~
+     branchName: 
+-string):
++string,
+~
++    remoteName?: string,
+~
++  ):
+  Promise<boolean> {
+~
+     const diff = await this.repoDiffService.execute(repositoryPath);
+~
+     if (diff.length > 0) {
+~
+       return false;
+~
+     }
+~
+ 
+~
+     await safeGit(
+~
+       this.gitRunner.checkoutBranch(branchName, 
+-repositoryPath),
++repositoryPath, remoteName),
+~
+       this.eventEmitter,
 ~
      );
 ~
-     
-+await
-  this.eventBus.emit({
+     return true;
 ~
-       type: "Authenticated",
+commit 2ea7d65f2d1f040947a3af7c7351b2a4be3ce307
+Author: Alexis Haim <alexishaim@outlook.fr>
+Date:   Mon Oct 13 07:38:03 2025 +0700
+
+    With functional branch checkout
+
+diff --git a/server/modules/repository/application/use-cases/checkout-branch.ts b/server/modules/repository/application/use-cases/checkout-branch.ts
+index 6c8c3c3..579d1a6 100644
+--- a/server/modules/repository/application/use-cases/checkout-branch.ts
++++ b/server/modules/repository/application/use-cases/checkout-branch.ts
+@@ -10,14 +10,18 @@ export class CheckoutBranch {
+     private readonly repoDiffService: RepoDiffService,
 ~
-       payload: { success: result },
+   ) {}
 ~
-     });
+ 
+~
+   async 
+-execute(repositoryPath:
++execute(
+~
++    repositoryPath:
+  string,
+~
+     branchName: 
+-string):
++string,
+~
++    remoteName?: string,
+~
++  ):
+  Promise<boolean> {
+~
+     const diff = await this.repoDiffService.execute(repositoryPath);
+~
+     if (diff.length > 0) {
+~
+       return false;
+~
+     }
+~
+ 
+~
+     await safeGit(
+~
+       this.gitRunner.checkoutBranch(branchName, 
+-repositoryPath),
++repositoryPath, remoteName),
+~
+       this.eventEmitter,
+~
+     );
+~
+     return true;
 ~
