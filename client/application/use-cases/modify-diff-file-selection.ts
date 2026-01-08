@@ -1,4 +1,4 @@
-import { DiffEntry } from "../../domain/diff";
+import { DiffEntry, DiffRepresentation } from "../../domain/diff";
 import { StatusEntryWithIndex } from "../../presenters/contexts/repo-tabs/context";
 import { IEventBus } from "../i-event-bus";
 import { IGitService } from "../i-git-service";
@@ -22,7 +22,7 @@ export class ModifyFileDiffSelection {
       payload: tempArray,
     });
 
-    let diff: DiffEntry | undefined = undefined;
+    let diff: DiffEntry<DiffRepresentation> | undefined = undefined;
     if (tempArray.length === 1) {
       if (commitHash) {
         diff = await this.gitService.getCommitFileDiff(

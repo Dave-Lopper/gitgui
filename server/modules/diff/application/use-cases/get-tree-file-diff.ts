@@ -1,7 +1,8 @@
 import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
-import { DiffEntry } from "../../domain/entities.js";
-import { parseFileNumStat, parseFilePatch } from "../../domain/services.js";
+import { DiffEntry, DiffRepresentation } from "../../domain/entities.js";
+import { parseFilePatch } from "../../domain/services/differ/index.js";
+import { parseFileNumStat } from "../../domain/services/numstats.js";
 import { DiffGitRunner } from "../git-runner.js";
 
 export class GetTreeFileDiff {
@@ -14,12 +15,12 @@ export class GetTreeFileDiff {
     repositoryPath: string,
     filePath: string,
     staged: boolean,
-  ): Promise<DiffEntry> {
+  ): Promise<DiffEntry<DiffRepresentation>> {
     const rawPatch = await safeGit(
       this.gitRunner.getFilePatch(repositoryPath, filePath, staged),
       this.eventEmitter,
     );
-    const hunks = parseFilePatch(rawPatch);
+    const { hunks, diffRepresentation } = parseFilePatch(filePath, rawPatch);
     const numstatLines = await safeGit(
       this.gitRunner.getFileNumStats(repositoryPath, filePath, staged),
       this.eventEmitter,
@@ -29,7 +30,8 @@ export class GetTreeFileDiff {
     return {
       addedLines: numstat[0],
       removedLines: numstat[1],
+      representation: diffRepresentation,
       hunks,
     };
-  }
+}
 }

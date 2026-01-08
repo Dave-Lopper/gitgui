@@ -1,0 +1,30 @@
+.identifier {
+  color: black;
+}
+
+.typeHint {
+  color: green;
+}
+
+.functionDeclaration,
+.variableDeclaration,
+.keyword,
+.operator {
+  color: blue;
+}
+
+.punctuation {
+  color: #7a7a7a;
+}
+
+.comment {
+  color: #454545;
+}
+
+.string {
+  color: red;
+}
+
+.number {
+  color: purple;
+}

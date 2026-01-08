@@ -1,11 +1,11 @@
 import { IEventEmitter } from "../../../../commons/application/i-event-emitter.js";
 import { safeGit } from "../../../../commons/application/safe-git.js";
-import { DiffEntry } from "../../../diff/domain/entities.js";
 import {
-  parseFileDiff,
-  parseFileNumStat,
-  parseFilePatch,
-} from "../../../diff/domain/services.js";
+  DiffEntry,
+  DiffRepresentation,
+} from "../../../diff/domain/entities.js";
+import { parseFilePatch } from "../../../diff/domain/services/differ/index.js";
+import { parseFileNumStat } from "../../../diff/domain/services/numstats.js";
 import { CommitGitRunner } from "../git-runner.js";
 
 export class GetCommitFileDiff {
@@ -18,16 +18,13 @@ export class GetCommitFileDiff {
     repositoryPath: string,
     commitHash: string,
     filePath: string,
-  ): Promise<DiffEntry> {
-    // const rawDiff = await safeGit(
-    //   this.gitRunner.getCommitFileDiff(repositoryPath, commitHash, filePath),
-    //   this.eventEmitter,
-    // );
+  ): Promise<DiffEntry<DiffRepresentation>> {
     const rawPatch = await safeGit(
       this.gitRunner.getCommitfilePatch(repositoryPath, commitHash, filePath),
       this.eventEmitter,
     );
-    const hunks = parseFilePatch(rawPatch);
+
+    const { hunks, diffRepresentation } = parseFilePatch(filePath, rawPatch);
     const rawNumStats = await safeGit(
       this.gitRunner.getCommitFileStats(repositoryPath, commitHash, filePath),
       this.eventEmitter,
@@ -39,6 +36,11 @@ export class GetCommitFileDiff {
       numstats = [0, 0];
     }
 
-    return { addedLines: numstats[0], removedLines: numstats[1], hunks };
+    return {
+      addedLines: numstats[0],
+      removedLines: numstats[1],
+      representation: diffRepresentation,
+      hunks,
+    };
   }
 }

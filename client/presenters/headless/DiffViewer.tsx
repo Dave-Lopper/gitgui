@@ -1,12 +1,15 @@
 import { useMemo, useState } from "react";
 
-import { DiffEntry } from "../../domain/diff";
+import { DiffEntry, DiffRepresentation } from "../../domain/diff";
 import { useEventSubscription } from "../../infra/react-bus-helper";
 import { StatusEntryWithIndex } from "../contexts/repo-tabs/context";
+import "./syntax-highlighting.css";
 
 export default function DiffViewer() {
   const [fileSelection, setFileSelection] = useState<StatusEntryWithIndex[]>();
-  const [viewedDiff, setViewedDiff] = useState<DiffEntry | undefined>();
+  const [viewedDiff, setViewedDiff] = useState<
+    DiffEntry<DiffRepresentation> | undefined
+  >();
 
   // useEventSubscription(
   //   "DiffSelectionModified",
@@ -87,8 +90,14 @@ export default function DiffViewer() {
                             </span>
                           </span>
 
-                          <span className="whitespace-pre text-black">
-                            {line.content}
+                          <span className="whitespace-pre text-black flex flex-row">
+                            {Array.isArray(line.content) ? (
+                              line.content.map((token) => (
+                                <pre className={token.type}>{token.value}</pre>
+                              ))
+                            ) : (
+                              <pre>{line.content}</pre>
+                            )}
                           </span>
                         </div>
                       ) : (
@@ -110,10 +119,18 @@ export default function DiffViewer() {
                                   part.type === "DIFF"
                                     ? diffColors[line.type].highlight
                                     : ""
-                                } whitespace-pre
+                                } whitespace-pre flex flex-row
                               `}
                             >
-                              {part.content}
+                              {Array.isArray(part.content) ? (
+                                part.content.map((token) => (
+                                  <pre className={token.type}>
+                                    {token.value}
+                                  </pre>
+                                ))
+                              ) : (
+                                <pre>{part.content}</pre>
+                              )}
                             </span>
                           ))}
                         </div>
