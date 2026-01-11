@@ -1,11 +1,13 @@
-import { LanguageSpecificTokenizer, LexerState } from ".";
+import { LanguageSpecificLexer, ProgrammingLangLexerState } from "..";
 
-export class JavascriptTokenizer implements LanguageSpecificTokenizer {
+export class JavascriptTokenizer implements LanguageSpecificLexer {
   public readonly functionDeclarators = ["function"];
   public readonly nativeTypes = [
     "number",
     "boolean",
     "string",
+    "Map",
+    "Set",
     "Array",
     "Object",
   ];
@@ -51,6 +53,7 @@ export class JavascriptTokenizer implements LanguageSpecificTokenizer {
     "return",
     "class",
     "extends",
+    "implements",
     "new",
     "try",
     "catch",
@@ -68,6 +71,10 @@ export class JavascriptTokenizer implements LanguageSpecificTokenizer {
     "default",
     "typeof",
     "instanceof",
+    "abstract",
+    "final",
+    "eval",
+    "private",
   ];
   public readonly stringClosersMapping = { "'": "'", '"': '"', "`": "`" };
   public readonly varDeclarators = ["var", "let", "const"];
@@ -101,14 +108,20 @@ export class JavascriptTokenizer implements LanguageSpecificTokenizer {
     return 0;
   }
 
-  public isStringTemplateOpening(value: string, state: LexerState): number {
+  public isStringTemplateOpening(
+    value: string,
+    state: ProgrammingLangLexerState,
+  ): number {
     if (state.inString === "`" && value.startsWith("${")) {
       return 2;
     }
     return 0;
   }
 
-  public isStringTemplateClosing(value: string, state: LexerState): number {
+  public isStringTemplateClosing(
+    value: string,
+    state: ProgrammingLangLexerState,
+  ): number {
     if (state.inString === "`" && value.startsWith("}")) {
       return 1;
     }

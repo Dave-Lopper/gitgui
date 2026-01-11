@@ -26,6 +26,7 @@ export class GetTreeFileDiff {
       this.eventEmitter,
     );
     const numstat = parseFileNumStat(numstatLines);
+    console.log({ hunks, diffRepresentation });
 
     return {
       addedLines: numstat[0],
@@ -33,5 +34,5 @@ export class GetTreeFileDiff {
       representation: diffRepresentation,
       hunks,
     };
-}
+  }
 }

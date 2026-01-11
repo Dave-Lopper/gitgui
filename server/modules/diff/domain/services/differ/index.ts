@@ -1,10 +1,6 @@
 import { ChangedLine, DiffRepresentation, Hunk } from "../../entities.js";
-import {
-  LexerState,
-  LineTokenizer,
-  Token,
-  highlightSupportedFileTypes,
-} from "../tokenizer/index.js";
+import { TOKENIZERS } from "../tokenizer/bootstrap.js";
+import { LineTokenizer, Token } from "../tokenizer/index.js";
 import { myersDiff } from "./myers.js";
 
 type RawDiffLine = {
@@ -179,8 +175,9 @@ function groupDiffBlocks(hunks: RawHunk[]): BlockedHunk[] {
 
 function computeWordDiffs(
   rawHunks: BlockedHunk[],
-  tokenizer: undefined | LineTokenizer,
+  tokenizer: undefined | LineTokenizer<unknown, unknown>,
 ): Hunk<DiffRepresentation>[] {
+  // console.log({ rawHunks });
   const formattedHunks: Hunk<DiffRepresentation>[] = [];
 
   for (let i = 0; i < rawHunks.length; i++) {
@@ -197,17 +194,15 @@ function computeWordDiffs(
     let newLineN = rawHunk.newLineStart;
 
     for (let j = 0; j < rawHunk.blocks.length; j++) {
-      let lexerState: LexerState = {
-        inBlockComment: false,
-        inStringTemplateExpr: 0,
-        inString: null,
-      };
+      let lexerState = tokenizer?.initialState;
+
       const block = rawHunk.blocks[j];
 
       if (block.type === "UNCHANGED") {
         for (let k = 0; k < block.oldLines.length; k++) {
-          let content: Token[] | string;
+          let content: Token<unknown>[] | string;
           if (tokenizer) {
+            console.log("Tokenizing line");
             const tokenizerRv = tokenizer.tokenizeLine(
               block.oldLines[k].content,
               lexerState,
@@ -232,7 +227,7 @@ function computeWordDiffs(
 
       if (block.type === "REMOVED") {
         for (let k = 0; k < block.oldLines.length; k++) {
-          let content: Token[] | string;
+          let content: Token<unknown>[] | string;
           if (tokenizer) {
             const tokenizerRv = tokenizer.tokenizeLine(
               block.oldLines[k].content,
@@ -256,7 +251,7 @@ function computeWordDiffs(
 
       if (block.type === "ADDED") {
         for (let k = 0; k < block.newLines.length; k++) {
-          let content: Token[] | string;
+          let content: Token<unknown>[] | string;
           if (tokenizer) {
             const tokenizerRv = tokenizer.tokenizeLine(
               block.newLines[k].content,
@@ -281,11 +276,6 @@ function computeWordDiffs(
       if (block.type === "MODIFIED") {
         if (block.oldLines.length === block.newLines.length) {
           for (let k = 0; k < block.oldLines.length; k++) {
-            // console.log({
-            //   k,
-            //   blockOldLinesLen: block.oldLines.length,
-            //   blockNewLinesLen: block.newLines.length,
-            // });
             const edits = myersDiff(
               block.oldLines[k].content,
               block.newLines[k].content,
@@ -304,7 +294,7 @@ function computeWordDiffs(
 
             for (let l = 0; l < edits.length; l++) {
               const edit = edits[l];
-              let content: Token[] | string;
+              let content: Token<unknown>[] | string;
               if (tokenizer) {
                 const tokenizerRv = tokenizer.tokenizeLine(
                   edit.value,
@@ -373,7 +363,7 @@ function computeWordDiffs(
             const edit = edits[k];
             let editValue = edit.value;
 
-            let content: Token[] | string;
+            let content: Token<unknown>[] | string;
             if (tokenizer) {
               const tokenizerRv = tokenizer.tokenizeLine(
                 edit.value,
@@ -475,7 +465,7 @@ function computeWordDiffs(
           }
         } else {
           for (let k = 0; k < block.oldLines.length; k++) {
-            let content: Token[] | string;
+            let content: Token<unknown>[] | string;
             if (tokenizer) {
               const tokenizerRv = tokenizer.tokenizeLine(
                 block.oldLines[k].content,
@@ -495,12 +485,8 @@ function computeWordDiffs(
             oldLineN++;
           }
           for (let k = 0; k < block.newLines.length; k++) {
-            lexerState = {
-              inBlockComment: false,
-              inString: null,
-              inStringTemplateExpr: 0,
-            };
-            let content: Token[] | string;
+            lexerState = tokenizer?.initialState;
+            let content: Token<unknown>[] | string;
             if (tokenizer) {
               const tokenizerRv = tokenizer.tokenizeLine(
                 block.oldLines[k].content,
@@ -534,13 +520,14 @@ export function parseFilePatch(
   diffRepresentation: DiffRepresentation;
   hunks: Hunk<DiffRepresentation>[];
 } {
-  let tokenizer: LineTokenizer | undefined = undefined;
+  let tokenizer: LineTokenizer<unknown, unknown> | undefined = undefined;
   const lastDotIndex = filePath.lastIndexOf(".");
 
   if (lastDotIndex > -1) {
     const extension = filePath.substring(lastDotIndex + 1, filePath.length);
-    tokenizer = highlightSupportedFileTypes.get(extension);
+    tokenizer = TOKENIZERS.get(extension);
   }
+  console.log("Parsing file patch, about to computeDiffWords", tokenizer);
 
   return {
     hunks: computeWordDiffs(groupDiffBlocks(parsePatch(patch)), tokenizer),
