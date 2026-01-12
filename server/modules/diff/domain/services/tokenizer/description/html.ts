@@ -4,6 +4,7 @@ import {
   ProgrammingLangTokenType,
 } from "../programming/index.js";
 import { JavascriptTokenizer } from "../programming/languages/javascript.js";
+import { CssLineTokenizer, CssTokenType } from "./css.js";
 
 export type HtmlSpecificTokenType =
   | "tagName"
@@ -11,7 +12,10 @@ export type HtmlSpecificTokenType =
   | "string"
   | "punctuation";
 
-export type HtmlTokenType = HtmlSpecificTokenType | ProgrammingLangTokenType;
+export type HtmlTokenType =
+  | HtmlSpecificTokenType
+  | ProgrammingLangTokenType
+  | CssTokenType;
 
 export type HtmlLexerState = {
   isInCssTag: boolean;
@@ -41,6 +45,9 @@ export class HtmlLineTokenizer
     const jsTokenizer = new ProgrammingLangLineTokenizer(
       new JavascriptTokenizer(),
     );
+    const cssTokenizer = new CssLineTokenizer();
+    let jsTokenizerState = jsTokenizer.initialState;
+    let cssTokenizerState = cssTokenizer.initialState;
     const tokens: Token<HtmlTokenType>[] = [];
 
     let toProcess = line;
@@ -130,24 +137,25 @@ export class HtmlLineTokenizer
         continue;
       }
 
+      // Javascript script tag
       if (toProcess.startsWith("<script")) {
         tokens.push({ type: "punctuation", value: "<" });
         tokens.push({ type: "tagName", value: "script" });
         state.isOpeningJavascriptTag = true;
         state.isInHtmlTag = true;
         i += 7;
+        continue;
       }
 
       const jsTagClosingIndex = toProcess.indexOf("</script>");
       if (state.isInJavascriptTag === true && jsTagClosingIndex > -1) {
         const jsPart = toProcess.substring(0, jsTagClosingIndex);
-        tokens.push(
-          ...jsTokenizer.tokenizeLine(jsPart, {
-            inBlockComment: false,
-            inString: null,
-            inStringTemplateExpr: 0,
-          }).tokens,
+        const tokenizerOutput = jsTokenizer.tokenizeLine(
+          jsPart,
+          jsTokenizerState,
         );
+
+        tokens.push(...tokenizerOutput.tokens);
         i += jsPart.length;
 
         tokens.push({ type: "punctuation", value: "</" });
@@ -155,15 +163,51 @@ export class HtmlLineTokenizer
         tokens.push({ type: "punctuation", value: ">" });
         i += "</script>".length;
         state.isInJavascriptTag = false;
+        jsTokenizerState = jsTokenizer.initialState;
         continue;
       } else if (state.isInJavascriptTag === true) {
-        tokens.push(
-          ...jsTokenizer.tokenizeLine(toProcess, {
-            inBlockComment: false,
-            inString: null,
-            inStringTemplateExpr: 0,
-          }).tokens,
+        const tokenizerOutput = jsTokenizer.tokenizeLine(
+          toProcess,
+          jsTokenizerState,
         );
+        jsTokenizerState = tokenizerOutput.state;
+        tokens.push(...tokenizerOutput.tokens);
+        i += toProcess.length;
+        continue;
+      }
+
+      // Css Style tag
+      if (toProcess.startsWith("<style")) {
+        tokens.push({ type: "punctuation", value: "<" });
+        tokens.push({ type: "tagName", value: "style" });
+        state.isOpeningCssTag = true;
+        state.isInHtmlTag = true;
+        i += 6;
+        continue;
+      }
+
+      const cssClosingIndex = toProcess.indexOf("</style>");
+      if (state.isInCssTag === true && cssClosingIndex > -1) {
+        const cssPart = toProcess.substring(0, cssClosingIndex);
+        tokens.push(
+          ...cssTokenizer.tokenizeLine(cssPart, cssTokenizerState).tokens,
+        );
+        i += cssPart.length;
+
+        tokens.push({ type: "punctuation", value: "</" });
+        tokens.push({ type: "keyword", value: "style" });
+        tokens.push({ type: "punctuation", value: ">" });
+        i += "</style>".length;
+        state.isInCssTag = false;
+        cssTokenizerState = cssTokenizer.initialState;
+        continue;
+      } else if (state.isInCssTag === true) {
+        const tokenizerOutput = cssTokenizer.tokenizeLine(
+          toProcess,
+          cssTokenizerState,
+        );
+        cssTokenizerState = tokenizerOutput.state;
+        tokens.push(...tokenizerOutput.tokens);
         i += toProcess.length;
         continue;
       }
