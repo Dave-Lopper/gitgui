@@ -12,12 +12,14 @@ export type CssTokenType =
   | "whitespace"
   | "unknown";
 
-export type CssLexerState = {};
+export type CssLexerState = {
+  nextToken: CssTokenType;
+};
 
 export class CssLineTokenizer
   implements LineTokenizer<CssTokenType, CssLexerState>
 {
-  public readonly initialState: CssLexerState = {};
+  public readonly initialState: CssLexerState = { nextToken: "property" };
 
   private readonly HTML_TAGS = [
     "a",
@@ -155,13 +157,54 @@ export class CssLineTokenizer
         continue;
       }
 
+      const colonIndex = toProcess.indexOf(":");
+      if (colonIndex > -1 && toProcess.trimEnd().endsWith(";")) {
+        const [propName, propVal] = toProcess.split(":");
+        tokens.push(
+          { type: "property", value: propName },
+          { type: "punctuation", value: ":" },
+          {
+            type: "propertyValue",
+            value: propVal.substring(0, propVal.length - 1),
+          },
+          { type: "punctuation", value: ";" },
+        );
+        return { tokens, state };
+      }
+
+      if (char === "[") {
+        tokens.push({ type: "punctuation", value: "[" });
+        i++;
+        const closingIndex = toProcess.indexOf("]");
+
+        if (closingIndex > -1) {
+          const attr = toProcess.substring(1, closingIndex);
+          const equalIndex = attr.indexOf("=");
+
+          if (equalIndex > -1) {
+            const [attrName, attrVal] = attr.split("=");
+            tokens.push(
+              { type: "attrName", value: attrName },
+              { type: "string", value: attrVal },
+            );
+          } else {
+            tokens.push({ type: "attrName", value: attr });
+          }
+          tokens.push({ type: "punctuation", value: "]" });
+          i += attr.length + 1;
+          continue;
+        }
+
+        state.nextToken = "attrName";
+      }
+
       if ([".", "#"].includes(char)) {
         const remainder = toProcess.substring(1, toProcess.length);
 
         let separator;
         for (let j = 0; j < remainder.length; j++) {
           const char = remainder.charAt(j);
-          if ([" ", ".", "#"].includes(char)) {
+          if ([" ", ".", "#", ","].includes(char)) {
             separator = char;
             break;
           }
@@ -185,22 +228,32 @@ export class CssLineTokenizer
         continue;
       }
 
+      if (char === ":") {
+        tokens.push({ type: "punctuation", value: ":" });
+        state.nextToken = "propertyValue";
+        i++;
+        continue;
+      }
+
       if (char === " ") {
         tokens.push({ type: "whitespace", value: " " });
         i++;
         continue;
       }
 
-      if (["{", "}", ":", ";"].includes(char)) {
+      if (["{", "}", ";", ","].includes(char)) {
         tokens.push({ type: "punctuation", value: char });
         i++;
         continue;
       }
 
-      if (tokens.length > 0 && tokens[tokens.length - 1].type === "unknown") {
+      if (
+        tokens.length > 0 &&
+        tokens[tokens.length - 1].type === state.nextToken
+      ) {
         tokens[tokens.length - 1].value += char;
       } else {
-        tokens.push({ type: "unknown", value: char });
+        tokens.push({ type: state.nextToken, value: char });
       }
     }
     return { tokens, state };
