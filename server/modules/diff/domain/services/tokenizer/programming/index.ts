@@ -62,6 +62,14 @@ export class ProgrammingLangLineTokenizer
     state: ProgrammingLangLexerState;
   } {
     const tokens: Token<ProgrammingLangTokenType>[] = [];
+    const sepChars = [
+      ...this.langLexer.punctuation,
+      "\t",
+      "\n",
+      " ",
+      undefined,
+      "",
+    ];
     let toProcess = line;
     let i = 0;
 
@@ -183,11 +191,11 @@ export class ProgrammingLangLineTokenizer
       let shouldContinue = false;
       for (let j = 0; j < this.langLexer.keywords.length; j++) {
         const keyword = this.langLexer.keywords[j];
+        const nextChar = toProcess.charAt(keyword.length);
         if (
-          toProcess.startsWith(`${keyword} `) &&
-          (prevChar === " " || prevChar === "\t" || this,
-          this.langLexer.punctuation.includes(prevChar) ||
-            prevChar.length === 0)
+          toProcess.startsWith(keyword) &&
+          sepChars.includes(prevChar) &&
+          sepChars.includes(nextChar)
         ) {
           tokens.push({ type: "keyword", value: `${keyword} ` });
           i += keyword.length + 1;
@@ -198,7 +206,13 @@ export class ProgrammingLangLineTokenizer
 
       for (let j = 0; j < this.langLexer.operators.length; j++) {
         const operator = this.langLexer.operators[j];
-        if (toProcess.startsWith(operator)) {
+        const nextChar = toProcess.charAt(operator.length);
+
+        if (
+          toProcess.startsWith(operator) &&
+          sepChars.includes(nextChar) &&
+          sepChars.includes(prevChar)
+        ) {
           tokens.push({ type: "operator", value: operator });
           i += operator.length;
           shouldContinue = true;
@@ -208,9 +222,12 @@ export class ProgrammingLangLineTokenizer
 
       for (let j = 0; j < this.langLexer.varDeclarators.length; j++) {
         const varDeclarator = this.langLexer.varDeclarators[j];
+        const nextChar = toProcess.charAt(varDeclarator.length);
+
         if (
-          toProcess.startsWith(`${varDeclarator} `) &&
-          (prevChar === " " || prevChar === "\t" || prevChar.length === 0)
+          toProcess.startsWith(varDeclarator) &&
+          sepChars.includes(nextChar) &&
+          sepChars.includes(prevChar)
         ) {
           tokens.push({
             type: "variableDeclaration",
@@ -224,16 +241,11 @@ export class ProgrammingLangLineTokenizer
 
       for (let j = 0; j < this.langLexer.nativeTypes.length; j++) {
         const nativeType = this.langLexer.nativeTypes[j];
+        const nextChar = toProcess.charAt(nativeType.length);
         if (
           toProcess.startsWith(nativeType) &&
-          (!toProcess.charAt(nativeType.length) ||
-            this.langLexer.punctuation.includes(
-              toProcess.charAt(nativeType.length),
-            ) ||
-            toProcess.charAt(nativeType.length) === " ") &&
-          (prevChar.length === 0 ||
-            this.langLexer.punctuation.includes(prevChar) ||
-            prevChar === " ")
+          sepChars.includes(prevChar) &&
+          sepChars.includes(nextChar)
         ) {
           tokens.push({
             type: "typeHint",
@@ -247,10 +259,12 @@ export class ProgrammingLangLineTokenizer
 
       for (let j = 0; j < this.langLexer.functionDeclarators.length; j++) {
         const funcDeclarator = this.langLexer.functionDeclarators[j];
+        const nextChar = toProcess.charAt(funcDeclarator.length);
 
         if (
           toProcess.startsWith(`${funcDeclarator} `) &&
-          (prevChar === " " || prevChar === "\t" || prevChar.length === 0)
+          sepChars.includes(prevChar) &&
+          sepChars.includes(nextChar)
         ) {
           tokens.push({
             type: "functionDeclaration",
@@ -263,15 +277,12 @@ export class ProgrammingLangLineTokenizer
 
       for (let j = 0; j < this.langLexer.numericTypes.length; j++) {
         const numericType = this.langLexer.numericTypes[j];
+        const nextChar = toProcess.charAt(numericType.length);
 
         if (
           toProcess.startsWith(numericType) &&
-          (prevChar === " " || prevChar === "\t" || prevChar.length === 0) &&
-          (toProcess.charAt(numericType.length) === " " ||
-            toProcess.charAt(numericType.length) === "\t" ||
-            this.langLexer.punctuation.includes(
-              toProcess.charAt(numericType.length),
-            ))
+          sepChars.includes(prevChar) &&
+          sepChars.includes(nextChar)
         ) {
           tokens.push({
             type: "number",

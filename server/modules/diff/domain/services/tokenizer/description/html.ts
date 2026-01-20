@@ -8,6 +8,7 @@ import { CssLineTokenizer, CssTokenType } from "./css.js";
 
 export type HtmlSpecificTokenType =
   | "tagName"
+  | "tagContent"
   | "attribute"
   | "string"
   | "punctuation";

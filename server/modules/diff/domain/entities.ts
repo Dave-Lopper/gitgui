@@ -3,7 +3,7 @@ import { Token } from "./services/tokenizer";
 export type DiffRepresentation = "PLAINTEXT" | "TOKENIZED";
 type ContentByRep = {
   PLAINTEXT: string;
-  TOKENIZED: Token[];
+  TOKENIZED: Token<unknown>[];
 };
 
 export type LinePart<R extends DiffRepresentation> = {

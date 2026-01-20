@@ -202,7 +202,6 @@ function computeWordDiffs(
         for (let k = 0; k < block.oldLines.length; k++) {
           let content: Token<unknown>[] | string;
           if (tokenizer) {
-            console.log("Tokenizing line");
             const tokenizerRv = tokenizer.tokenizeLine(
               block.oldLines[k].content,
               lexerState,
@@ -527,7 +526,6 @@ export function parseFilePatch(
     const extension = filePath.substring(lastDotIndex + 1, filePath.length);
     tokenizer = TOKENIZERS.get(extension);
   }
-  console.log("Parsing file patch, about to computeDiffWords", tokenizer);
 
   return {
     hunks: computeWordDiffs(groupDiffBlocks(parsePatch(patch)), tokenizer),

@@ -78,7 +78,7 @@ export default function DiffViewer() {
 
                 <div className="flex flex-col items-start w-full border-retro border-b-1">
                   {hunk.lines.map((line) => (
-                    <div className="flex items-start font-semibold text-white LINE w-full cursor-pointer">
+                    <div className="flex items-start font-semibold LINE w-full cursor-pointer">
                       {line.type === "CONTEXT" ? (
                         <div className="flex item-start justify-start hover:bg-retro-pressed w-full bg-white">
                           <span className="bg-retro border-black font-retro text-black font-thin flex text-xs">
