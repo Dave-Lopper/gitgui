@@ -90,6 +90,7 @@ export function parseRepoStatus(statusLines: string[]): TreeStatus {
 }
 
 export function parseCommitStatus(statusLines: string[]): StatusEntry[] {
+  console.log({ statusLines });
   const files: StatusEntry[] = [];
   for (let i = 0; i < statusLines.length; i++) {
     const statusLine = statusLines[i];

@@ -103,7 +103,6 @@ export default function AppLayout() {
     "CommitViewed",
     async (event) => {
       if (event.payload) {
-        console.log({ VIEWEDCOMMITEVENT: event });
         setViewedCommit({
           hash: event.payload.commit.hash,
           entries: event.payload.status,
@@ -211,6 +210,9 @@ export default function AppLayout() {
                     }
                     statusEntries={viewedCommit.entries}
                     commitHash={viewedCommit.hash}
+                    containerClassname={
+                      theme === "RETRO" ? "retro-scrollbar" : ""
+                    }
                   />
                 </div>
               ) : (

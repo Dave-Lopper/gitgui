@@ -78,6 +78,7 @@ export class CommitGitCliRunner
       [
         "--no-pager",
         "show",
+        "-m",
         "--no-color",
         "--patch-with-raw",
         commitHash,
@@ -93,9 +94,10 @@ export class CommitGitCliRunner
     repositoryPath: string,
     commitHash: string,
   ): Promise<string[]> {
+    console.log({ commitHash });
     return await this.safeRun(
       "git",
-      ["--no-pager", "show", "--no-color", "--name-status", commitHash],
+      ["--no-pager", "show", "--no-color", "--name-status", "-m", commitHash],
       { cwd: repositoryPath },
     );
   }

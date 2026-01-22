@@ -14,7 +14,6 @@ import {
   RightClickMenuOptionProps,
   SelectedFilesCounterProps,
 } from "./DiffFileOptionRightClickMenu";
-import { useRepositorySelection } from "./hooks/repository-selection";
 
 export type ThemedFileOptionProps = {
   isSelected: boolean;
@@ -197,7 +196,7 @@ export default function ModifiedFilesList({
 
   return (
     <div
-      className={`flex flex-col ${containerClassname ? containerClassname : ""}`}
+      className={`flex flex-col ${containerClassname ? containerClassname : ""} overflow-auto`}
     >
       <RightClickMenu
         containerClassname={rightClickMenuClassname}

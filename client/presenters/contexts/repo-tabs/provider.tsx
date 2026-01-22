@@ -18,7 +18,6 @@ export function RepoTabsContextProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (currentTab === "DIFF") {
-      console.log("Resetting viewed commit");
       const resetViewedCommit = async () => {
         if (!repositorySelection) {
           return;
