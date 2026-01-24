@@ -55,13 +55,87 @@ export class HtmlLineTokenizer
     let i = 0;
 
     while (toProcess.length > 0) {
-      console.log({ toProcess, state });
       toProcess = line.substring(i, line.length);
       const char = line.charAt(i);
       const nextChar = line.charAt(i + 1);
 
+      // Javascript script tag
+      if (toProcess.startsWith("<script")) {
+        tokens.push({ type: "punctuation", value: "<" });
+        tokens.push({ type: "tagName", value: "script" });
+        state.isOpeningJavascriptTag = true;
+        state.isInHtmlTag = true;
+        i += 7;
+        continue;
+      }
+
+      const jsTagClosingIndex = toProcess.indexOf("</script>");
+      if (state.isInJavascriptTag === true && jsTagClosingIndex > -1) {
+        const jsPart = toProcess.substring(0, jsTagClosingIndex);
+        const tokenizerOutput = jsTokenizer.tokenizeLine(
+          jsPart,
+          jsTokenizerState,
+        );
+
+        tokens.push(...tokenizerOutput.tokens);
+        i += jsPart.length;
+
+        tokens.push({ type: "punctuation", value: "</" });
+        tokens.push({ type: "keyword", value: "script" });
+        tokens.push({ type: "punctuation", value: ">" });
+        i += "</script>".length;
+        state.isInJavascriptTag = false;
+        jsTokenizerState = jsTokenizer.initialState;
+        continue;
+      } else if (state.isInJavascriptTag === true) {
+        const tokenizerOutput = jsTokenizer.tokenizeLine(
+          toProcess,
+          jsTokenizerState,
+        );
+        jsTokenizerState = tokenizerOutput.state;
+        tokens.push(...tokenizerOutput.tokens);
+        i += toProcess.length;
+        continue;
+      }
+
+      // Css Style tag
+      if (toProcess.startsWith("<style")) {
+        tokens.push({ type: "punctuation", value: "<" });
+        tokens.push({ type: "tagName", value: "style" });
+        state.isOpeningCssTag = true;
+        state.isInHtmlTag = true;
+        i += 6;
+        continue;
+      }
+
+      const cssClosingIndex = toProcess.indexOf("</style>");
+      if (state.isInCssTag === true && cssClosingIndex > -1) {
+        const cssPart = toProcess.substring(0, cssClosingIndex);
+        tokens.push(
+          ...cssTokenizer.tokenizeLine(cssPart, cssTokenizerState).tokens,
+        );
+        i += cssPart.length;
+
+        tokens.push({ type: "punctuation", value: "</" });
+        tokens.push({ type: "keyword", value: "style" });
+        tokens.push({ type: "punctuation", value: ">" });
+        i += "</style>".length;
+        state.isInCssTag = false;
+        cssTokenizerState = cssTokenizer.initialState;
+        continue;
+      } else if (state.isInCssTag === true) {
+        const tokenizerOutput = cssTokenizer.tokenizeLine(
+          toProcess,
+          cssTokenizerState,
+        );
+        cssTokenizerState = tokenizerOutput.state;
+        tokens.push(...tokenizerOutput.tokens);
+        i += toProcess.length;
+        continue;
+      }
+
       if (char === "<" && nextChar.match(/[a-zA-Z]/i)) {
-        const tagName = toProcess.split(" ")[0].substring(1);
+        const tagName = toProcess.split(/[ >\/]+/)[0].substring(1);
         i += tagName.length + 1;
         tokens.push({ type: "punctuation", value: "<" });
         tokens.push({ type: "tagName", value: tagName });
@@ -72,8 +146,6 @@ export class HtmlLineTokenizer
       if (char === ">" && state.isInHtmlTag === true) {
         tokens.push({ type: "punctuation", value: ">" });
         state.isInHtmlTag = false;
-
-        console.log("HERE", { line, state });
 
         if (state.isOpeningJavascriptTag === true) {
           state.isInJavascriptTag = true;
@@ -146,79 +218,23 @@ export class HtmlLineTokenizer
         continue;
       }
 
-      // Javascript script tag
-      if (toProcess.startsWith("<script")) {
-        tokens.push({ type: "punctuation", value: "<" });
-        tokens.push({ type: "tagName", value: "script" });
-        state.isOpeningJavascriptTag = true;
-        state.isInHtmlTag = true;
-        i += 7;
-        continue;
-      }
-
-      const jsTagClosingIndex = toProcess.indexOf("</script>");
-      if (state.isInJavascriptTag === true && jsTagClosingIndex > -1) {
-        const jsPart = toProcess.substring(0, jsTagClosingIndex);
-        const tokenizerOutput = jsTokenizer.tokenizeLine(
-          jsPart,
-          jsTokenizerState,
-        );
-
-        tokens.push(...tokenizerOutput.tokens);
-        i += jsPart.length;
-
+      if (
+        toProcess.startsWith("</") &&
+        state.isInCssTag === false &&
+        state.isInJavascriptTag === false
+      ) {
         tokens.push({ type: "punctuation", value: "</" });
-        tokens.push({ type: "keyword", value: "script" });
-        tokens.push({ type: "punctuation", value: ">" });
-        i += "</script>".length;
-        state.isInJavascriptTag = false;
-        jsTokenizerState = jsTokenizer.initialState;
-        continue;
-      } else if (state.isInJavascriptTag === true) {
-        const tokenizerOutput = jsTokenizer.tokenizeLine(
-          toProcess,
-          jsTokenizerState,
-        );
-        jsTokenizerState = tokenizerOutput.state;
-        tokens.push(...tokenizerOutput.tokens);
-        i += toProcess.length;
-        continue;
-      }
+        i += 2;
 
-      // Css Style tag
-      if (toProcess.startsWith("<style")) {
-        console.log("HERE2");
-        tokens.push({ type: "punctuation", value: "<" });
-        tokens.push({ type: "tagName", value: "style" });
-        state.isOpeningCssTag = true;
-        state.isInHtmlTag = true;
-        i += 6;
-        continue;
-      }
-
-      const cssClosingIndex = toProcess.indexOf("</style>");
-      if (state.isInCssTag === true && cssClosingIndex > -1) {
-        const cssPart = toProcess.substring(0, cssClosingIndex);
-        tokens.push(
-          ...cssTokenizer.tokenizeLine(cssPart, cssTokenizerState).tokens,
-        );
-        i += cssPart.length;
-
-        tokens.push({ type: "punctuation", value: "</" });
-        tokens.push({ type: "keyword", value: "style" });
-        tokens.push({ type: "punctuation", value: ">" });
-        i += "</style>".length;
-        state.isInCssTag = false;
-        cssTokenizerState = cssTokenizer.initialState;
-        continue;
-      } else if (state.isInCssTag === true) {
-        const tokenizerOutput = cssTokenizer.tokenizeLine(
-          toProcess,
-          cssTokenizerState,
-        );
-        cssTokenizerState = tokenizerOutput.state;
-        tokens.push(...tokenizerOutput.tokens);
-        i += toProcess.length;
+        const closingIndex = toProcess.indexOf(">");
+        if (closingIndex > -1) {
+          const tagName = toProcess.substring(2, closingIndex);
+          tokens.push(
+            { type: "tagName", value: tagName },
+            { type: "punctuation", value: ">" },
+          );
+          i += tagName.length + 1;
+        }
         continue;
       }
 

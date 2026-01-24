@@ -57,7 +57,6 @@ export default function DiffViewer() {
   } else if (!viewedDiff && (!fileSelection || fileSelection.length === 0)) {
     return <div>No file selected</div>;
   }
-  console.log({ viewedDiff });
 
   return (
     <div className="m-0 flex h-full w-full flex-col items-start justify-start bg-retro-desktop select-text overflow-auto font-[consolas] retro-scrollbar">
