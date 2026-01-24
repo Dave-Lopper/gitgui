@@ -176,7 +176,10 @@ async function createWindow() {
     return await diffUseCases.getTreeFileDiff.execute(
       parsedMessage.repositoryPath,
       parsedMessage.filePath,
+      parsedMessage.currentBranchName,
+      parsedMessage.remoteName,
       parsedMessage.staged,
+      parsedMessage.status,
     );
   });
 

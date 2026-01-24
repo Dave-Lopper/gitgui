@@ -68,11 +68,21 @@ electron.contextBridge.exposeInMainWorld("electronAPI", {
   getTreeFileDiff: (
     repositoryPath: string,
     filePath: string,
+    currentBranchName: string,
+    remoteName: string,
     staged: boolean,
+    status: string,
   ) =>
     electron.ipcRenderer.invoke(
       "diff:getTreeFileDiff",
-      JSON.stringify({ repositoryPath, filePath, staged }),
+      JSON.stringify({
+        repositoryPath,
+        filePath,
+        currentBranchName,
+        remoteName,
+        staged,
+        status,
+      }),
     ),
   selectRepositoryFromDisk: () =>
     electron.ipcRenderer.invoke("repositories:selectFromDisk"),

@@ -48,6 +48,8 @@ export default function ModifiedFilesList({
     const triggerUseCase = async () =>
       await useCases.modifyFileDiffSelection.execute(
         repositorySelection.repository.localPath,
+        repositorySelection.repository.remoteName || "origin",
+        repositorySelection.repository.checkedOutBranch,
         fileSelection,
         commitHash,
       );

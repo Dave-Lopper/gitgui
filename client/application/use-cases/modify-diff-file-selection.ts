@@ -11,6 +11,8 @@ export class ModifyFileDiffSelection {
 
   async execute(
     repositoryPath: string,
+    remoteName: string,
+    currentBranchName: string,
     selection: Set<string>,
     commitHash: string | undefined = undefined,
   ) {
@@ -34,7 +36,10 @@ export class ModifyFileDiffSelection {
         diff = await this.gitService.getTreeFileDiff(
           repositoryPath,
           tempArray[0].path,
+          currentBranchName,
+          remoteName,
           tempArray[0].staged,
+          tempArray[0].status,
         );
       }
     }

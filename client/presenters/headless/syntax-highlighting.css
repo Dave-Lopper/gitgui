@@ -2,14 +2,17 @@
   color: black;
 }
 
-.typeHint {
+.typeHint,
+.className {
   color: green;
 }
 
 .functionDeclaration,
 .variableDeclaration,
+.propertyValue,
 .keyword,
-.operator {
+.operator,
+.tagName {
   color: blue;
 }
 
@@ -21,10 +24,15 @@
   color: #454545;
 }
 
-.string {
+.string,
+.id {
   color: red;
 }
 
 .number {
   color: purple;
+}
+
+.propertyValue {
+  color: #1F51FF;
 }

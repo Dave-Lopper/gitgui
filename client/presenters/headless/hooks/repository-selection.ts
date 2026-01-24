@@ -31,6 +31,8 @@ export function useRepositorySelection(listenStaging: boolean = false) {
       }
       await useCases.modifyFileDiffSelection.execute(
         repositorySelection.repository.localPath,
+        repositorySelection.repository.remoteName || "origin",
+        repositorySelection.repository.checkedOutBranch,
         new Set(),
         undefined,
       );

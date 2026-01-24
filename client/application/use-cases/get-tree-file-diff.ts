@@ -10,12 +10,17 @@ export class GetTreeFileDiff {
 
   async execute(
     repositoryPath: string,
+    remoteName: string,
     statusEntry: StatusEntry,
+    currentBranchName: string,
   ): Promise<void> {
     const diffEntry = await this.gitService.getTreeFileDiff(
       repositoryPath,
       statusEntry.path,
+      currentBranchName,
+      remoteName,
       statusEntry.staged,
+      statusEntry.status,
     );
     await this.eventBus.emit({
       type: "FileDiffConsulted",

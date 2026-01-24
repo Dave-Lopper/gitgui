@@ -55,6 +55,7 @@ export class HtmlLineTokenizer
     let i = 0;
 
     while (toProcess.length > 0) {
+      console.log({ toProcess, state });
       toProcess = line.substring(i, line.length);
       const char = line.charAt(i);
       const nextChar = line.charAt(i + 1);
@@ -72,9 +73,16 @@ export class HtmlLineTokenizer
         tokens.push({ type: "punctuation", value: ">" });
         state.isInHtmlTag = false;
 
+        console.log("HERE", { line, state });
+
         if (state.isOpeningJavascriptTag === true) {
           state.isInJavascriptTag = true;
           state.isOpeningJavascriptTag = false;
+        }
+
+        if (state.isOpeningCssTag === true) {
+          state.isInCssTag = true;
+          state.isOpeningCssTag = false;
         }
 
         i++;
@@ -114,19 +122,19 @@ export class HtmlLineTokenizer
       }
 
       if (char === '"' && state.isInHtmlTag === true) {
-        state.inString = '"';
         const quoteTrimmed = toProcess.substring(1);
         const closingIndex = quoteTrimmed.indexOf('"');
         if (closingIndex > -1) {
           const stringRemained = quoteTrimmed.substring(0, closingIndex);
           tokens.push({
             type: "string",
-            value: `"${stringRemained}`,
+            value: `"${stringRemained}"`,
           });
-          i += stringRemained.length + 1;
+          i += stringRemained.length + 2;
         } else {
           tokens.push({ type: "string", value: toProcess });
           i += toProcess.length;
+          state.inString = '"';
         }
         continue;
       }
@@ -179,6 +187,7 @@ export class HtmlLineTokenizer
 
       // Css Style tag
       if (toProcess.startsWith("<style")) {
+        console.log("HERE2");
         tokens.push({ type: "punctuation", value: "<" });
         tokens.push({ type: "tagName", value: "style" });
         state.isOpeningCssTag = true;
@@ -218,7 +227,7 @@ export class HtmlLineTokenizer
         state.isInJavascriptTag === false &&
         state.isInHtmlTag === false
       ) {
-        if (tokens[tokens.length - 1].type === "unknown") {
+        if (tokens.length > 0 && tokens[tokens.length - 1].type === "unknown") {
           tokens[tokens.length - 1].value += char;
         } else {
           tokens.push({ type: "unknown", value: char });
@@ -226,6 +235,14 @@ export class HtmlLineTokenizer
         i++;
         continue;
       }
+
+      const lastToken = tokens[tokens.length - 1];
+      if (lastToken !== undefined && lastToken.type === "unknown") {
+        lastToken.value += char;
+      } else {
+        tokens.push({ type: "unknown", value: char });
+      }
+      i++;
     }
 
     return { state, tokens };

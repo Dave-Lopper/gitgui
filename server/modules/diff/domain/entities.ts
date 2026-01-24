@@ -29,16 +29,15 @@ export type ChangedLine<R extends DiffRepresentation> = {
 
 export type Hunk<R extends DiffRepresentation> = {
   enclosingBlock?: string;
-  oldLineCount: number;
+  oldLineCount?: number;
   oldLineStart: number;
-  newLineCount: number;
+  newLineCount?: number;
   newLineStart: number;
   lines: (ChangedLine<R> | ContextLine<R>)[];
 };
 
 export type DiffEntry<R extends DiffRepresentation> = {
   representation: R;
-  addedLines: number;
-  removedLines: number;
+  numStat: { added: number; removed: number } | null;
   hunks: Hunk<R>[];
 };

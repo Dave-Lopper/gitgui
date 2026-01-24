@@ -57,6 +57,7 @@ export default function DiffViewer() {
   } else if (!viewedDiff && (!fileSelection || fileSelection.length === 0)) {
     return <div>No file selected</div>;
   }
+  console.log({ viewedDiff });
 
   return (
     <div className="m-0 flex h-full w-full flex-col items-start justify-start bg-retro-desktop select-text overflow-auto font-[consolas] retro-scrollbar">
@@ -66,9 +67,19 @@ export default function DiffViewer() {
             {viewedDiff?.hunks.map((hunk) => (
               <div className=" flex flex-col items-start w-full">
                 <div className="text-black bg-retro retro-borders border-2 px-2 py-[2px] w-full font-retro flex justify-start">
-                  @@ {hunk.oldLineStart},{hunk.oldLineStart + hunk.oldLineCount}{" "}
-                  -&gt; {hunk.newLineStart},
-                  {hunk.newLineStart + hunk.newLineCount} @@
+                  @@ - {hunk.oldLineStart}
+                  {hunk.oldLineCount !== undefined ? (
+                    <>, {hunk.oldLineStart + hunk.oldLineCount}</>
+                  ) : (
+                    <> </>
+                  )}
+                  &gt; + {hunk.newLineStart}
+                  {hunk.newLineCount !== undefined ? (
+                    <>, {hunk.newLineStart + hunk.newLineCount}</>
+                  ) : (
+                    <> </>
+                  )}{" "}
+                  @@
                   {hunk.enclosingBlock && (
                     <span className="text-black ml-5">
                       {hunk.enclosingBlock}

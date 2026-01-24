@@ -22,112 +22,112 @@ export class CssLineTokenizer
   public readonly initialState: CssLexerState = { nextToken: "property" };
 
   private readonly HTML_TAGS = [
-    "a",
-    "abbr",
+    "fieldcaption",
+    "blockquote",
+    "colgroup",
+    "datalist",
+    "fieldset",
+    "optgroup",
+    "progress",
+    "template",
+    "textarea",
     "address",
-    "area",
     "article",
+    "caption",
+    "details",
+    "picture",
+    "section",
+    "summary",
+    "canvas",
+    "dialog",
+    "figure",
+    "footer",
+    "header",
+    "hgroup",
+    "iframe",
+    "legeng",
+    "object",
+    "option",
+    "output",
+    "search",
+    "select",
+    "strong",
     "aside",
     "audio",
-    "b",
+    "embed",
+    "input",
+    "label",
+    "meter",
+    "param",
+    "small",
+    "table",
+    "tfoot",
+    "thead",
+    "title",
+    "track",
+    "video",
+    "abbr",
+    "area",
     "base",
-    "bdi",
-    "bdo",
-    "blockquote",
     "body",
-    "canvas",
-    "caption",
     "cite",
     "code",
-    "col",
-    "colgroup",
     "data",
-    "datalist",
-    "dd",
+    "form",
+    "head",
+    "html",
+    "link",
+    "main",
+    "mark",
+    "menu",
+    "meta",
+    "ruby",
+    "samp",
+    "span",
+    "time",
+    "bdi",
+    "bdo",
+    "col",
     "del",
-    "details",
     "dfn",
-    "dialog",
     "div",
+    "img",
+    "ins",
+    "kbd",
+    "map",
+    "nav",
+    "pre",
+    "sub",
+    "sup",
+    "svg",
+    "var",
+    "wbr",
+    "dd",
     "dl",
     "dt",
     "em",
-    "embed",
-    "fieldset",
-    "fieldcaption",
-    "figure",
-    "footer",
-    "form",
     "h1",
     "h2",
     "h3",
     "h4",
     "h5",
     "h6",
-    "head",
-    "header",
-    "hgroup",
     "hr",
-    "html",
-    "i",
-    "iframe",
-    "img",
-    "input",
-    "ins",
-    "kbd",
-    "label",
-    "legeng",
     "li",
-    "link",
-    "main",
-    "map",
-    "mark",
-    "menu",
-    "meta",
-    "meter",
-    "nav",
-    "object",
     "ol",
-    "optgroup",
-    "option",
-    "output",
-    "p",
-    "param",
-    "picture",
-    "pre",
-    "progress",
-    "q",
     "rp",
     "rt",
-    "ruby",
-    "s",
-    "samp",
-    "search",
-    "section",
-    "select",
-    "small",
-    "span",
-    "strong",
-    "sub",
-    "summary",
-    "sup",
-    "svg",
-    "table",
     "td",
-    "template",
-    "textarea",
-    "tfoot",
     "th",
-    "thead",
-    "time",
-    "title",
     "tr",
-    "track",
-    "u",
     "ul",
-    "var",
-    "video",
-    "wbr",
+    "a",
+    "b",
+    "i",
+    "p",
+    "q",
+    "s",
+    "u",
   ];
 
   public tokenizeLine(
@@ -198,6 +198,13 @@ export class CssLineTokenizer
         state.nextToken = "attrName";
       }
 
+      if (char === "]") {
+        tokens.push({ type: "punctuation", value: "]" });
+        state.nextToken = "property";
+        i++;
+        continue;
+      }
+
       if ([".", "#"].includes(char)) {
         const remainder = toProcess.substring(1, toProcess.length);
 
@@ -247,13 +254,24 @@ export class CssLineTokenizer
         continue;
       }
 
+      if (char === "=") {
+        if (state.nextToken === "attrName") {
+          state.nextToken = "string";
+        }
+        tokens.push({ type: "punctuation", value: "=" });
+        i++;
+        continue;
+      }
+
       if (
         tokens.length > 0 &&
         tokens[tokens.length - 1].type === state.nextToken
       ) {
         tokens[tokens.length - 1].value += char;
+        i++;
       } else {
         tokens.push({ type: state.nextToken, value: char });
+        i++;
       }
     }
     return { tokens, state };

@@ -19,9 +19,9 @@ type RawContextLine = {
 type RawLine = RawContextLine | RawDiffLine;
 type RawHunk = {
   enclosingBlock?: string;
-  newLineCount: number;
+  newLineCount?: number;
   newLineStart: number;
-  oldLineCount: number;
+  oldLineCount?: number;
   oldLineStart: number;
 
   lines: RawLine[];
@@ -37,14 +37,16 @@ type BlockedHunk = Omit<RawHunk, "lines"> & { blocks: DiffBlock[] };
 
 function parsePatch(patch: string): RawHunk[] {
   const hunks: RawHunk[] = [];
-  const patchHunks = patch.split(/(^@@ -\d+,\d+ \+\d+,\d+ @@ ?.*$)/m).slice(1);
+  const patchHunks = patch
+    .split(/(^@@ -\d+(,\d+)? \+\d+(,\d+)? @@ ?.*$)/m)
+    .slice(1);
 
-  for (let i = 0; i < patchHunks.length; i += 2) {
+  for (let i = 0; i < patchHunks.length; i += 4) {
     const hunkHeader = patchHunks[i];
-    const rawHunk = patchHunks[i + 1];
+    const rawHunk = patchHunks[i + 3];
 
     const hunkMatch = hunkHeader.match(
-      /@@ -(\d+),(\d+) \+(\d+),(\d+) @@ ?(.*$)/m,
+      /@@ -(\d+)(,\d+)? \+(\d+)(,\d+)? @@ ?(.*$)/m,
     );
     if (!hunkMatch) {
       throw new Error(`Diff hunk line unexpectedly formed: ${hunkHeader}`);
@@ -60,9 +62,15 @@ function parsePatch(patch: string): RawHunk[] {
     ] = hunkMatch;
 
     const currentHunk: RawHunk = {
-      newLineCount: parseInt(newLineCount),
+      newLineCount:
+        newLineCount !== undefined && newLineCount.length > 0
+          ? parseInt(newLineCount.substring(1))
+          : undefined,
       newLineStart: parseInt(newLineStart),
-      oldLineCount: parseInt(oldLineCount),
+      oldLineCount:
+        oldLineCount !== undefined && oldLineCount.length > 0
+          ? parseInt(oldLineCount.substring(1))
+          : undefined,
       oldLineStart: parseInt(oldLineStart),
       enclosingBlock,
       lines: [],
@@ -104,7 +112,6 @@ function parsePatch(patch: string): RawHunk[] {
 
     hunks.push(currentHunk);
   }
-
   return hunks;
 }
 
@@ -177,11 +184,17 @@ function computeWordDiffs(
   rawHunks: BlockedHunk[],
   tokenizer: undefined | LineTokenizer<unknown, unknown>,
 ): Hunk<DiffRepresentation>[] {
-  // console.log({ rawHunks });
   const formattedHunks: Hunk<DiffRepresentation>[] = [];
 
   for (let i = 0; i < rawHunks.length; i++) {
     const rawHunk = rawHunks[i];
+    let lexerState = tokenizer?.initialState;
+    const enclosingBlock = rawHunk.enclosingBlock;
+    if (enclosingBlock !== undefined && tokenizer !== undefined) {
+      const tokenizerRv = tokenizer.tokenizeLine(enclosingBlock, lexerState);
+      lexerState = tokenizerRv.state;
+    }
+
     const formattedHunk: Hunk<DiffRepresentation> = {
       enclosingBlock: rawHunk.enclosingBlock,
       newLineCount: rawHunk.newLineCount,
@@ -194,8 +207,6 @@ function computeWordDiffs(
     let newLineN = rawHunk.newLineStart;
 
     for (let j = 0; j < rawHunk.blocks.length; j++) {
-      let lexerState = tokenizer?.initialState;
-
       const block = rawHunk.blocks[j];
 
       if (block.type === "UNCHANGED") {
@@ -530,5 +541,46 @@ export function parseFilePatch(
   return {
     hunks: computeWordDiffs(groupDiffBlocks(parsePatch(patch)), tokenizer),
     diffRepresentation: tokenizer === undefined ? "PLAINTEXT" : "TOKENIZED",
+  };
+}
+
+export function getOneSidedDiff(
+  fileContents: string,
+  filePath: string,
+  side: "ADDED" | "REMOVED",
+): {
+  diffRepresentation: DiffRepresentation;
+  hunks: Hunk<DiffRepresentation>[];
+} {
+  let tokenizer: LineTokenizer<unknown, unknown> | undefined = undefined;
+  const lastDotIndex = filePath.lastIndexOf(".");
+
+  if (lastDotIndex > -1) {
+    const extension = filePath.substring(lastDotIndex + 1, filePath.length);
+    tokenizer = TOKENIZERS.get(extension);
+  }
+  const diffRepresentation =
+    tokenizer === undefined ? "PLAINTEXT" : "TOKENIZED";
+
+  const lines = fileContents.split("\n");
+  const hunk: Hunk<DiffRepresentation> = {
+    newLineCount: lines.length,
+    newLineStart: 1,
+    oldLineCount: lines.length,
+    oldLineStart: 1,
+    lines: [],
+  };
+
+  for (let i = 0; i < lines.length; i++) {
+    hunk.lines.push({
+      type: side,
+      n: i + 1,
+      parts: [{ type: "CONTEXT", content: lines[i] }],
+    });
+  }
+
+  return {
+    diffRepresentation,
+    hunks: [hunk],
   };
 }

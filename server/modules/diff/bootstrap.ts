@@ -33,7 +33,7 @@ export function bootstrap(window: BrowserWindow) {
       gitRunner,
       repoStatusService,
     ),
-    getTreeFileDiff: new GetTreeFileDiff(eventEmitter, gitRunner),
+    getTreeFileDiff: new GetTreeFileDiff(eventEmitter, filesRepo, gitRunner),
     stageAndStash: new StageAndStash(eventEmitter, gitRunner),
     toggleFileStaged: new ToggleFileStaged(eventEmitter, gitRunner),
   };

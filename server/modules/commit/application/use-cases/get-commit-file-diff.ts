@@ -37,8 +37,7 @@ export class GetCommitFileDiff {
     }
 
     return {
-      addedLines: numstats[0],
-      removedLines: numstats[1],
+      numStat: { added: numstats[0], removed: numstats[1] },
       representation: diffRepresentation,
       hunks,
     };
