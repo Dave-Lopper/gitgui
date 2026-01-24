@@ -571,11 +571,30 @@ export function getOneSidedDiff(
     lines: [],
   };
 
+  let lexerState = undefined;
+  if (tokenizer !== undefined) {
+    lexerState = tokenizer.initialState;
+  }
+
   for (let i = 0; i < lines.length; i++) {
+    let content;
+    if (tokenizer !== undefined) {
+      const tokenizerRv = tokenizer.tokenizeLine(lines[i], lexerState);
+      lexerState = tokenizerRv.state;
+      content = tokenizerRv.tokens;
+    } else {
+      content = lines[i];
+    }
+
     hunk.lines.push({
       type: side,
       n: i + 1,
-      parts: [{ type: "CONTEXT", content: lines[i] }],
+      parts: [
+        {
+          type: "CONTEXT",
+          content,
+        },
+      ],
     });
   }
 

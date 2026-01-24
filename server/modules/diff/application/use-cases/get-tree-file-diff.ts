@@ -34,7 +34,10 @@ export class GetTreeFileDiff {
     let representation: DiffRepresentation;
     let numstat: number[] | undefined = undefined;
     if (status == "ADDED") {
-      numstat = [await this.filesRepository.countLines(filePath), 0];
+      numstat = [
+        await this.filesRepository.countLines(`${repositoryPath}/${filePath}`),
+        0,
+      ];
       const parsed = await this.oneSidedDiffService.execute(
         repositoryPath,
         filePath,

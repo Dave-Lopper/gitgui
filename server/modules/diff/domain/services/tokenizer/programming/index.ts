@@ -303,7 +303,7 @@ export class ProgrammingLangLineTokenizer
         continue;
       }
 
-      const digitMatch = toProcess.match(/^([0-9]+)[\s\)\];\}]/);
+      const digitMatch = toProcess.match(/^([0-9.]+)[\s\)\];\}\+\-*%><=,]?/);
       if (digitMatch && digitMatch[1] && digitMatch[1].length > 0) {
         tokens.push({ type: "number", value: digitMatch[1] });
         i += digitMatch[1].length;

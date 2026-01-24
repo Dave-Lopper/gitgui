@@ -22,7 +22,9 @@ export class OneSidedDiffService {
   }> {
     let fileContents: string;
     if (status === "ADDED") {
-      fileContents = await this.filesRepository.readFile(filePath);
+      fileContents = await this.filesRepository.readFile(
+        `${repositoryPath}/${filePath}`,
+      );
     } else if (status === "REMOVED") {
       fileContents = await this.gitRunner.getHeadFileContents(
         currentBranchName,
