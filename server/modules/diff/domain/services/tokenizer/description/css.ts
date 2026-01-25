@@ -143,6 +143,47 @@ export class CssLineTokenizer
       const char = toProcess.charAt(0);
       let foundHtmlTag = false;
 
+      const atRuleRegex = /^(\s*)(@[a-zA-Z0-9-_]+) /;
+      const atRuleRegexMatch = toProcess.match(atRuleRegex);
+      if (atRuleRegexMatch !== null && atRuleRegexMatch[2].length > 0) {
+        if (atRuleRegexMatch[1].length > 0) {
+          tokens.push({ type: "whitespace", value: atRuleRegexMatch[1] });
+          i += atRuleRegexMatch[1].length;
+        }
+
+        tokens.push({ type: "tagName", value: atRuleRegexMatch[2] });
+        i += atRuleRegexMatch[2].length;
+
+        let foundEndChar = false;
+        const startingIndex =
+          atRuleRegexMatch[1].length + atRuleRegexMatch[2].length;
+
+        for (let endChar of ["{", ";"]) {
+          const charIndex = toProcess.indexOf(endChar);
+          if (charIndex > -1) {
+            const remainder = toProcess.substring(startingIndex, charIndex);
+            tokens.push(
+              { type: "propertyValue", value: remainder },
+              { type: "punctuation", value: endChar },
+            );
+            i += remainder.length + 1;
+            foundEndChar = true;
+          }
+        }
+
+        // Accomodate sass syntax
+        if (!foundEndChar) {
+          const remainder = toProcess.substring(
+            startingIndex,
+            toProcess.length,
+          );
+          tokens.push({ type: "propertyValue", value: remainder });
+          i += remainder.length;
+        }
+
+        continue;
+      }
+
       for (let j = 0; j < this.HTML_TAGS.length; j++) {
         const htmlTag = this.HTML_TAGS[j];
 
