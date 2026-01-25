@@ -12,14 +12,12 @@ export type CssTokenType =
   | "whitespace"
   | "unknown";
 
-export type CssLexerState = {
-  nextToken: CssTokenType;
-};
+export type CssLexerState = {};
 
 export class CssLineTokenizer
   implements LineTokenizer<CssTokenType, CssLexerState>
 {
-  public readonly initialState: CssLexerState = { nextToken: "property" };
+  public readonly initialState: CssLexerState = {};
 
   private readonly HTML_TAGS = [
     "fieldcaption",
@@ -184,6 +182,47 @@ export class CssLineTokenizer
         continue;
       }
 
+      const colonIndex = toProcess.indexOf(":");
+      if (colonIndex > -1) {
+        const [propName, propVal] = toProcess.split(":");
+        tokens.push(
+          { type: "property", value: propName },
+          { type: "punctuation", value: ":" },
+          {
+            type: "propertyValue",
+            value: propVal.endsWith(";")
+              ? propVal.substring(0, propVal.length - 1)
+              : propVal,
+          },
+        );
+        if (toProcess.trimEnd().endsWith(";")) {
+          tokens.push({ type: "punctuation", value: ";" });
+        }
+        return { tokens, state };
+      }
+
+      const equalIndex = toProcess.indexOf("=");
+      if (equalIndex > -1) {
+        const attrName = toProcess.substring(0, equalIndex);
+        tokens.push(
+          { type: "attrName", value: attrName },
+          { type: "punctuation", value: "=" },
+        );
+        i += attrName.length + 1;
+
+        const closingIndex = toProcess.indexOf("]");
+        let attrValue;
+        if (closingIndex > -1) {
+          attrValue = toProcess.substring(equalIndex + 1, closingIndex);
+        } else {
+          attrValue = toProcess.substring(equalIndex + 1, toProcess.length);
+        }
+
+        tokens.push({ type: "string", value: attrValue });
+        i += attrValue.length;
+        continue;
+      }
+
       for (let j = 0; j < this.HTML_TAGS.length; j++) {
         const htmlTag = this.HTML_TAGS[j];
 
@@ -196,21 +235,6 @@ export class CssLineTokenizer
       }
       if (foundHtmlTag) {
         continue;
-      }
-
-      const colonIndex = toProcess.indexOf(":");
-      if (colonIndex > -1 && toProcess.trimEnd().endsWith(";")) {
-        const [propName, propVal] = toProcess.split(":");
-        tokens.push(
-          { type: "property", value: propName },
-          { type: "punctuation", value: ":" },
-          {
-            type: "propertyValue",
-            value: propVal.substring(0, propVal.length - 1),
-          },
-          { type: "punctuation", value: ";" },
-        );
-        return { tokens, state };
       }
 
       if (char === "[") {
@@ -233,15 +257,12 @@ export class CssLineTokenizer
           }
           tokens.push({ type: "punctuation", value: "]" });
           i += attr.length + 1;
-          continue;
         }
-
-        state.nextToken = "attrName";
+        continue;
       }
 
       if (char === "]") {
         tokens.push({ type: "punctuation", value: "]" });
-        state.nextToken = "property";
         i++;
         continue;
       }
@@ -278,7 +299,6 @@ export class CssLineTokenizer
 
       if (char === ":") {
         tokens.push({ type: "punctuation", value: ":" });
-        state.nextToken = "propertyValue";
         i++;
         continue;
       }
@@ -296,22 +316,16 @@ export class CssLineTokenizer
       }
 
       if (char === "=") {
-        if (state.nextToken === "attrName") {
-          state.nextToken = "string";
-        }
         tokens.push({ type: "punctuation", value: "=" });
         i++;
         continue;
       }
 
-      if (
-        tokens.length > 0 &&
-        tokens[tokens.length - 1].type === state.nextToken
-      ) {
+      if (tokens.length > 0 && tokens[tokens.length - 1].type === "unknown") {
         tokens[tokens.length - 1].value += char;
         i++;
       } else {
-        tokens.push({ type: state.nextToken, value: char });
+        tokens.push({ type: "unknown", value: char });
         i++;
       }
     }
