@@ -10,6 +10,7 @@ export { default as RetroDivider } from "./Divider";
 export { default as RetroLabel } from "./Label";
 export { default as RetroModal } from "./Modal";
 export { default as RetroModifiedFilesCounter } from "./ModifiedFilesCounter";
+export { default as RetroModifiedFilesEmptyState } from "./ModifiedFilesEmptyState";
 export { default as RetroRepositoryDropdown } from "./RepoSelectionDropdown";
 export { default as RetroRepositorySelectionMenu } from "./RepoSelectionMenu";
 export { default as RetroRepositoryTab } from "./RepositoryTab";

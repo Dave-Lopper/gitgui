@@ -38,6 +38,7 @@ import {
   RetroDiffFileOptionRightClickFilesCounter,
   RetroDivider,
   RetroModifiedFilesCounter,
+  RetroModifiedFilesEmptyState,
   RetroRepositoryDropdown,
   RetroRepositorySelectionMenu,
   RetroSettingsMenu,
@@ -187,6 +188,7 @@ export default function AppLayout() {
                     containerClassname="overflow-auto retro-scrollbar"
                     repositorySelection={repositorySelection}
                     themedFileOption={ModifiedFileOption}
+                    themedEmptyState={RetroModifiedFilesEmptyState}
                     rightClickMenuClassname="bg-retro font-retro retro-borders absolute w-[300px] border-[2px] text-black"
                     rightClickMenuOption={RetroDiffFileListRightClickMenuOption}
                     rightClickMenuFilesCounter={

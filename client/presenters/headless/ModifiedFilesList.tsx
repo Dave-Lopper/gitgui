@@ -33,6 +33,7 @@ export default function ModifiedFilesList({
   rightClickMenuOption: RightClickMenuOption,
   statusEntries,
   themedFileOption: ThemedFileOption,
+  themedEmptyState: ThemedEmptyState,
 }: {
   commitHash: string | undefined;
   containerClassname?: string;
@@ -42,6 +43,7 @@ export default function ModifiedFilesList({
   rightClickMenuOption: ComponentType<RightClickMenuOptionProps>;
   statusEntries: StatusEntry[];
   themedFileOption: ComponentType<ThemedFileOptionProps>;
+  themedEmptyState?: ComponentType<{}>;
 }) {
   const [fileSelection, setFileSelection] = useState<Set<string>>(new Set());
   useEffect(() => {
@@ -198,7 +200,7 @@ export default function ModifiedFilesList({
 
   return (
     <div
-      className={`flex flex-col ${containerClassname ? containerClassname : ""} overflow-auto`}
+      className={`flex flex-col ${containerClassname ? containerClassname : ""} overflow-auto ${statusEntries.length > 0 ? "justify-start" : "justify-center"} h-full`}
     >
       <RightClickMenu
         containerClassname={rightClickMenuClassname}
@@ -206,28 +208,32 @@ export default function ModifiedFilesList({
         position={rightClickMenuPosition}
         selectedFilesCounter={RightClickMenuFilesCounter}
       />
-      {statusEntries.map((file, index) => (
-        <ThemedFileOption
-          key={file.path}
-          onClick={(e: MouseEvent<HTMLDivElement>) =>
-            clickHandler(e, file, index)
-          }
-          onContextMenu={(e: MouseEvent<HTMLDivElement>) =>
-            rightClickHandler(e, file, index)
-          }
-          showStaged={commitHash === undefined}
-          toggleStaging={async () =>
-            await useCases.toggleFilesStaged.execute(
-              repositorySelection?.repository.localPath!,
-              file,
-              index,
-              repositorySelection,
-            )
-          }
-          file={file}
-          isSelected={fileSelection.has(JSON.stringify({ ...file, index }))}
-        />
-      ))}
+      {statusEntries.length === 0 && ThemedEmptyState !== undefined ? (
+        <ThemedEmptyState />
+      ) : (
+        statusEntries.map((file, index) => (
+          <ThemedFileOption
+            key={file.path}
+            onClick={(e: MouseEvent<HTMLDivElement>) =>
+              clickHandler(e, file, index)
+            }
+            onContextMenu={(e: MouseEvent<HTMLDivElement>) =>
+              rightClickHandler(e, file, index)
+            }
+            showStaged={commitHash === undefined}
+            toggleStaging={async () =>
+              await useCases.toggleFilesStaged.execute(
+                repositorySelection?.repository.localPath!,
+                file,
+                index,
+                repositorySelection,
+              )
+            }
+            file={file}
+            isSelected={fileSelection.has(JSON.stringify({ ...file, index }))}
+          />
+        ))
+      )}
     </div>
   );
 }
