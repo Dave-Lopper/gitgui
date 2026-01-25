@@ -1,6 +1,7 @@
 import { CssLineTokenizer } from "./description/css.js";
 import { HtmlLineTokenizer } from "./description/html.js";
 import { JsonLineTokenizer } from "./description/json.js";
+import { YamlLineTokenizer } from "./description/yaml.js";
 import { LineTokenizer } from "./index.js";
 import { ProgrammingLangLineTokenizer } from "./programming/index.js";
 import { GolangTokenizer } from "./programming/languages/golang.js";
@@ -28,4 +29,9 @@ TOKENIZERS.set("json", new JsonLineTokenizer());
 TOKENIZERS.set("py", new ProgrammingLangLineTokenizer(new PythonTokenizer()));
 TOKENIZERS.set("go", new ProgrammingLangLineTokenizer(new GolangTokenizer()));
 TOKENIZERS.set("html", new HtmlLineTokenizer());
+TOKENIZERS.set("xml", new HtmlLineTokenizer());
 TOKENIZERS.set("css", new CssLineTokenizer());
+TOKENIZERS.set("scss", new CssLineTokenizer());
+TOKENIZERS.set("sass", new CssLineTokenizer());
+TOKENIZERS.set("yaml", new YamlLineTokenizer());
+TOKENIZERS.set("yml", new YamlLineTokenizer());

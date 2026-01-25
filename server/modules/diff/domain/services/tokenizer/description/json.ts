@@ -74,9 +74,9 @@ export class JsonLineTokenizer
       }
 
       if (tokens.length > 0 && tokens[tokens.length - 1].type === "unknown") {
-        tokens.push({ type: "unknown", value: char });
-      } else {
         tokens[tokens.length - 1].value += char;
+      } else {
+        tokens.push({ type: "unknown", value: char });
       }
       i++;
     }
