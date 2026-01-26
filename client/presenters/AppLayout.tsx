@@ -33,6 +33,7 @@ import {
   RetroAuthModal,
   RetroBranchDropdown,
   RetroCommitForm,
+  RetroContextMenuOption,
   RetroContextualMenu,
   RetroDiffFileOption,
   RetroDiffFileOptionRightClickFilesCounter,
@@ -44,7 +45,6 @@ import {
   RetroSettingsMenu,
   RetroSubHeader,
 } from "./themed/retro";
-import RetroDiffFileListRightClickMenuOption from "./themed/retro/DiffFileListRightClickMenuOption";
 import History from "./themed/retro/History";
 import { truncateString } from "./utils";
 
@@ -190,7 +190,7 @@ export default function AppLayout() {
                     themedFileOption={ModifiedFileOption}
                     themedEmptyState={RetroModifiedFilesEmptyState}
                     rightClickMenuClassname="bg-retro font-retro retro-borders absolute w-[300px] border-[2px] text-black"
-                    rightClickMenuOption={RetroDiffFileListRightClickMenuOption}
+                    contextMenuOption={RetroContextMenuOption}
                     rightClickMenuFilesCounter={
                       RetroDiffFileOptionRightClickFilesCounter
                     }
@@ -206,7 +206,7 @@ export default function AppLayout() {
                     repositorySelection={repositorySelection}
                     themedFileOption={ModifiedFileOption}
                     rightClickMenuClassname="bg-retro font-retro retro-borders absolute w-[300px] border-[2px] text-black"
-                    rightClickMenuOption={RetroDiffFileListRightClickMenuOption}
+                    contextMenuOption={RetroContextMenuOption}
                     rightClickMenuFilesCounter={
                       RetroDiffFileOptionRightClickFilesCounter
                     }
@@ -223,7 +223,7 @@ export default function AppLayout() {
             </div>
           }
           leftPaneClassName="bg-red h-full"
-          rightPane={<DiffViewer />}
+          rightPane={<DiffViewer contextMenuOption={RetroContextMenuOption} />}
           divider={divider}
         />
       )}

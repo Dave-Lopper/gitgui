@@ -45,6 +45,10 @@ export type ChangedLine<R extends DiffRepresentation> = {
   parts: LinePart<R>[];
 };
 
+export type DiffLine =
+  | ChangedLine<DiffRepresentation>
+  | ContextLine<DiffRepresentation>;
+
 export type Hunk<R extends DiffRepresentation> = {
   enclosingBlock?: string;
   oldLineCount?: number;
@@ -63,3 +67,28 @@ export type DiffEntry<R extends DiffRepresentation> = {
   removedLines: number;
   hunks: Hunk<R>[];
 };
+
+export function getLineContents(line: DiffLine): string {
+  let lineContents = "";
+
+  if (line.type === "CONTEXT") {
+    if (typeof line.content === "string") {
+      lineContents = line.content;
+    } else {
+      for (let i = 0; i < line.content.length; i++) {
+        lineContents += line.content[i].value;
+      }
+    }
+  } else {
+    for (let i = 0; i < line.parts.length; i++) {
+      if (typeof line.parts[i].content === "string") {
+        lineContents += line.parts[i].content;
+      } else {
+        for (let j = 0; j < line.parts[i].content.length; j++) {
+          lineContents += (line.parts[i].content[j] as any).value;
+        }
+      }
+    }
+  }
+  return lineContents;
+}

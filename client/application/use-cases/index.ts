@@ -7,6 +7,7 @@ export { CloneRepository } from "./clone-repository";
 export { ConsultCommitDiff } from "./consult-commit-diff";
 export { ConsultFileDiff } from "./consult-file-diff";
 export { CopyAbsoluteFilePath } from "./copy-absolute-file-path";
+export { CopyDiffLine } from "./copy-diff-line";
 export { CopyRelativeFilePath } from "./copy-relative-file-path";
 export { EmptyDiffFilesSelection } from "./empty-diff-files-selection";
 export { ExitViewedCommit } from "./exit-viewed-commit";

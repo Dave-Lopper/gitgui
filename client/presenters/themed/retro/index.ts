@@ -4,7 +4,7 @@ export { default as RetroCheckbox } from "./Checkbox";
 export { default as RetroCommitForm } from "./CommitForm";
 export { default as RetroContextualMenu } from "./ContextualMenu";
 export { default as RetroDiffFileOption } from "./DiffFileOption";
-export { default as RetroDiffFileOptionRightClickMenuOption } from "./DiffFileListRightClickMenuOption";
+export { default as RetroContextMenuOption } from "./ContextMenuOption";
 export { default as RetroDiffFileOptionRightClickFilesCounter } from "./DiffFileRightClickMenuFilesCounter";
 export { default as RetroDivider } from "./Divider";
 export { default as RetroLabel } from "./Label";

@@ -30,7 +30,7 @@ export default function ModifiedFilesList({
   repositorySelection,
   rightClickMenuClassname,
   rightClickMenuFilesCounter: RightClickMenuFilesCounter,
-  rightClickMenuOption: RightClickMenuOption,
+  contextMenuOption: ContextMenuOption,
   statusEntries,
   themedFileOption: ThemedFileOption,
   themedEmptyState: ThemedEmptyState,
@@ -40,7 +40,7 @@ export default function ModifiedFilesList({
   repositorySelection: RepositorySelectionDto;
   rightClickMenuClassname?: string;
   rightClickMenuFilesCounter: ComponentType<SelectedFilesCounterProps>;
-  rightClickMenuOption: ComponentType<RightClickMenuOptionProps>;
+  contextMenuOption: ComponentType<RightClickMenuOptionProps>;
   statusEntries: StatusEntry[];
   themedFileOption: ComponentType<ThemedFileOptionProps>;
   themedEmptyState?: ComponentType<{}>;
@@ -204,7 +204,7 @@ export default function ModifiedFilesList({
     >
       <RightClickMenu
         containerClassname={rightClickMenuClassname}
-        menuOption={RightClickMenuOption}
+        menuOption={ContextMenuOption}
         position={rightClickMenuPosition}
         selectedFilesCounter={RightClickMenuFilesCounter}
       />
