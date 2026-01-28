@@ -76,24 +76,28 @@ export class PythonTokenizer implements LanguageSpecificLexer {
     "yield",
   ];
   public readonly stringClosersMapping = {
-    "'": "'",
-    '"': '"',
-    'f"': '"',
-    'r"': '"',
-    'b"': '"',
-    "f'": "'",
-    "r'": "'",
-    "b'": "'",
-    '"""': '"""',
-    "'''": "'''",
     'r"""': '"""',
     'f"""': '"""',
     'b"""': '"""',
     "r'''": "'''",
     "f'''": "'''",
     "b'''": "'''",
+    '"""': '"""',
+    "'''": "'''",
+    'f"': '"',
+    'r"': '"',
+    'b"': '"',
+    "f'": "'",
+    "r'": "'",
+    "b'": "'",
+    "'": "'",
+    '"': '"',
   };
   public readonly varDeclarators = [];
+
+  public getStringTemplateClosingIndex(value: string): number {
+    return value.indexOf("}");
+  }
 
   // Handled by multi-line string
   public isBlockCommentOpening(value: string): number {
@@ -110,7 +114,7 @@ export class PythonTokenizer implements LanguageSpecificLexer {
   }
 
   public isStringMarker(value: string): number {
-    for (let stringOpener of Object.values(this.stringClosersMapping)) {
+    for (let stringOpener of Object.keys(this.stringClosersMapping)) {
       if (value.startsWith(stringOpener)) {
         return stringOpener.length;
       }

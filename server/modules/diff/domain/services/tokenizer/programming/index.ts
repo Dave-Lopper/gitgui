@@ -29,6 +29,7 @@ export interface LanguageSpecificLexer {
   punctuation: string[];
   stringClosersMapping: Record<string, string>;
   varDeclarators: string[];
+  getStringTemplateClosingIndex: (value: string) => number;
   isBlockCommentOpening: (value: string) => number;
   isBlockCommentClosing: (value: string) => number;
   isLineComment: (value: string) => boolean;
@@ -51,7 +52,7 @@ export class ProgrammingLangLineTokenizer
     inBlockComment: false,
     inString: null,
     inStringTemplateExpr: 0,
-  };
+  } as const;
   constructor(private readonly langLexer: LanguageSpecificLexer) {}
 
   public tokenizeLine(
@@ -143,6 +144,27 @@ export class ProgrammingLangLineTokenizer
           tokens.push({ type: "punctuation", value: char });
           state.inStringTemplateExpr--;
           i += stringTplClosingLength;
+          continue;
+        }
+
+        if (state.inStringTemplateExpr > 0) {
+          const closingIndex =
+            this.langLexer.getStringTemplateClosingIndex(toProcess);
+
+          let langSubstring;
+          if (closingIndex > -1) {
+            langSubstring = toProcess.substring(0, closingIndex);
+          } else {
+            langSubstring = toProcess;
+          }
+          const tokenizerRv = this.tokenizeLine(langSubstring, {
+            inString: null,
+            inStringTemplateExpr: 0,
+            inBlockComment: false,
+          });
+
+          tokens.push(...tokenizerRv.tokens);
+          i += langSubstring.length;
           continue;
         }
 

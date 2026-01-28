@@ -72,6 +72,10 @@ export class GolangTokenizer implements LanguageSpecificLexer {
   };
   public readonly varDeclarators = [];
 
+  public getStringTemplateClosingIndex(value: string): number {
+    return -1;
+  }
+
   // Handled by multi-line string
   public isBlockCommentOpening(value: string): number {
     if (value.startsWith("/*")) {

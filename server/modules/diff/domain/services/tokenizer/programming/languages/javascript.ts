@@ -79,6 +79,10 @@ export class JavascriptTokenizer implements LanguageSpecificLexer {
   public readonly stringClosersMapping = { "'": "'", '"': '"', "`": "`" };
   public readonly varDeclarators = ["var", "let", "const"];
 
+  public getStringTemplateClosingIndex(value: string): number {
+    return value.indexOf("}");
+  }
+
   public isBlockCommentOpening(value: string): number {
     if (value.startsWith("/*")) {
       return 2;
