@@ -196,6 +196,14 @@ async function createWindow() {
     );
   });
 
+  ipcMain.handle("diff:stashFile", async (event, message) => {
+    const parsedMessage = JSON.parse(message);
+    return await diffUseCases.stashFile.execute(
+      parsedMessage.repositoryPath,
+      parsedMessage.filePath,
+    );
+  });
+
   window.webContents.on("render-process-gone", (event, details) => {
     console.error("Renderer process crashed:", details);
   });

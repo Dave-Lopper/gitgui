@@ -11,6 +11,7 @@ import { BatchAddToGitignore } from "./application/use-cases/batch-add-to-gitign
 import { BatchDiscardFileModifications } from "./application/use-cases/batch-discard-file-mofiications.js";
 import { GetTreeFileDiff } from "./application/use-cases/get-tree-file-diff.js";
 import { StageAndStash } from "./application/use-cases/stage-and-stash.js";
+import { StashFile } from "./application/use-cases/stash-file.js";
 import { ToggleFileStaged } from "./application/use-cases/toggle-files-staged.js";
 import { DiffCliGitRunner } from "./infra/diff-git-cli-runner.js";
 
@@ -35,6 +36,7 @@ export function bootstrap(window: BrowserWindow) {
     ),
     getTreeFileDiff: new GetTreeFileDiff(eventEmitter, filesRepo, gitRunner),
     stageAndStash: new StageAndStash(eventEmitter, gitRunner),
+    stashFile: new StashFile(eventEmitter, gitRunner),
     toggleFileStaged: new ToggleFileStaged(eventEmitter, gitRunner),
   };
 }

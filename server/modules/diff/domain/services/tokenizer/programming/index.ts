@@ -168,7 +168,7 @@ export class ProgrammingLangLineTokenizer
           continue;
         }
 
-        if (tokens.length > 0) {
+        if (tokens.length > 0 && tokens[tokens.length - 1].type === "string") {
           tokens[tokens.length - 1].value += char;
         } else {
           tokens.push({ type: "string", value: char });

@@ -43,6 +43,8 @@ export interface DiffGitRunner {
 
   stageFiles(repositoryPath: string): Promise<void>;
 
+  stashFile(repositoryPath: string, filePath: string): Promise<void>;
+
   stashFiles(repositoryPath: string): Promise<void>;
 
   unstageFile(repositoryPath: string, filePath: string): Promise<void>;
