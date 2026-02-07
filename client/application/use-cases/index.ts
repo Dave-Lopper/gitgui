@@ -24,6 +24,7 @@ export { SelectDiffFiles } from "./select-diff-files";
 export { SelectRepositoryFromSaved } from "./select-repository-from-saved";
 export { SelectRepositoryFromDisk } from "./select-repository-from-disk";
 export { StageStashAndCheckout } from "./stage-stash-and-checkout";
+export { StashFile } from "./stash-file";
 export { ToggleDiffFileSelection } from "./toggle-diff-file-selection";
 export { ToggleFileStaged } from "./toggle-file-staged";
 export { ViewCommit } from "./view-commit";

@@ -69,5 +69,7 @@ export interface IGitService {
 
   stageAndStash(repositoryPath: string): Promise<void>;
 
+  stashFile(repositoryPath: string, filePath: string): Promise<void>;
+
   toggleFilesStaged(repositoryPath: string, filePaths: string[]): Promise<void>;
 }

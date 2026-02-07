@@ -163,7 +163,7 @@ export class DiffCliGitRunner extends GitCliRunner implements DiffGitRunner {
   }
 
   async stashFile(repositoryPath: string, filePath: string): Promise<void> {
-    await this.safeRun("git", ["stash", "push", "--", filePath], {
+    await this.safeRun("git", ["stash", "push", "-u", "--", filePath], {
       cwd: repositoryPath,
     });
   }

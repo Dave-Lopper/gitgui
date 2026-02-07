@@ -3,17 +3,18 @@ import {
   MouseEvent,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
 import { useCases } from "../../bootstrap";
 import { StatusEntry } from "../../domain/status";
 import { RepositorySelectionDto } from "../../dto/repo-selection";
+import ContextMenu, { ContextMenuItemProps } from "./ContextMenu";
 import {
-  default as RightClickMenu,
-  RightClickMenuOptionProps,
   SelectedFilesCounterProps,
 } from "./DiffFileOptionRightClickMenu";
+import { useContextMenu } from "./hooks/context-menu";
 
 export type ThemedFileOptionProps = {
   isSelected: boolean;
@@ -40,12 +41,93 @@ export default function ModifiedFilesList({
   repositorySelection: RepositorySelectionDto;
   rightClickMenuClassname?: string;
   rightClickMenuFilesCounter: ComponentType<SelectedFilesCounterProps>;
-  contextMenuOption: ComponentType<RightClickMenuOptionProps>;
+  contextMenuOption: ComponentType<ContextMenuItemProps>;
   statusEntries: StatusEntry[];
   themedFileOption: ComponentType<ThemedFileOptionProps>;
   themedEmptyState?: ComponentType<{}>;
 }) {
   const [fileSelection, setFileSelection] = useState<Set<string>>(new Set());
+
+  const contextMenuItems = useMemo<ContextMenuItemProps[]>(() => {
+    const items = [
+      {
+        text: "Discard changes",
+        onClick: async () => {
+          const filePaths: string[] = [];
+          fileSelection.forEach((file) =>
+            filePaths.push(JSON.parse(file).path),
+          );
+          return await useCases.batchDiscardFileModifications.execute(
+            repositorySelection.repository.localPath,
+            filePaths,
+          );
+        },
+      },
+      {
+        text: "Add to gitignore",
+        onClick: async () => {
+          const filePaths: string[] = [];
+          fileSelection.forEach((file) =>
+            filePaths.push(JSON.parse(file).path),
+          );
+          return await useCases.batchDiscardFileModifications.execute(
+            repositorySelection.repository.localPath,
+            filePaths,
+          );
+        },
+      },
+    ];
+
+    if (fileSelection.size === 1) {
+      const selectedFile = JSON.parse(fileSelection.values().next().value!);
+      const filePathParts = selectedFile.path.split(".");
+      const fileExtension = filePathParts[filePathParts.length - 1];
+      items.push({
+        text: `Add all .${fileExtension} to gitignore`,
+        onClick: async () =>
+          await useCases.addFileTypeToGitignore.execute(
+            repositorySelection.repository.localPath,
+            selectedFile,
+          ),
+      });
+    }
+
+    items.push(
+      {
+        text: "Copy absolute path",
+        onClick: async () => {
+          const selectedFile = JSON.parse(fileSelection.values().next().value!);
+          return await useCases.copyAbsoluteFilePath.execute(
+            repositorySelection.repository.localPath,
+            selectedFile.path,
+          );
+        },
+      },
+      {
+        text: "Copy relative path",
+        onClick: async () => {
+          const selectedFile = JSON.parse(fileSelection.values().next().value!);
+          return await useCases.copyRelativeFilePath.execute(
+            repositorySelection?.repository.localPath,
+            selectedFile.path,
+          );
+        },
+      },
+      {
+        text: "Stash file",
+        onClick: async () => {
+          const selectedFile = JSON.parse(fileSelection.values().next().value!);
+          return await useCases.stashFile.execute(
+            repositorySelection?.repository.localPath,
+            selectedFile.path,
+          );
+        },
+      },
+    );
+    return items;
+  }, [fileSelection]);
+  const contextMenu = useContextMenu();
+
   useEffect(() => {
     const triggerUseCase = async () =>
       await useCases.modifyFileDiffSelection.execute(
@@ -105,7 +187,7 @@ export default function ModifiedFilesList({
 
   const rightClickHandler = useCallback(
     async (e: MouseEvent<HTMLDivElement>, file: StatusEntry, idx: number) => {
-      setFileSelection(new Set(JSON.stringify({ ...file, index: idx })));
+      setFileSelection(new Set([JSON.stringify({ ...file, index: idx })]));
       setRightClickMenuPosition([e.clientX, e.clientY]);
     },
     [fileSelection, repositorySelection, statusEntries],
@@ -201,12 +283,20 @@ export default function ModifiedFilesList({
   return (
     <div
       className={`flex flex-col ${containerClassname ? containerClassname : ""} overflow-auto ${statusEntries.length > 0 ? "justify-start" : "justify-center"} h-full`}
+      onContextMenu={(e) => {
+        contextMenu.open(e);
+        e.preventDefault();
+      }}
     >
-      <RightClickMenu
-        containerClassname={rightClickMenuClassname}
-        menuOption={ContextMenuOption}
-        position={rightClickMenuPosition}
-        selectedFilesCounter={RightClickMenuFilesCounter}
+      <ContextMenu
+        containerClassName="bg-retro font-retro retro-borders absolute w-[300px] border-[2px] text-black"
+        isOpen={contextMenu.isOpen}
+        itemComponent={ContextMenuOption}
+        items={contextMenuItems}
+        position={contextMenu.position}
+        onClose={() => {
+          contextMenu.close();
+        }}
       />
       {statusEntries.length === 0 && ThemedEmptyState !== undefined ? (
         <ThemedEmptyState />

@@ -158,6 +158,10 @@ export class GitService implements IGitService {
     await window.electronAPI.stageAndStash(repositoryPath);
   }
 
+  async stashFile(repositoryPath: string, filePath: string): Promise<void> {
+    await window.electronAPI.stashFile(repositoryPath, filePath);
+  }
+
   async toggleFilesStaged(
     repositoryPath: string,
     filePaths: string[],

@@ -82,6 +82,7 @@ declare global {
         path: string,
       ) => Promise<ActionResponse<RepositorySelectionDto>>;
       stageAndStash: (repositoryPath: string) => Promise<void>;
+      stashFile: (repositoryPath: string, filePath: string) => Promise<void>;
       toggleFilesStaged: (
         repositoryPath: string,
         filePaths: string[],
