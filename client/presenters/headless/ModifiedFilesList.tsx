@@ -11,9 +11,6 @@ import { useCases } from "../../bootstrap";
 import { StatusEntry } from "../../domain/status";
 import { RepositorySelectionDto } from "../../dto/repo-selection";
 import ContextMenu, { ContextMenuItemProps } from "./ContextMenu";
-import {
-  SelectedFilesCounterProps,
-} from "./DiffFileOptionRightClickMenu";
 import { useContextMenu } from "./hooks/context-menu";
 
 export type ThemedFileOptionProps = {
@@ -29,8 +26,6 @@ export default function ModifiedFilesList({
   commitHash,
   containerClassname,
   repositorySelection,
-  rightClickMenuClassname,
-  rightClickMenuFilesCounter: RightClickMenuFilesCounter,
   contextMenuOption: ContextMenuOption,
   statusEntries,
   themedFileOption: ThemedFileOption,
@@ -39,8 +34,6 @@ export default function ModifiedFilesList({
   commitHash: string | undefined;
   containerClassname?: string;
   repositorySelection: RepositorySelectionDto;
-  rightClickMenuClassname?: string;
-  rightClickMenuFilesCounter: ComponentType<SelectedFilesCounterProps>;
   contextMenuOption: ComponentType<ContextMenuItemProps>;
   statusEntries: StatusEntry[];
   themedFileOption: ComponentType<ThemedFileOptionProps>;

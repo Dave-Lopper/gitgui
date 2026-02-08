@@ -1,11 +1,4 @@
-import {
-  use,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import { useCases } from "../bootstrap";
 import { StatusEntry } from "../domain/status";
@@ -36,7 +29,6 @@ import {
   RetroContextMenuOption,
   RetroContextualMenu,
   RetroDiffFileOption,
-  RetroDiffFileOptionRightClickFilesCounter,
   RetroDivider,
   RetroModifiedFilesCounter,
   RetroModifiedFilesEmptyState,
@@ -189,11 +181,7 @@ export default function AppLayout() {
                     repositorySelection={repositorySelection}
                     themedFileOption={ModifiedFileOption}
                     themedEmptyState={RetroModifiedFilesEmptyState}
-                    rightClickMenuClassname="bg-retro font-retro retro-borders absolute w-[300px] border-[2px] text-black"
                     contextMenuOption={RetroContextMenuOption}
-                    rightClickMenuFilesCounter={
-                      RetroDiffFileOptionRightClickFilesCounter
-                    }
                     statusEntries={repositorySelection.treeStatus.entries}
                     commitHash={undefined}
                   />
@@ -205,11 +193,7 @@ export default function AppLayout() {
                   <ModifiedFilesList
                     repositorySelection={repositorySelection}
                     themedFileOption={ModifiedFileOption}
-                    rightClickMenuClassname="bg-retro font-retro retro-borders absolute w-[300px] border-[2px] text-black"
                     contextMenuOption={RetroContextMenuOption}
-                    rightClickMenuFilesCounter={
-                      RetroDiffFileOptionRightClickFilesCounter
-                    }
                     statusEntries={viewedCommit.entries}
                     commitHash={viewedCommit.hash}
                     containerClassname={

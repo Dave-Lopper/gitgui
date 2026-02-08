@@ -7,10 +7,16 @@ import { useContextMenu } from "./hooks/context-menu";
 
 export default function DiffLine({
   contextMenuOption: ContextMenuOption,
+  copyHunk,
+  isHunkSelected,
   line,
+  toggleHunkSelection,
 }: {
+  copyHunk: () => Promise<void>;
   contextMenuOption: ComponentType<ContextMenuItemProps>;
+  isHunkSelected: boolean;
   line: DiffLineType;
+  toggleHunkSelection: () => void;
 }) {
   const [isSelected, setIsSelected] = useState(false);
   const diffColors = useMemo<{
@@ -40,9 +46,15 @@ export default function DiffLine({
         onMouseEnter: async () => {
           setIsSelected(true);
         },
-        onMouseLeave: async () => {
-          setIsSelected(false);
+      },
+      {
+        text: "Copy hunk to clipboard",
+        onClick: async () => {
+          await copyHunk();
+          toggleHunkSelection();
         },
+        onMouseEnter: async () => toggleHunkSelection(),
+        onMouseLeave: async () => toggleHunkSelection(),
       },
     ],
     [],
@@ -99,7 +111,7 @@ export default function DiffLine({
         </div>
       ) : (
         <div
-          className={`flex w-full ${isSelected ? diffColors[line.type].highlight : diffColors[line.type]} ${diffColors[line.type].bg} cursor-pointer`}
+          className={`flex w-full ${isSelected || isHunkSelected ? diffColors[line.type].highlight : diffColors[line.type]} ${diffColors[line.type].bg} cursor-pointer`}
         >
           <span className="bg-retro border-black font-retro text-black font-thin flex text-xs">
             <span className="border-r-[1px]  w-6 h-6 flex justify-center items-center ">
