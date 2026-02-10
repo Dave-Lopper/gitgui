@@ -1,12 +1,13 @@
 import { LineTokenizer, Token } from "..";
+import { JavascriptTokenizer } from "./languages/javascript.js";
 
-export type ProgrammingLangLexerState = {
+export type JsxLexerState = {
   inBlockComment: boolean;
   inString: string | null;
   inStringTemplateExpr: number;
 };
 
-export type ProgrammingLangTokenType =
+export type JsxTokenType =
   | "keyword"
   | "number"
   | "string"
@@ -20,51 +21,27 @@ export type ProgrammingLangTokenType =
   | "variableDeclaration"
   | "typeHint";
 
-export interface LanguageSpecificLexer {
-  functionDeclarators: string[];
-  keywords: string[];
-  nativeTypes: string[];
-  numericTypes: string[];
-  operators: string[];
-  punctuation: string[];
-  stringClosersMapping: Record<string, string>;
-  varDeclarators: string[];
-  getStringTemplateClosingIndex: (value: string) => number;
-  isBlockCommentOpening: (value: string) => number;
-  isBlockCommentClosing: (value: string) => number;
-  isLineComment: (value: string) => boolean;
-  isStringMarker: (value: string) => number;
-  isStringTemplateClosing: (
-    value: string,
-    state: ProgrammingLangLexerState,
-  ) => number;
-  isStringTemplateOpening: (
-    value: string,
-    state: ProgrammingLangLexerState,
-  ) => number;
-  lineHasBlockCommentClosing: (value: string) => number;
-}
-
-export class ProgrammingLangLineTokenizer
-  implements LineTokenizer<ProgrammingLangTokenType, ProgrammingLangLexerState>
+export class JsxLineTokenizer
+  implements LineTokenizer<JsxTokenType, JsxLexerState>
 {
-  public readonly initialState: ProgrammingLangLexerState = {
+  public readonly initialState: JsxLexerState = {
     inBlockComment: false,
     inString: null,
     inStringTemplateExpr: 0,
   } as const;
-  constructor(private readonly langLexer: LanguageSpecificLexer) {}
+  private jsTokenizer = new JavascriptTokenizer();
+  constructor() {}
 
   public tokenizeLine(
     line: string,
-    state: ProgrammingLangLexerState,
+    state: JsxLexerState,
   ): {
-    tokens: Token<ProgrammingLangTokenType>[];
-    state: ProgrammingLangLexerState;
+    tokens: Token<JsxTokenType>[];
+    state: JsxLexerState;
   } {
-    const tokens: Token<ProgrammingLangTokenType>[] = [];
+    const tokens: Token<JsxTokenType>[] = [];
     const sepChars = [
-      ...this.langLexer.punctuation,
+      ...this.jsTokenizer.punctuation,
       "\t",
       "\n",
       " ",
@@ -73,26 +50,30 @@ export class ProgrammingLangLineTokenizer
     ];
     let toProcess = line;
     let i = 0;
+    const jsStringsClosersMapping = this.jsTokenizer
+      .stringClosersMapping as Record<string, string>;
 
     while (toProcess.length > 0) {
       toProcess = line.substring(i, line.length);
       const char = line.charAt(i);
       const prevChar = line.charAt(i - 1);
 
-      const stringMarkerLength = this.langLexer.isStringMarker(toProcess);
+      const stringMarkerLength = this.jsTokenizer.isStringMarker(toProcess);
 
       if (stringMarkerLength > 0) {
         if (
           state.inString !== null &&
           toProcess.startsWith(
-            this.langLexer.stringClosersMapping[state.inString],
+            (this.jsTokenizer.stringClosersMapping as Record<string, string>)[
+              state.inString
+            ],
           )
         ) {
           tokens.push({
             type: "punctuation",
-            value: this.langLexer.stringClosersMapping[state.inString],
+            value: jsStringsClosersMapping[state.inString],
           });
-          i += this.langLexer.stringClosersMapping[state.inString].length;
+          i += jsStringsClosersMapping[state.inString].length;
           state.inString = null;
           continue;
         } else if (state.inString === null) {
@@ -122,7 +103,7 @@ export class ProgrammingLangLineTokenizer
       }
 
       if (state.inString !== null) {
-        const stringTplOpeningLength = this.langLexer.isStringTemplateOpening(
+        const stringTplOpeningLength = this.jsTokenizer.isStringTemplateOpening(
           toProcess,
           state,
         );
@@ -136,7 +117,7 @@ export class ProgrammingLangLineTokenizer
           continue;
         }
 
-        const stringTplClosingLength = this.langLexer.isStringTemplateClosing(
+        const stringTplClosingLength = this.jsTokenizer.isStringTemplateClosing(
           toProcess,
           state,
         );
@@ -149,7 +130,7 @@ export class ProgrammingLangLineTokenizer
 
         if (state.inStringTemplateExpr > 0) {
           const closingIndex =
-            this.langLexer.getStringTemplateClosingIndex(toProcess);
+            this.jsTokenizer.getStringTemplateClosingIndex(toProcess);
 
           let langSubstring;
           if (closingIndex > -1) {
@@ -177,7 +158,7 @@ export class ProgrammingLangLineTokenizer
         continue;
       }
 
-      if (this.langLexer.isLineComment(toProcess)) {
+      if (this.jsTokenizer.isLineComment(toProcess)) {
         tokens.push({ type: "comment", value: toProcess });
         return { tokens, state };
       }
@@ -191,11 +172,11 @@ export class ProgrammingLangLineTokenizer
       if (
         state.inBlockComment === false &&
         state.inString === null &&
-        this.langLexer.isBlockCommentOpening(toProcess)
+        this.jsTokenizer.isBlockCommentOpening(toProcess)
       ) {
         state.inBlockComment = true;
         const closingIndex =
-          this.langLexer.lineHasBlockCommentClosing(toProcess);
+          this.jsTokenizer.lineHasBlockCommentClosing(toProcess);
 
         if (closingIndex === -1) {
           tokens.push({ type: "comment", value: toProcess });
@@ -212,8 +193,8 @@ export class ProgrammingLangLineTokenizer
       }
 
       let shouldContinue = false;
-      for (let j = 0; j < this.langLexer.keywords.length; j++) {
-        const keyword = this.langLexer.keywords[j];
+      for (let j = 0; j < this.jsTokenizer.keywords.length; j++) {
+        const keyword = this.jsTokenizer.keywords[j];
         const nextChar = toProcess.charAt(keyword.length);
         if (
           toProcess.startsWith(keyword) &&
@@ -227,8 +208,8 @@ export class ProgrammingLangLineTokenizer
         }
       }
 
-      for (let j = 0; j < this.langLexer.operators.length; j++) {
-        const operator = this.langLexer.operators[j];
+      for (let j = 0; j < this.jsTokenizer.operators.length; j++) {
+        const operator = this.jsTokenizer.operators[j];
 
         if (toProcess.startsWith(operator)) {
           tokens.push({ type: "operator", value: operator });
@@ -238,8 +219,8 @@ export class ProgrammingLangLineTokenizer
         }
       }
 
-      for (let j = 0; j < this.langLexer.varDeclarators.length; j++) {
-        const varDeclarator = this.langLexer.varDeclarators[j];
+      for (let j = 0; j < this.jsTokenizer.varDeclarators.length; j++) {
+        const varDeclarator = this.jsTokenizer.varDeclarators[j];
         const nextChar = toProcess.charAt(varDeclarator.length);
 
         if (
@@ -257,8 +238,8 @@ export class ProgrammingLangLineTokenizer
         }
       }
 
-      for (let j = 0; j < this.langLexer.nativeTypes.length; j++) {
-        const nativeType = this.langLexer.nativeTypes[j];
+      for (let j = 0; j < this.jsTokenizer.nativeTypes.length; j++) {
+        const nativeType = this.jsTokenizer.nativeTypes[j];
         const nextChar = toProcess.charAt(nativeType.length);
         if (
           toProcess.startsWith(nativeType) &&
@@ -275,8 +256,8 @@ export class ProgrammingLangLineTokenizer
         }
       }
 
-      for (let j = 0; j < this.langLexer.functionDeclarators.length; j++) {
-        const funcDeclarator = this.langLexer.functionDeclarators[j];
+      for (let j = 0; j < this.jsTokenizer.functionDeclarators.length; j++) {
+        const funcDeclarator = this.jsTokenizer.functionDeclarators[j];
         const nextChar = toProcess.charAt(funcDeclarator.length);
 
         if (
@@ -293,8 +274,8 @@ export class ProgrammingLangLineTokenizer
         }
       }
 
-      for (let j = 0; j < this.langLexer.numericTypes.length; j++) {
-        const numericType = this.langLexer.numericTypes[j];
+      for (let j = 0; j < this.jsTokenizer.numericTypes.length; j++) {
+        const numericType = this.jsTokenizer.numericTypes[j];
         const nextChar = toProcess.charAt(numericType.length);
 
         if (
@@ -315,7 +296,7 @@ export class ProgrammingLangLineTokenizer
         continue;
       }
 
-      if (this.langLexer.punctuation.includes(char)) {
+      if (this.jsTokenizer.punctuation.includes(char)) {
         tokens.push({ type: "punctuation", value: char });
         i++;
         continue;
