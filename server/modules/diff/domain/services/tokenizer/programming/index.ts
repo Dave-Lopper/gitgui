@@ -177,6 +177,23 @@ export class ProgrammingLangLineTokenizer
         continue;
       }
 
+      if (state.inBlockComment) {
+        const closingIndex =
+          this.langLexer.lineHasBlockCommentClosing(toProcess);
+        if (closingIndex === -1) {
+          tokens.push({ type: "comment", value: toProcess });
+          return { tokens, state };
+        }
+
+        tokens.push({
+          type: "comment",
+          value: toProcess.substring(0, closingIndex),
+        });
+        i += closingIndex; // Skip next chars as we just added them
+        state.inBlockComment = false;
+        continue;
+      }
+
       if (this.langLexer.isLineComment(toProcess)) {
         tokens.push({ type: "comment", value: toProcess });
         return { tokens, state };

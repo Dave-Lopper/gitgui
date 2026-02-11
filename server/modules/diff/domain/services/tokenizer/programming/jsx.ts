@@ -158,6 +158,27 @@ export class JsxLineTokenizer
         continue;
       }
 
+      if (state.inBlockComment) {
+        const closingIndex =
+          this.jsTokenizer.lineHasBlockCommentClosing(toProcess);
+        if (closingIndex === -1) {
+          tokens.push({ type: "comment", value: toProcess });
+          return { tokens, state };
+        }
+
+        tokens.push({
+          type: "comment",
+          value: toProcess.substring(0, closingIndex),
+        });
+        i += closingIndex; // Skip next chars as we just added them
+        state.inBlockComment = false;
+        continue;
+      }
+
+      if (line.includes("Contents of the old and new")) {
+        console.log({ line, state });
+      }
+
       if (this.jsTokenizer.isLineComment(toProcess)) {
         tokens.push({ type: "comment", value: toProcess });
         return { tokens, state };
