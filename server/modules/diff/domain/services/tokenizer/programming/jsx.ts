@@ -5,9 +5,13 @@ export type JsxLexerState = {
   inBlockComment: boolean;
   inString: string | null;
   inStringTemplateExpr: number;
+  inJsxTag: boolean;
+  lexerMode: "js" | "jsx" | "jsxExpression";
+  braceDepth: number;
 };
 
 export type JsxTokenType =
+  | "attribute"
   | "keyword"
   | "number"
   | "string"
@@ -21,6 +25,20 @@ export type JsxTokenType =
   | "variableDeclaration"
   | "typeHint";
 
+const EXPR_ALLOWED_AFTER = new Set<JsxTokenType>([
+  "operator",
+  "punctuation",
+  "keyword",
+  "whitespace",
+]);
+
+const EXPR_DISALLOWED_AFTER = new Set<JsxTokenType>([
+  "identifier",
+  "number",
+  "string",
+  "unknown",
+]);
+
 export class JsxLineTokenizer
   implements LineTokenizer<JsxTokenType, JsxLexerState>
 {
@@ -28,42 +46,199 @@ export class JsxLineTokenizer
     inBlockComment: false,
     inString: null,
     inStringTemplateExpr: 0,
+    lexerMode: "js",
+    braceDepth: 0,
+    inJsxTag: false,
   } as const;
   private jsTokenizer = new JavascriptTokenizer();
-  constructor() {}
+  private jsSepChars = [
+    ...this.jsTokenizer.punctuation.filter((p) => p !== "."),
+    "\t",
+    "\n",
+    " ",
+    undefined,
+    "",
+  ];
+  private sepChars = [
+    ...this.jsTokenizer.punctuation.filter((p) => p !== "."),
+    "\t",
+    "\n",
+    " ",
+    undefined,
+    "",
+  ];
 
-  public tokenizeLine(
+  private looksLikeJsx(toProcess: string): boolean {
+    return (
+      (toProcess.startsWith("</") && /<\/[A-Za-z]/.test(toProcess)) ||
+      (toProcess.startsWith("<") && /<[A-Za-z]/.test(toProcess))
+    );
+  }
+
+  private isValidJsxTagStart(
+    toProcess: string,
+    prevToken: Token<JsxTokenType> | undefined,
+    state: JsxLexerState,
+  ): boolean {
+    // Never inside strings or comments
+    if (state.inString !== null || state.inBlockComment) {
+      return false;
+    }
+
+    if (!this.looksLikeJsx(toProcess)) {
+      return false;
+    }
+
+    // Start of line → JSX allowed
+    if (!prevToken) {
+      return true;
+    }
+
+    // Disallowed contexts
+    if (EXPR_DISALLOWED_AFTER.has(prevToken.type)) {
+      return false;
+    }
+
+    if (
+      prevToken.type === "punctuation" &&
+      [")", "]", "}", ":"].includes(prevToken.value)
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
+  public tokenizeJsx(
+    tokens: Token<JsxTokenType>[],
     line: string,
     state: JsxLexerState,
   ): {
     tokens: Token<JsxTokenType>[];
     state: JsxLexerState;
+    remainder: string;
   } {
-    const tokens: Token<JsxTokenType>[] = [];
-    const sepChars = [
-      ...this.jsTokenizer.punctuation,
-      "\t",
-      "\n",
-      " ",
-      undefined,
-      "",
-    ];
-    let toProcess = line;
+    let remainder = line;
+    let i = 0;
+    const whiteSpaceRegexp = /^(\s+)/g;
+
+    while (remainder.length > 0) {
+      remainder = line.substring(i, line.length);
+      const char = remainder.charAt(0);
+
+      const whiteSpaceMatch = whiteSpaceRegexp.exec(remainder);
+      if (whiteSpaceMatch !== null) {
+        const space = whiteSpaceMatch[1];
+        tokens.push({ type: "whitespace", value: space });
+        i += space.length;
+        continue;
+      }
+
+      if (state.inJsxTag && char === "=") {
+        tokens.push({ type: "operator", value: "=" });
+        i++;
+        continue;
+      }
+
+      if (state.inString === null && state.inJsxTag && char === '"') {
+        const closingIndex = remainder.substring(1).indexOf('"');
+        let tokenValue = '"';
+        if (closingIndex > -1) {
+          tokenValue += remainder.substring(1, closingIndex + 2);
+        } else {
+          tokenValue += remainder;
+          state.inString = '"';
+        }
+        tokens.push({ type: "string", value: tokenValue });
+        i += tokenValue.length + 1;
+        continue;
+      }
+
+      if (char === "{") {
+        state.lexerMode = "js";
+        state.braceDepth += 1;
+        tokens.push({ type: "punctuation", value: "{" });
+        i++;
+        return { tokens, state, remainder: line.substring(i, line.length) };
+      }
+
+      if (remainder.startsWith("<>")) {
+        tokens.push({ type: "punctuation", value: "<>" });
+        i += 2;
+        state.inJsxTag = false;
+        continue;
+      }
+      if (remainder.startsWith("</>")) {
+        tokens.push({ type: "punctuation", value: "</>" });
+        i += 3;
+        state.inJsxTag = false;
+        continue;
+      }
+
+      if (remainder.startsWith("<")) {
+        tokens.push({ type: "punctuation", value: "<" });
+        i++;
+        const tagNmame = remainder.substring(1).split(" ")[0];
+        tokens.push({ type: "keyword", value: tagNmame });
+        i += tagNmame.length;
+        state.inJsxTag = true;
+        continue;
+      }
+
+      if (remainder.startsWith("/>")) {
+        tokens.push({ type: "punctuation", value: "/>" });
+        i += 2;
+        state.inJsxTag = false;
+        continue;
+      }
+
+      if (state.inJsxTag) {
+        if (
+          tokens.length > 0 &&
+          tokens[tokens.length - 1].type === "attribute"
+        ) {
+          tokens[tokens.length - 1].value += char;
+        } else {
+          tokens.push({ type: "attribute", value: char });
+        }
+        i++;
+        continue;
+      }
+
+      if (tokens.length > 0 && tokens[tokens.length - 1].type === "unknown") {
+        tokens[tokens.length - 1].value += char;
+      } else {
+        tokens.push({ type: "unknown", value: char });
+      }
+    }
+
+    return { tokens, state, remainder };
+  }
+
+  public tokenizeJs(
+    tokens: Token<JsxTokenType>[],
+    line: string,
+    state: JsxLexerState,
+  ): {
+    state: JsxLexerState;
+    tokens: Token<JsxTokenType>[];
+    remainder: string;
+  } {
+    let remainder = line;
     let i = 0;
     const jsStringsClosersMapping = this.jsTokenizer
       .stringClosersMapping as Record<string, string>;
 
-    while (toProcess.length > 0) {
-      toProcess = line.substring(i, line.length);
+    while (remainder.length > 0) {
+      remainder = line.substring(i, line.length);
       const char = line.charAt(i);
       const prevChar = line.charAt(i - 1);
 
-      const stringMarkerLength = this.jsTokenizer.isStringMarker(toProcess);
-
+      const stringMarkerLength = this.jsTokenizer.isStringMarker(remainder);
       if (stringMarkerLength > 0) {
         if (
           state.inString !== null &&
-          toProcess.startsWith(
+          remainder.startsWith(
             (this.jsTokenizer.stringClosersMapping as Record<string, string>)[
               state.inString
             ],
@@ -77,7 +252,7 @@ export class JsxLineTokenizer
           state.inString = null;
           continue;
         } else if (state.inString === null) {
-          state.inString = toProcess.substring(0, stringMarkerLength);
+          state.inString = remainder.substring(0, stringMarkerLength);
           tokens.push(
             { type: "punctuation", value: state.inString },
             { type: "string", value: "" },
@@ -86,14 +261,14 @@ export class JsxLineTokenizer
           continue;
         } else {
           if (tokens.length > 0) {
-            tokens[tokens.length - 1].value += toProcess.substring(
+            tokens[tokens.length - 1].value += remainder.substring(
               0,
               stringMarkerLength,
             );
           } else {
             tokens.push({
               type: "string",
-              value: toProcess.substring(0, stringMarkerLength),
+              value: remainder.substring(0, stringMarkerLength),
             });
           }
           i += stringMarkerLength;
@@ -104,13 +279,13 @@ export class JsxLineTokenizer
 
       if (state.inString !== null) {
         const stringTplOpeningLength = this.jsTokenizer.isStringTemplateOpening(
-          toProcess,
+          remainder,
           state,
         );
         if (stringTplOpeningLength > 0) {
           tokens.push({
             type: "punctuation",
-            value: toProcess.substring(0, stringTplOpeningLength),
+            value: remainder.substring(0, stringTplOpeningLength),
           });
           state.inStringTemplateExpr++;
           i += stringTplOpeningLength;
@@ -118,7 +293,7 @@ export class JsxLineTokenizer
         }
 
         const stringTplClosingLength = this.jsTokenizer.isStringTemplateClosing(
-          toProcess,
+          remainder,
           state,
         );
         if (stringTplClosingLength > 0) {
@@ -130,18 +305,21 @@ export class JsxLineTokenizer
 
         if (state.inStringTemplateExpr > 0) {
           const closingIndex =
-            this.jsTokenizer.getStringTemplateClosingIndex(toProcess);
+            this.jsTokenizer.getStringTemplateClosingIndex(remainder);
 
           let langSubstring;
           if (closingIndex > -1) {
-            langSubstring = toProcess.substring(0, closingIndex);
+            langSubstring = remainder.substring(0, closingIndex);
           } else {
-            langSubstring = toProcess;
+            langSubstring = remainder;
           }
-          const tokenizerRv = this.tokenizeLine(langSubstring, {
+          const tokenizerRv = this.tokenizeJs(tokens, langSubstring, {
             inString: null,
             inStringTemplateExpr: 0,
             inBlockComment: false,
+            lexerMode: "js",
+            braceDepth: state.braceDepth,
+            inJsxTag: state.inJsxTag,
           });
 
           tokens.push(...tokenizerRv.tokens);
@@ -160,28 +338,142 @@ export class JsxLineTokenizer
 
       if (state.inBlockComment) {
         const closingIndex =
-          this.jsTokenizer.lineHasBlockCommentClosing(toProcess);
+          this.jsTokenizer.lineHasBlockCommentClosing(remainder);
         if (closingIndex === -1) {
-          tokens.push({ type: "comment", value: toProcess });
-          return { tokens, state };
+          tokens.push({ type: "comment", value: remainder });
+          return { tokens, state, remainder: "" };
         }
 
         tokens.push({
           type: "comment",
-          value: toProcess.substring(0, closingIndex),
+          value: remainder.substring(0, closingIndex),
         });
         i += closingIndex; // Skip next chars as we just added them
         state.inBlockComment = false;
         continue;
       }
 
-      if (line.includes("Contents of the old and new")) {
-        console.log({ line, state });
+      if (this.jsTokenizer.isLineComment(remainder)) {
+        tokens.push({ type: "comment", value: remainder });
+        return { tokens, state, remainder: "" };
       }
 
-      if (this.jsTokenizer.isLineComment(toProcess)) {
-        tokens.push({ type: "comment", value: toProcess });
-        return { tokens, state };
+      if (char === "{") {
+        state.braceDepth += 1;
+        tokens.push({ type: "punctuation", value: "{" });
+        i++;
+        continue;
+      }
+
+      if (char === "}") {
+        state.braceDepth -= 1;
+        tokens.push({ type: "punctuation", value: "}" });
+        i++;
+        if (state.braceDepth === -1) {
+          state.lexerMode = "jsx";
+          return { tokens, state, remainder: line.substring(i, line.length) };
+        }
+        continue;
+      }
+
+      let shouldContinue = false;
+      for (let j = 0; j < this.jsTokenizer.varDeclarators.length; j++) {
+        const varDeclarator = this.jsTokenizer.varDeclarators[j];
+        const nextChar = remainder.charAt(varDeclarator.length);
+
+        if (
+          !remainder.startsWith(varDeclarator) ||
+          !this.sepChars.includes(nextChar) ||
+          !this.sepChars.includes(prevChar)
+        ) {
+          continue;
+        }
+
+        shouldContinue = true;
+        tokens.push({
+          type: "variableDeclaration",
+          value: varDeclarator,
+        });
+        i += varDeclarator.length;
+        const varDeclarationWithType = new RegExp(
+          `${varDeclarator}([\\s]*)([a-zA-Z0-9_$]+)([\\s]*):([\\s]*)([<>a-zA-Z0-9{}:,\\s]+)([\\s]*)=([\\s]*)`,
+        );
+        const resultVarDeclarationWithType =
+          varDeclarationWithType.exec(remainder);
+        if (resultVarDeclarationWithType !== null) {
+          const [
+            ,
+            declaratorNameSpace,
+            varName,
+            nameColonSpace,
+            colonTypeSpace,
+            type,
+            typeEqualSpace,
+            equalExprSpace,
+          ] = resultVarDeclarationWithType;
+
+          tokens.push(
+            {
+              type: "identifier",
+              value: `${declaratorNameSpace}${varName}${nameColonSpace}`,
+            },
+            { type: "punctuation", value: `:${colonTypeSpace}` },
+            { type: "typeHint", value: `${type}${typeEqualSpace}` },
+            { type: "operator", value: `=${equalExprSpace}` },
+          );
+          i +=
+            declaratorNameSpace.length +
+            varName.length +
+            nameColonSpace.length +
+            1 +
+            colonTypeSpace.length +
+            type.length +
+            typeEqualSpace.length +
+            1 +
+            equalExprSpace.length;
+        }
+
+        const varDeclarationWithoutType = new RegExp(
+          `${varDeclarator}([\\s]*)([a-zA-Z0-9_$]+)([\\s]*)=([\\s]*)`,
+        );
+        const resultVarDeclarationWithoutType =
+          varDeclarationWithoutType.exec(remainder);
+        if (resultVarDeclarationWithoutType) {
+          const [
+            ,
+            declaratorNameSpace,
+            varName,
+            varNameEqualSpace,
+            equalExprSpace,
+          ] = resultVarDeclarationWithoutType;
+          tokens.push(
+            {
+              type: "identifier",
+              value: `${declaratorNameSpace}${varName}${varNameEqualSpace}`,
+            },
+            { type: "operator", value: `=${equalExprSpace}` },
+          );
+          i +=
+            declaratorNameSpace.length +
+            varName.length +
+            varNameEqualSpace.length +
+            1 +
+            equalExprSpace.length;
+        }
+      }
+      if (shouldContinue) {
+        continue;
+      }
+
+      if (
+        this.isValidJsxTagStart(
+          remainder,
+          tokens.length > 0 ? tokens[tokens.length - 1] : undefined,
+          state,
+        )
+      ) {
+        state.lexerMode = "jsx";
+        return { remainder, tokens, state };
       }
 
       if (char === " " || char === "\t") {
@@ -193,34 +485,33 @@ export class JsxLineTokenizer
       if (
         state.inBlockComment === false &&
         state.inString === null &&
-        this.jsTokenizer.isBlockCommentOpening(toProcess)
+        this.jsTokenizer.isBlockCommentOpening(remainder)
       ) {
         state.inBlockComment = true;
         const closingIndex =
-          this.jsTokenizer.lineHasBlockCommentClosing(toProcess);
+          this.jsTokenizer.lineHasBlockCommentClosing(remainder);
 
         if (closingIndex === -1) {
-          tokens.push({ type: "comment", value: toProcess });
-          return { tokens, state };
+          tokens.push({ type: "comment", value: remainder });
+          return { tokens, state, remainder: "" };
         }
 
         tokens.push({
           type: "comment",
-          value: toProcess.substring(0, closingIndex),
+          value: remainder.substring(0, closingIndex),
         });
         i += closingIndex; // Skip next chars as we just added them
         state.inBlockComment = false;
         continue;
       }
 
-      let shouldContinue = false;
       for (let j = 0; j < this.jsTokenizer.keywords.length; j++) {
         const keyword = this.jsTokenizer.keywords[j];
-        const nextChar = toProcess.charAt(keyword.length);
+        const nextChar = remainder.charAt(keyword.length);
         if (
-          toProcess.startsWith(keyword) &&
-          sepChars.includes(prevChar) &&
-          sepChars.includes(nextChar)
+          remainder.startsWith(keyword) &&
+          this.sepChars.includes(prevChar) &&
+          this.sepChars.includes(nextChar)
         ) {
           tokens.push({ type: "keyword", value: `${keyword} ` });
           i += keyword.length + 1;
@@ -232,7 +523,7 @@ export class JsxLineTokenizer
       for (let j = 0; j < this.jsTokenizer.operators.length; j++) {
         const operator = this.jsTokenizer.operators[j];
 
-        if (toProcess.startsWith(operator)) {
+        if (remainder.startsWith(operator)) {
           tokens.push({ type: "operator", value: operator });
           i += operator.length;
           shouldContinue = true;
@@ -240,32 +531,13 @@ export class JsxLineTokenizer
         }
       }
 
-      for (let j = 0; j < this.jsTokenizer.varDeclarators.length; j++) {
-        const varDeclarator = this.jsTokenizer.varDeclarators[j];
-        const nextChar = toProcess.charAt(varDeclarator.length);
-
-        if (
-          toProcess.startsWith(varDeclarator) &&
-          sepChars.includes(nextChar) &&
-          sepChars.includes(prevChar)
-        ) {
-          tokens.push({
-            type: "variableDeclaration",
-            value: `${varDeclarator} `,
-          });
-          i += varDeclarator.length + 1;
-          shouldContinue = true;
-          break;
-        }
-      }
-
       for (let j = 0; j < this.jsTokenizer.nativeTypes.length; j++) {
         const nativeType = this.jsTokenizer.nativeTypes[j];
-        const nextChar = toProcess.charAt(nativeType.length);
+        const nextChar = remainder.charAt(nativeType.length);
         if (
-          toProcess.startsWith(nativeType) &&
-          sepChars.includes(prevChar) &&
-          sepChars.includes(nextChar)
+          remainder.startsWith(nativeType) &&
+          this.sepChars.includes(prevChar) &&
+          this.sepChars.includes(nextChar)
         ) {
           tokens.push({
             type: "typeHint",
@@ -279,12 +551,12 @@ export class JsxLineTokenizer
 
       for (let j = 0; j < this.jsTokenizer.functionDeclarators.length; j++) {
         const funcDeclarator = this.jsTokenizer.functionDeclarators[j];
-        const nextChar = toProcess.charAt(funcDeclarator.length);
+        const nextChar = remainder.charAt(funcDeclarator.length);
 
         if (
-          toProcess.startsWith(`${funcDeclarator} `) &&
-          sepChars.includes(prevChar) &&
-          sepChars.includes(nextChar)
+          remainder.startsWith(`${funcDeclarator} `) &&
+          this.sepChars.includes(prevChar) &&
+          this.sepChars.includes(nextChar)
         ) {
           tokens.push({
             type: "functionDeclaration",
@@ -297,12 +569,12 @@ export class JsxLineTokenizer
 
       for (let j = 0; j < this.jsTokenizer.numericTypes.length; j++) {
         const numericType = this.jsTokenizer.numericTypes[j];
-        const nextChar = toProcess.charAt(numericType.length);
+        const nextChar = remainder.charAt(numericType.length);
 
         if (
-          toProcess.startsWith(numericType) &&
-          sepChars.includes(prevChar) &&
-          sepChars.includes(nextChar)
+          remainder.startsWith(numericType) &&
+          this.sepChars.includes(prevChar) &&
+          this.sepChars.includes(nextChar)
         ) {
           tokens.push({
             type: "number",
@@ -323,7 +595,7 @@ export class JsxLineTokenizer
         continue;
       }
 
-      const digitMatch = toProcess.match(/^([0-9.]+)[\s\)\];\}\+\-*%><=,]?/);
+      const digitMatch = remainder.match(/^([0-9.]+)[\s\)\];\}\+\-*%><=,]?/);
       if (digitMatch && digitMatch[1] && digitMatch[1].length > 0) {
         tokens.push({ type: "number", value: digitMatch[1] });
         i += digitMatch[1].length;
@@ -342,6 +614,40 @@ export class JsxLineTokenizer
       }
     }
 
+    return { state, tokens, remainder: "" };
+  }
+
+  public tokenizeLine(
+    line: string,
+    state: JsxLexerState,
+  ): {
+    tokens: Token<JsxTokenType>[];
+    state: JsxLexerState;
+  } {
+    let tokens: Token<JsxTokenType>[] = [];
+    let remainder = line;
+
+    while (remainder.length > 0) {
+      if (state.lexerMode === "js") {
+        ({ remainder, state, tokens } = this.tokenizeJs(
+          tokens,
+          remainder,
+          state,
+        ));
+      } else if (state.lexerMode === "jsx") {
+        ({ remainder, state, tokens } = this.tokenizeJsx(
+          tokens,
+          remainder,
+          state,
+        ));
+      } else {
+        ({ remainder, state, tokens } = this.tokenizeJs(
+          tokens,
+          remainder,
+          state,
+        ));
+      }
+    }
     return { state, tokens };
   }
 }

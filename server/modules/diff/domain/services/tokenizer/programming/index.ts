@@ -64,7 +64,7 @@ export class ProgrammingLangLineTokenizer
   } {
     const tokens: Token<ProgrammingLangTokenType>[] = [];
     const sepChars = [
-      ...this.langLexer.punctuation,
+      ...this.langLexer.punctuation.filter((p) => p !== "."),
       "\t",
       "\n",
       " ",
