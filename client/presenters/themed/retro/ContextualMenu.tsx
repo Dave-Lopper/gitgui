@@ -22,8 +22,6 @@ export default function ContextualMenu() {
   } = useContextualMenu();
   const { repositorySelection } = useRepositorySelection();
 
-  console.log({ contextualAction });
-
   if (!repositorySelection) {
     return (
       <div className="h-full w-full flex border-[2px] border-b-white border-l-0 border-r-0"></div>
