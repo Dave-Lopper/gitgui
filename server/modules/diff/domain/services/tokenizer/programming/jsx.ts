@@ -8,6 +8,7 @@ export type JsxLexerState = {
   inJsxTag: boolean;
   lexerMode: "js" | "jsx" | "jsxExpression";
   braceDepth: number;
+  jsxStartedAtDepth: number | null;
 };
 
 export type JsxTokenType =
@@ -48,6 +49,7 @@ export class JsxLineTokenizer
     inStringTemplateExpr: 0,
     lexerMode: "js",
     braceDepth: 0,
+    jsxStartedAtDepth: null,
     inJsxTag: false,
   } as const;
   private jsTokenizer = new JavascriptTokenizer();
@@ -68,10 +70,10 @@ export class JsxLineTokenizer
     "",
   ];
 
-  private looksLikeJsx(toProcess: string): boolean {
+  private looksLikeJsx(value: string): boolean {
     return (
-      (toProcess.startsWith("</") && /<\/[A-Za-z]/.test(toProcess)) ||
-      (toProcess.startsWith("<") && /<[A-Za-z]/.test(toProcess))
+      (value.startsWith("</") && /<\/[A-Za-z]/.test(value)) ||
+      (value.startsWith("<") && /<[A-Za-z]/.test(value))
     );
   }
 
@@ -134,6 +136,12 @@ export class JsxLineTokenizer
         continue;
       }
 
+      if (remainder.startsWith("//")) {
+        tokens.push({ type: "comment", value: remainder });
+        i += remainder.length;
+        continue;
+      }
+
       if (state.inJsxTag && char === "=") {
         tokens.push({ type: "operator", value: "=" });
         i++;
@@ -150,7 +158,7 @@ export class JsxLineTokenizer
           state.inString = '"';
         }
         tokens.push({ type: "string", value: tokenValue });
-        i += tokenValue.length + 1;
+        i += tokenValue.length;
         continue;
       }
 
@@ -172,10 +180,30 @@ export class JsxLineTokenizer
         tokens.push({ type: "punctuation", value: "</>" });
         i += 3;
         state.inJsxTag = false;
+        state.lexerMode = "js";
+        state.jsxStartedAtDepth = null;
         continue;
       }
 
-      if (remainder.startsWith("<")) {
+      if (remainder.startsWith("</")) {
+        tokens.push({ type: "punctuation", value: "</" });
+        i += 2;
+        const closingIndex = remainder.indexOf(">");
+        if (closingIndex > -1) {
+          const tagName = remainder.substring(2, closingIndex);
+          tokens.push({ type: "keyword", value: tagName });
+          i += tagName.length;
+          tokens.push({ type: "punctuation", value: ">" });
+          i++;
+          state.inJsxTag = false;
+          state.lexerMode = "js";
+          state.jsxStartedAtDepth = null;
+        }
+
+        continue;
+      }
+
+      if (char === "<") {
         tokens.push({ type: "punctuation", value: "<" });
         i++;
         const tagNmame = remainder.substring(1).split(" ")[0];
@@ -189,6 +217,16 @@ export class JsxLineTokenizer
         tokens.push({ type: "punctuation", value: "/>" });
         i += 2;
         state.inJsxTag = false;
+        state.jsxStartedAtDepth = null;
+        state.lexerMode = "js";
+        continue;
+      }
+      if (char === ">") {
+        tokens.push({ type: "punctuation", value: ">" });
+        i++;
+        state.inJsxTag = false;
+        state.lexerMode = "js";
+        state.jsxStartedAtDepth = null;
         continue;
       }
 
@@ -205,11 +243,18 @@ export class JsxLineTokenizer
         continue;
       }
 
+      if (["(", ")", ":"].includes(char)) {
+        tokens.push({ type: "punctuation", value: char });
+        i++;
+        continue;
+      }
+
       if (tokens.length > 0 && tokens[tokens.length - 1].type === "unknown") {
         tokens[tokens.length - 1].value += char;
       } else {
         tokens.push({ type: "unknown", value: char });
       }
+      i++;
     }
 
     return { tokens, state, remainder };
@@ -228,11 +273,20 @@ export class JsxLineTokenizer
     let i = 0;
     const jsStringsClosersMapping = this.jsTokenizer
       .stringClosersMapping as Record<string, string>;
+    const whiteSpaceRegexp = /^(\s+)/g;
 
     while (remainder.length > 0) {
       remainder = line.substring(i, line.length);
       const char = line.charAt(i);
       const prevChar = line.charAt(i - 1);
+
+      const whiteSpaceMatch = whiteSpaceRegexp.exec(remainder);
+      if (whiteSpaceMatch !== null) {
+        const space = whiteSpaceMatch[1];
+        tokens.push({ type: "whitespace", value: space });
+        i += space.length;
+        continue;
+      }
 
       const stringMarkerLength = this.jsTokenizer.isStringMarker(remainder);
       if (stringMarkerLength > 0) {
@@ -282,6 +336,7 @@ export class JsxLineTokenizer
           remainder,
           state,
         );
+
         if (stringTplOpeningLength > 0) {
           tokens.push({
             type: "punctuation",
@@ -289,17 +344,6 @@ export class JsxLineTokenizer
           });
           state.inStringTemplateExpr++;
           i += stringTplOpeningLength;
-          continue;
-        }
-
-        const stringTplClosingLength = this.jsTokenizer.isStringTemplateClosing(
-          remainder,
-          state,
-        );
-        if (stringTplClosingLength > 0) {
-          tokens.push({ type: "punctuation", value: char });
-          state.inStringTemplateExpr--;
-          i += stringTplClosingLength;
           continue;
         }
 
@@ -313,17 +357,23 @@ export class JsxLineTokenizer
           } else {
             langSubstring = remainder;
           }
-          const tokenizerRv = this.tokenizeJs(tokens, langSubstring, {
+
+          const tokenizerRv = this.tokenizeJs([], langSubstring, {
             inString: null,
             inStringTemplateExpr: 0,
             inBlockComment: false,
             lexerMode: "js",
             braceDepth: state.braceDepth,
             inJsxTag: state.inJsxTag,
+            jsxStartedAtDepth: state.jsxStartedAtDepth,
           });
-
           tokens.push(...tokenizerRv.tokens);
           i += langSubstring.length;
+          if (closingIndex > -1) {
+            tokens.push({ type: "punctuation", value: "}" });
+            state.inStringTemplateExpr--;
+            i++;
+          }
           continue;
         }
 
@@ -369,7 +419,7 @@ export class JsxLineTokenizer
         state.braceDepth -= 1;
         tokens.push({ type: "punctuation", value: "}" });
         i++;
-        if (state.braceDepth === -1) {
+        if (state.braceDepth === state.jsxStartedAtDepth) {
           state.lexerMode = "jsx";
           return { tokens, state, remainder: line.substring(i, line.length) };
         }
@@ -395,6 +445,7 @@ export class JsxLineTokenizer
           value: varDeclarator,
         });
         i += varDeclarator.length;
+
         const varDeclarationWithType = new RegExp(
           `${varDeclarator}([\\s]*)([a-zA-Z0-9_$]+)([\\s]*):([\\s]*)([<>a-zA-Z0-9{}:,\\s]+)([\\s]*)=([\\s]*)`,
         );
@@ -431,6 +482,7 @@ export class JsxLineTokenizer
             typeEqualSpace.length +
             1 +
             equalExprSpace.length;
+          continue;
         }
 
         const varDeclarationWithoutType = new RegExp(
@@ -438,7 +490,7 @@ export class JsxLineTokenizer
         );
         const resultVarDeclarationWithoutType =
           varDeclarationWithoutType.exec(remainder);
-        if (resultVarDeclarationWithoutType) {
+        if (resultVarDeclarationWithoutType !== null) {
           const [
             ,
             declaratorNameSpace,
@@ -459,6 +511,35 @@ export class JsxLineTokenizer
             varNameEqualSpace.length +
             1 +
             equalExprSpace.length;
+          continue;
+        }
+
+        const equalIndex = remainder.indexOf("=");
+        if (equalIndex > -1) {
+          const varNamePart = remainder.substring(
+            varDeclarator.length,
+            equalIndex,
+          );
+          for (let j = 0; j < varNamePart.length; j++) {
+            const varNameChar = varNamePart.charAt(j);
+
+            if (whiteSpaceRegexp.exec(varNameChar)) {
+              if (tokens[tokens.length - 1].type === "whitespace") {
+                tokens[tokens.length - 1].value += varNameChar;
+              } else {
+                tokens.push({ type: "whitespace", value: varNameChar });
+              }
+            } else if ([":", "{", "}", "[", "]", ","].includes(varNameChar)) {
+              tokens.push({ type: "punctuation", value: varNameChar });
+            } else {
+              if (tokens[tokens.length - 1].type === "identifier") {
+                tokens[tokens.length - 1].value += varNameChar;
+              } else {
+                tokens.push({ type: "identifier", value: varNameChar });
+              }
+            }
+            i++;
+          }
         }
       }
       if (shouldContinue) {
@@ -473,13 +554,8 @@ export class JsxLineTokenizer
         )
       ) {
         state.lexerMode = "jsx";
+        state.jsxStartedAtDepth = state.braceDepth;
         return { remainder, tokens, state };
-      }
-
-      if (char === " " || char === "\t") {
-        tokens.push({ type: "whitespace", value: char });
-        i++;
-        continue;
       }
 
       if (
@@ -513,8 +589,8 @@ export class JsxLineTokenizer
           this.sepChars.includes(prevChar) &&
           this.sepChars.includes(nextChar)
         ) {
-          tokens.push({ type: "keyword", value: `${keyword} ` });
-          i += keyword.length + 1;
+          tokens.push({ type: "keyword", value: keyword });
+          i += keyword.length;
           shouldContinue = true;
           break;
         }

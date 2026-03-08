@@ -45,6 +45,7 @@ export class JavascriptTokenizer implements LanguageSpecificLexer {
     ":",
     ".",
     ",",
+    "?",
   ];
   public readonly keywords = [
     "abstract",
@@ -54,6 +55,7 @@ export class JavascriptTokenizer implements LanguageSpecificLexer {
     "case",
     "catch",
     "class",
+    "constructor",
     "continue",
     "do",
     "else",
@@ -72,7 +74,10 @@ export class JavascriptTokenizer implements LanguageSpecificLexer {
     "default",
     "new",
     "private",
+    "public",
+    "readonly",
     "return",
+    "super",
     "switch",
     "this",
     "throw",
@@ -85,6 +90,21 @@ export class JavascriptTokenizer implements LanguageSpecificLexer {
   public readonly varDeclarators = ["var", "let", "const"];
 
   public getStringTemplateClosingIndex(value: string): number {
+    if (value.includes("{")) {
+      let braceDepth = 1;
+      for (let i = 0; i < value.length; i++) {
+        const char = value.charAt(i);
+        if (char === "{") {
+          braceDepth++;
+        } else if (char === "}") {
+          braceDepth--;
+          if (braceDepth === 0) {
+            return i > 0 ? i : i + 1;
+          }
+        }
+      }
+      return -1;
+    }
     return value.indexOf("}");
   }
 

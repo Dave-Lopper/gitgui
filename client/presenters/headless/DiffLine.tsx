@@ -1,9 +1,16 @@
 import { ComponentType, useMemo, useRef, useState } from "react";
 
+
+
 import { useCases } from "../../bootstrap";
 import { DiffLine as DiffLineType } from "../../domain/diff";
 import ContextMenu, { ContextMenuItemProps } from "./ContextMenu";
 import { useContextMenu } from "./hooks/context-menu";
+import "./syntax-highlighting.css";
+
+
+
+
 
 export default function DiffLine({
   contextMenuOption: ContextMenuOption,
@@ -25,14 +32,14 @@ export default function DiffLine({
   }>(
     () => ({
       ADDED: {
-        bg: "bg-emerald-400",
-        highlight: "bg-green-600",
-        hover: "hover:bg-green-600",
+        bg: "bg-emerald-300",
+        highlight: "bg-green-500",
+        hover: "hover:bg-green-500",
       },
       REMOVED: {
-        bg: "bg-red-400",
-        highlight: "bg-red-600",
-        hover: "hover:bg-red-600",
+        bg: "bg-red-300",
+        highlight: "bg-red-500",
+        hover: "hover:bg-red-500",
       },
     }),
     [],

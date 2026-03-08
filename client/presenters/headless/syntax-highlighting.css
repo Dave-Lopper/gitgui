@@ -1,4 +1,5 @@
-.identifier {
+.identifier,
+.unknown {
   color: black;
 }
 
@@ -34,5 +35,5 @@
 }
 
 .propertyValue {
-  color: #1F51FF;
+  color: #1f51ff;
 }

@@ -7,7 +7,7 @@ import RetroDiffFileListRightClickMenuOption from "../themed/retro/ContextMenuOp
 import ContextMenu, { ContextMenuItemProps } from "./ContextMenu";
 import DiffHunk from "./DiffHunk";
 import { useContextMenu } from "./hooks/context-menu";
-import "./syntax-highlighting.css";
+
 
 export default function DiffViewer({
   contextMenuOption: ContextMenuOption,
