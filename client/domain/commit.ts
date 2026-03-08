@@ -9,6 +9,6 @@ export type Commit = {
 };
 
 export type CommitStatus = {
-  remoteUnpulled: number;
-  localUnpushed: number;
+  unpulledCommitsCount: number;
+  unpushedCommitsCount: number;
 };

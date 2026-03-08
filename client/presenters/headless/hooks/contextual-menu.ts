@@ -26,6 +26,7 @@ export function useContextualMenu() {
     "RepositoryFetched",
     async (event) => {
       setIsFetchLoading(false);
+      console.log({ eventPayloadRepoFetched: event.payload });
       setCommitStatus(event.payload);
     },
     [],
@@ -56,10 +57,11 @@ export function useContextualMenu() {
     if (!commitStatus || !repositorySelection) {
       return;
     }
+    console.log("USEEFFECT", { commitStatus });
 
-    if (commitStatus.remoteUnpulled > 0) {
+    if (commitStatus.unpulledCommitsCount > 0) {
       setContextualAction("PULL");
-    } else if (commitStatus.localUnpushed > 0) {
+    } else if (commitStatus.unpushedCommitsCount > 0) {
       setContextualAction("PUSH");
     } else {
       setContextualAction("REFRESH");

@@ -7,7 +7,7 @@ export class CommitGitCliRunner
   implements CommitGitRunner
 {
   async commit(repositoryPath: string, message: string): Promise<void> {
-    await this.safeRun("git", ["commit", "-m", `"${message}"`], {
+    await this.safeRun("git", ["commit", "-m", message], {
       cwd: repositoryPath,
     });
   }

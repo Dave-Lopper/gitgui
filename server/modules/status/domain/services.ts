@@ -19,6 +19,7 @@ export function parseRepoStatus(statusLines: string[]): TreeStatus {
     if (relevantPart.includes(" ")) {
       const relevantPartParts = relevantPart.split(" ");
       const commitsPart = relevantPartParts.slice(1).join(" ");
+
       if (commitsPart.includes(",")) {
         const [ahead, behind] = commitsPart.split(",");
         unpushed = parseInt(ahead.slice(-1));
